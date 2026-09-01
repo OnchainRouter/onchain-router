@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
+import { alphaTagCleanup, parseDistTags } from './npm-alpha-tags.mjs';
+
 if (process.env.GITHUB_ACTIONS !== 'true' || process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch')
   throw new Error(
     'npm alpha publication is allowed only from a manually dispatched GitHub workflow',
@@ -29,6 +31,15 @@ function registryMetadata(item) {
   if (result.status === 0) return JSON.parse(result.stdout);
   if (/E404|404 Not Found/i.test(`${result.stdout}\n${result.stderr}`)) return null;
   throw new Error(`could not safely determine registry state for ${item.name}@${item.version}`);
+}
+
+function registryDistTags(name) {
+  const result = spawnSync('npm', ['dist-tag', 'ls', name], {
+    encoding: 'utf8',
+    env: process.env,
+  });
+  if (result.status !== 0) throw new Error(`could not read dist-tags for ${name}`);
+  return parseDistTags(result.stdout);
 }
 
 const publishOrder = [
@@ -82,4 +93,21 @@ for (const name of publishOrder) {
   if (result.status !== 0) throw new Error(`publication failed for ${item.name}@${item.version}`);
 }
 
-console.log('Published six AgenticFI packages as npm 0.1.0 alpha releases with provenance.');
+for (const name of publishOrder) {
+  const item = byName.get(name);
+  const tags = registryDistTags(name);
+  for (const tag of alphaTagCleanup(tags, item.version)) {
+    const result = spawnSync('npm', ['dist-tag', 'rm', name, tag], {
+      stdio: 'inherit',
+      env: process.env,
+    });
+    if (result.status !== 0) throw new Error(`could not remove unintended ${tag} tag from ${name}`);
+  }
+  const finalTags = registryDistTags(name);
+  if (finalTags.alpha !== item.version || finalTags.latest === item.version)
+    throw new Error(`${name} dist-tags do not match the bounded alpha release policy`);
+}
+
+console.log(
+  'Published six AgenticFI packages as npm 0.1.0 alpha releases with provenance and no unintended latest tags.',
+);
