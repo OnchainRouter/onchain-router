@@ -1,0 +1,35 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+google-credentials*.json
+vertex-credentials*.json
+
+# JavaScript and TypeScript
+node_modules/
+.pnpm-store/
+.turbo/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Generated release artifacts and state
+.artifacts/
+.cache/
+*.sqlite
+*.sqlite3
+*.log
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/

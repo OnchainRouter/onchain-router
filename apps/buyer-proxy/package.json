@@ -1,0 +1,62 @@
+{
+  "name": "@agenticfi/onchain-router-proxy",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Authenticated local OpenAI-compatible proxy for the Onchain Router Buyer Runtime",
+  "license": "MIT",
+  "author": "AgenticFI",
+  "keywords": [
+    "openai",
+    "proxy",
+    "x402",
+    "usdc",
+    "base",
+    "ai-agents",
+    "llm"
+  ],
+  "homepage": "https://llm.agenticfi.wtf/docs/proxy",
+  "bugs": "https://github.com/AgenticFI/onchain-router-clients/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgenticFI/onchain-router-clients.git",
+    "directory": "apps/buyer-proxy"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "buyer-proxy-threat-model.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "onchain-router-proxy": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean && chmod 755 dist/index.js",
+    "clean": "rm -rf dist coverage",
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@agenticfi/onchain-router-buyer-core": "workspace:*",
+    "@agenticfi/onchain-router": "workspace:*"
+  },
+  "devDependencies": {
+    "openai": "7.4.0",
+    "tsup": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

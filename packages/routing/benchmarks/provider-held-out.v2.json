@@ -1,0 +1,136 @@
+{
+  "version": "onchain-router-routing-benchmark/v1",
+  "name": "gemini-private-held-out-v2",
+  "baselineModel": "gemini-3.1-flash-lite",
+  "minimumAggregateQualityGainBasisPoints": 250,
+  "modelPriors": [
+    {
+      "id": "gemini-3.1-flash-lite",
+      "qualityBasisPoints": {
+        "general": 5000,
+        "code": 10000,
+        "reasoning": 3925,
+        "tool-use": 5000,
+        "vision": 5000
+      }
+    },
+    {
+      "id": "gemini-3.5-flash-lite",
+      "qualityBasisPoints": {
+        "general": 5000,
+        "code": 10000,
+        "reasoning": 5725,
+        "tool-use": 5000,
+        "vision": 5000
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "heldout-code-pages-02",
+      "profile": "eco",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys and exact requested labels or expressions."
+          },
+          {
+            "role": "user",
+            "content": "Debug this Python function intended to return the number of pages needed: def page_count(total, size): return total // size + 1. Return defect_label using exact label unconditional_extra_page, corrected_expression using exact expression (total + size - 1) // size, pages_20_10, pages_21_10, and pages_0_10."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "defect_label": "unconditional_extra_page",
+        "corrected_expression": "(total + size - 1) // size",
+        "pages_20_10": 2,
+        "pages_21_10": 3,
+        "pages_0_10": 0
+      },
+      "minimumQualityBasisPoints": 7500,
+      "maximumCostRatioBasisPoints": 10000
+    },
+    {
+      "id": "heldout-code-dedupe-02",
+      "profile": "auto",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys and exact requested labels or expressions."
+          },
+          {
+            "role": "user",
+            "content": "Inspect this JavaScript function for a sorted array: const uniqueSorted = values => values.filter((value, index) => index === 0 || value !== values[index + 1]);. Return defect_label using exact label compares_next_value, corrected_predicate using exact expression index === 0 || value !== values[index - 1], result_for_2_2_5_5_5_9 as an array, and result_length."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "defect_label": "compares_next_value",
+        "corrected_predicate": "index === 0 || value !== values[index - 1]",
+        "result_for_2_2_5_5_5_9": [2, 5, 9],
+        "result_length": 3
+      },
+      "minimumQualityBasisPoints": 7500,
+      "maximumCostRatioBasisPoints": 40000
+    },
+    {
+      "id": "heldout-reasoning-workshops-02",
+      "profile": "auto",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys."
+          },
+          {
+            "role": "user",
+            "content": "Reason about six workshops A, B, C, D, E, and F in distinct slots 1 through 6. C is immediately after A. F is immediately after C. B is before A. D is immediately before E. E is after F. Return the unique order as an array and the one-based slots of A, D, and F."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "order": ["B", "A", "C", "F", "D", "E"],
+        "a_slot": 2,
+        "d_slot": 5,
+        "f_slot": 4
+      },
+      "minimumQualityBasisPoints": 7500,
+      "maximumCostRatioBasisPoints": 40000
+    },
+    {
+      "id": "heldout-reasoning-fund-02",
+      "profile": "premium",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys. All amounts are integer cents."
+          },
+          {
+            "role": "user",
+            "content": "Analyze a fund that starts with 30,000 cents. It invests 40% in X, then invests half of the remaining cash in Y. X gains 25%. Y loses one third of its value. Finally, a 750-cent fee is paid from cash. Return x_final, y_final, cash_final, total_final, and net_change from the starting amount."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "x_final": 15000,
+        "y_final": 6000,
+        "cash_final": 8250,
+        "total_final": 29250,
+        "net_change": -750
+      },
+      "minimumQualityBasisPoints": 7500,
+      "maximumCostRatioBasisPoints": 100000
+    }
+  ]
+}

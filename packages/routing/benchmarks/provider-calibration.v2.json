@@ -1,0 +1,95 @@
+{
+  "version": "onchain-router-routing-calibration/v1",
+  "name": "gemini-private-calibration-v2",
+  "models": ["gemini-3.1-flash-lite", "gemini-3.5-flash-lite"],
+  "tasks": [
+    {
+      "id": "calibration-code-lower-bound-02",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys and exact requested labels or expressions."
+          },
+          {
+            "role": "user",
+            "content": "This JavaScript function should return the first index whose value is greater than or equal to x: function lowerBound(a, x) { let lo = 0, hi = a.length; while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (a[mid] <= x) lo = mid + 1; else hi = mid; } return lo; }. For the sorted array [1,2,2,4,7], return defect_label using the exact label upper_bound_condition, corrected_comparison using the exact expression a[mid] < x, index_for_2, index_for_3, and index_for_5."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "defect_label": "upper_bound_condition",
+        "corrected_comparison": "a[mid] < x",
+        "index_for_2": 1,
+        "index_for_3": 3,
+        "index_for_5": 4
+      }
+    },
+    {
+      "id": "calibration-reasoning-deliveries-02",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys."
+          },
+          {
+            "role": "user",
+            "content": "Five deliveries J, K, L, M, and N occupy distinct slots 1 through 5. K is immediately after J. M is after K. N is before J. M is immediately before L. Return the unique order as an array, plus the one-based slots of J, M, and N."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": { "order": ["N", "J", "K", "M", "L"], "j_slot": 2, "m_slot": 4, "n_slot": 1 }
+    },
+    {
+      "id": "calibration-code-window-state-02",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys and exact requested labels or expressions."
+          },
+          {
+            "role": "user",
+            "content": "Inspect this Python function intended to return the largest sum of any contiguous window of exactly k items: def best_window(values, k): current = sum(values[:k]); best = current; for i in range(k, len(values)): current += values[i] - values[i-k+1]; best = max(best, current); return best. Return defect_label using exact label outgoing_index_shift, corrected_update using exact expression current += values[i] - values[i-k], and result_for_4_1_7_2_6_k3."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "defect_label": "outgoing_index_shift",
+        "corrected_update": "current += values[i] - values[i-k]",
+        "result_for_4_1_7_2_6_k3": 15
+      }
+    },
+    {
+      "id": "calibration-reasoning-ledger-02",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys. All amounts are integer cents."
+          },
+          {
+            "role": "user",
+            "content": "An account starts at 24,000 cents. Apply these events in order: debit 3,750; credit 1,280; debit 2,415; credit 935. A 125-cent fee applies after each debit only when the post-debit balance before the fee is below 20,000. Return final_balance, debit_total excluding fees, credit_total, fee_count, and fee_total."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "final_balance": 19925,
+        "debit_total": 6165,
+        "credit_total": 2215,
+        "fee_count": 1,
+        "fee_total": 125
+      }
+    }
+  ]
+}

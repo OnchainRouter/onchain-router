@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Onchain Router'
+  short_description: 'Choose a safe bounded x402 buyer path'
+  default_prompt: 'Use $onchain-router to choose the safest available buyer entry point and make a bounded request with receipt evidence.'
+
+policy:
+  allow_implicit_invocation: true

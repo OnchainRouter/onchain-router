@@ -1,0 +1,61 @@
+{
+  "name": "@agenticfi/onchain-router-cli",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Command-line wallet, budgets, x402 payments, recovery, and receipts for Onchain Router",
+  "license": "MIT",
+  "author": "AgenticFI",
+  "keywords": [
+    "x402",
+    "usdc",
+    "base",
+    "ai-agents",
+    "cli",
+    "wallet",
+    "payments"
+  ],
+  "homepage": "https://llm.agenticfi.wtf/docs/cli",
+  "bugs": "https://github.com/AgenticFI/onchain-router-clients/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgenticFI/onchain-router-clients.git",
+    "directory": "apps/buyer-cli"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "onchain-router": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/broker-worker.ts --format esm --dts --clean && chmod 755 dist/index.js",
+    "clean": "rm -rf dist coverage",
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@agenticfi/onchain-router-buyer-core": "workspace:*",
+    "@agenticfi/onchain-router": "workspace:*"
+  },
+  "devDependencies": {
+    "@x402/core": "2.21.0",
+    "tsup": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

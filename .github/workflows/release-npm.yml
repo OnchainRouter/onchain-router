@@ -1,0 +1,46 @@
+name: Publish npm public alpha
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type publish-0.1.0-alpha
+        required: true
+        type: string
+      resume_existing:
+        description: Resume after a partial publish by verifying and skipping existing 0.1.0 packages
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'publish-0.1.0-alpha'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.14.0
+          registry-url: https://registry.npmjs.org
+      - name: Enable pinned pnpm and provenance-capable npm
+        run: corepack enable && corepack prepare pnpm@9.15.0 --activate && npm install --global npm@11.5.1
+      - name: Install dependencies without lifecycle scripts
+        run: pnpm install --frozen-lockfile
+      - name: Build the pinned SQLite native dependency
+        run: pnpm deps:native
+      - name: Verify source and tests
+        run: pnpm verify
+      - name: Build and inspect immutable tarballs
+        run: pnpm pack:alpha
+      - name: Publish six packages with npm provenance
+        run: node scripts/publish-alpha.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          RELEASE_CONFIRM: ${{ inputs.confirmation }}
+          RESUME_EXISTING: ${{ inputs.resume_existing }}

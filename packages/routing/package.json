@@ -1,0 +1,61 @@
+{
+  "name": "@agenticfi/onchain-router-routing",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Experimental deterministic model-selection core for Onchain Router",
+  "license": "MIT",
+  "author": "AgenticFI",
+  "keywords": [
+    "llm",
+    "routing",
+    "model-router",
+    "ai-agents",
+    "x402",
+    "cost",
+    "latency"
+  ],
+  "homepage": "https://llm.agenticfi.wtf/docs/routing",
+  "bugs": "https://github.com/AgenticFI/onchain-router-clients/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgenticFI/onchain-router-clients.git",
+    "directory": "packages/routing"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "UPSTREAM.md",
+    "routing-threat-model.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "clean": "rm -rf dist coverage",
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

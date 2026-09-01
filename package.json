@@ -1,0 +1,47 @@
+{
+  "name": "onchain-router-clients",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Public AgenticFI clients for policy-bounded x402 AI payments",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgenticFI/onchain-router-clients.git"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "axios": "1.19.0"
+    }
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "clean": "turbo run clean",
+    "deps:native": "pnpm --filter @agenticfi/onchain-router-buyer-core --config.ignore-scripts=false rebuild better-sqlite3",
+    "format:check": "prettier --check .",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:unit": "turbo run test:unit",
+    "test:integration": "turbo run test:integration",
+    "test:bins": "node scripts/smoke-built-binaries.mjs",
+    "package:check": "node scripts/check-public-packages.mjs",
+    "pack:alpha": "pnpm build && pnpm package:check && node scripts/pack-public-packages.mjs",
+    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:bins && pnpm package:check"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@types/node": "24.10.1",
+    "eslint": "9.39.1",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "16.5.0",
+    "prettier": "3.7.4",
+    "turbo": "2.10.9",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.50.1",
+    "vitest": "4.1.0"
+  }
+}
