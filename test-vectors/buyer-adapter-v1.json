@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "method": "chat",
+      "endpoint": "/v1/chat/completions",
+      "body": { "model": "text-model", "messages": [{ "role": "user", "content": "hello" }] }
+    },
+    {
+      "method": "messages",
+      "endpoint": "/v1/messages",
+      "body": { "model": "text-model", "messages": [{ "role": "user", "content": "hello" }] }
+    },
+    {
+      "method": "images",
+      "endpoint": "/v1/images/generations",
+      "body": { "model": "image-model", "prompt": "a blue square" }
+    },
+    {
+      "method": "speech",
+      "endpoint": "/v1/audio/speech",
+      "body": { "model": "speech-model", "input": "hello" }
+    },
+    {
+      "method": "transcriptions",
+      "endpoint": "/v1/audio/transcriptions",
+      "body": {
+        "model": "transcription-model",
+        "audio_base64": "SUQzYXVkaW8=",
+        "acknowledge_provider_retention": true
+      }
+    }
+  ]
+}

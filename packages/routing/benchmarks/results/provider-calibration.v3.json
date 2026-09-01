@@ -1,0 +1,153 @@
+{
+  "version": "onchain-router-routing-calibration-evidence/v1",
+  "date": "2026-08-31",
+  "sourceCommit": "fe221ef7d7f7e788c0339bf2a5af1aebe17bbda6",
+  "apiImage": "sha256:400f5b4b1c89fc43f87d49a77198bfc792af843c2c952bf6682e76441ad68130",
+  "gatewayImage": "sha256:af806882b7a6ced41658db5b6a7e98ed7b9b51d03b935e0417bf1c8552d688af",
+  "reportSha256": "815f48dfbd684a902ee617b2a9973a78d4b1037cde538f6355f8778353e2838d",
+  "execution": {
+    "authorizedProviderCalls": 8,
+    "automaticRetries": 0,
+    "providerCreditOnly": true,
+    "productionChanged": false,
+    "routingPriorsChanged": false,
+    "heldOutSuiteCreated": false
+  },
+  "financialStateBefore": {
+    "operations": 0,
+    "payment_attempts": 0,
+    "settlement_intents": 0,
+    "receipts": 0,
+    "reconciliation_items": 0,
+    "ledger_transactions": 0,
+    "provider_attempts": 0,
+    "usage_records": 0
+  },
+  "financialStateAfter": {
+    "operations": 0,
+    "payment_attempts": 0,
+    "settlement_intents": 0,
+    "receipts": 0,
+    "reconciliation_items": 0,
+    "ledger_transactions": 0,
+    "provider_attempts": 0,
+    "usage_records": 0
+  },
+  "facilitatorBefore": {
+    "verifyCalls": 0,
+    "settleCalls": 0,
+    "externalEffects": 0
+  },
+  "facilitatorAfter": {
+    "verifyCalls": 0,
+    "settleCalls": 0,
+    "externalEffects": 0
+  },
+  "report": {
+    "version": "onchain-router-routing-calibration-report/v2",
+    "calibrationVersion": "onchain-router-routing-calibration/v2",
+    "scorerVersion": "onchain-router-json-field-score/v2",
+    "suite": "gemini-private-calibration-v3",
+    "suiteHash": "e21d7d453c6485e86a5232de75ca5066cfbd3015b9d91c280d321ceef17b076a",
+    "catalogVersion": "2be9314ecba4b90b0ad617b0736ae439e75aa228614ab23170337bff9094ebd7",
+    "providerCalls": 8,
+    "taskCount": 4,
+    "modelCount": 2,
+    "models": [
+      {
+        "model": "gemini-3.1-flash-lite",
+        "aggregateQualityBasisPoints": 8425,
+        "totalMaximumAtomic": "59724",
+        "taskCount": 4
+      },
+      {
+        "model": "gemini-3.5-flash-lite",
+        "aggregateQualityBasisPoints": 8425,
+        "totalMaximumAtomic": "96899",
+        "taskCount": 4
+      }
+    ],
+    "tasks": [
+      {
+        "taskId": "calibration-code-lower-bound-03",
+        "model": "gemini-3.1-flash-lite",
+        "maximumAtomic": "14930",
+        "qualityBasisPoints": 10000,
+        "matchedFields": 2,
+        "expectedFields": 2,
+        "outputContractSatisfied": true,
+        "latencyMs": 2359
+      },
+      {
+        "taskId": "calibration-code-lower-bound-03",
+        "model": "gemini-3.5-flash-lite",
+        "maximumAtomic": "24224",
+        "qualityBasisPoints": 5500,
+        "matchedFields": 1,
+        "expectedFields": 2,
+        "outputContractSatisfied": true,
+        "latencyMs": 751
+      },
+      {
+        "taskId": "calibration-reasoning-deliveries-03",
+        "model": "gemini-3.1-flash-lite",
+        "maximumAtomic": "14899",
+        "qualityBasisPoints": 10000,
+        "matchedFields": 4,
+        "expectedFields": 4,
+        "outputContractSatisfied": true,
+        "latencyMs": 960
+      },
+      {
+        "taskId": "calibration-reasoning-deliveries-03",
+        "model": "gemini-3.5-flash-lite",
+        "maximumAtomic": "24186",
+        "qualityBasisPoints": 10000,
+        "matchedFields": 4,
+        "expectedFields": 4,
+        "outputContractSatisfied": true,
+        "latencyMs": 707
+      },
+      {
+        "taskId": "calibration-code-window-state-03",
+        "model": "gemini-3.1-flash-lite",
+        "maximumAtomic": "14947",
+        "qualityBasisPoints": 5500,
+        "matchedFields": 2,
+        "expectedFields": 4,
+        "outputContractSatisfied": true,
+        "latencyMs": 771
+      },
+      {
+        "taskId": "calibration-code-window-state-03",
+        "model": "gemini-3.5-flash-lite",
+        "maximumAtomic": "24244",
+        "qualityBasisPoints": 10000,
+        "matchedFields": 4,
+        "expectedFields": 4,
+        "outputContractSatisfied": true,
+        "latencyMs": 1003
+      },
+      {
+        "taskId": "calibration-reasoning-ledger-03",
+        "model": "gemini-3.1-flash-lite",
+        "maximumAtomic": "14948",
+        "qualityBasisPoints": 8200,
+        "matchedFields": 4,
+        "expectedFields": 5,
+        "outputContractSatisfied": true,
+        "latencyMs": 831
+      },
+      {
+        "taskId": "calibration-reasoning-ledger-03",
+        "model": "gemini-3.5-flash-lite",
+        "maximumAtomic": "24245",
+        "qualityBasisPoints": 8200,
+        "matchedFields": 4,
+        "expectedFields": 5,
+        "outputContractSatisfied": true,
+        "latencyMs": 860
+      }
+    ]
+  }
+}

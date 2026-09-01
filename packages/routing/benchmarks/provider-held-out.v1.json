@@ -1,0 +1,168 @@
+{
+  "version": "onchain-router-routing-benchmark/v1",
+  "name": "gemini-private-held-out-v1",
+  "baselineModel": "gemini-3.1-flash-lite",
+  "minimumAggregateQualityGainBasisPoints": 250,
+  "modelPriors": [
+    {
+      "id": "gemini-3.6-flash",
+      "qualityBasisPoints": {
+        "general": 9000,
+        "code": 9000,
+        "reasoning": 9000,
+        "tool-use": 9000,
+        "vision": 9000
+      }
+    },
+    {
+      "id": "gemini-3.5-flash-lite",
+      "qualityBasisPoints": {
+        "general": 7500,
+        "code": 7200,
+        "reasoning": 7000,
+        "tool-use": 7400,
+        "vision": 7200
+      }
+    },
+    {
+      "id": "gemini-3.5-flash",
+      "qualityBasisPoints": {
+        "general": 8500,
+        "code": 8600,
+        "reasoning": 8500,
+        "tool-use": 8500,
+        "vision": 8400
+      }
+    },
+    {
+      "id": "gemini-3.1-flash-lite",
+      "qualityBasisPoints": {
+        "general": 6500,
+        "code": 6000,
+        "reasoning": 5800,
+        "tool-use": 6200,
+        "vision": 6000
+      }
+    },
+    {
+      "id": "gemini-2.5-flash",
+      "qualityBasisPoints": {
+        "general": 7600,
+        "code": 7700,
+        "reasoning": 7600,
+        "tool-use": 7600,
+        "vision": 7500
+      }
+    },
+    {
+      "id": "gemini-2.5-pro",
+      "qualityBasisPoints": {
+        "general": 9300,
+        "code": 9600,
+        "reasoning": 9700,
+        "tool-use": 9400,
+        "vision": 9200
+      }
+    },
+    {
+      "id": "gemini-2.5-flash-lite",
+      "qualityBasisPoints": {
+        "general": 6000,
+        "code": 5600,
+        "reasoning": 5400,
+        "tool-use": 5800,
+        "vision": 5600
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "general-extraction-01",
+      "profile": "eco",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys."
+          },
+          {
+            "role": "user",
+            "content": "A service owned by Mira runs in Sweden with three replicas. Extract owner, region, and replica count."
+          }
+        ],
+        "max_tokens": 128,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": { "owner": "Mira", "region": "Sweden", "replicas": 3 },
+      "minimumQualityBasisPoints": 7500,
+      "maximumCostRatioBasisPoints": 10000
+    },
+    {
+      "id": "code-analysis-01",
+      "profile": "auto",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys."
+          },
+          {
+            "role": "user",
+            "content": "Debug this JavaScript code: const clamp = (n, min, max) => Math.min(min, Math.max(max, n)); Return bug, correct_expression, and clamp_12_0_10. Use the bug label bounds_reversed."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "bug": "bounds_reversed",
+        "correct_expression": "Math.min(max, Math.max(min, n))",
+        "clamp_12_0_10": 10
+      },
+      "minimumQualityBasisPoints": 7500,
+      "maximumCostRatioBasisPoints": 40000
+    },
+    {
+      "id": "reasoning-schedule-01",
+      "profile": "premium",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys."
+          },
+          {
+            "role": "user",
+            "content": "Reason about four jobs A, B, C, D. A is first. C is immediately after B. D is after C. Return the unique order and the zero-based index of D."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": { "order": ["A", "B", "C", "D"], "d_index": 3 },
+      "minimumQualityBasisPoints": 7500,
+      "maximumCostRatioBasisPoints": 100000
+    },
+    {
+      "id": "reasoning-ledger-01",
+      "profile": "auto",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys."
+          },
+          {
+            "role": "user",
+            "content": "Analyze an integer ledger that starts at 120. Apply -35, +18, -9, then +6. Return final, total_credits, and total_debits as positive integer amounts."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": { "final": 100, "total_credits": 24, "total_debits": 44 },
+      "minimumQualityBasisPoints": 7500,
+      "maximumCostRatioBasisPoints": 40000
+    }
+  ]
+}

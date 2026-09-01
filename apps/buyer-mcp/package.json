@@ -1,0 +1,63 @@
+{
+  "name": "@agenticfi/onchain-router-mcp",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Focused MCP tools for Onchain Router text, image, and speech payments",
+  "license": "MIT",
+  "author": "AgenticFI",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "x402",
+    "usdc",
+    "ai-agents",
+    "llm",
+    "tools"
+  ],
+  "homepage": "https://llm.agenticfi.wtf/docs/mcp",
+  "bugs": "https://github.com/AgenticFI/onchain-router-clients/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgenticFI/onchain-router-clients.git",
+    "directory": "apps/buyer-mcp"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "onchain-router-mcp": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean && chmod 755 dist/index.js",
+    "clean": "rm -rf dist coverage",
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "@agenticfi/onchain-router-buyer-core": "workspace:*",
+    "@agenticfi/onchain-router": "workspace:*",
+    "zod": "4.2.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.0.0",
+    "tsup": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@onchain-router/python-client",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "python3 scripts/build_wheel.py",
+    "clean": "rm -rf dist build ../../.cache/python-sdk",
+    "lint": "PYTHONPYCACHEPREFIX=../../.cache/python-sdk python3 -m compileall -q src tests",
+    "typecheck": "PYTHONPYCACHEPREFIX=../../.cache/python-sdk python3 -m compileall -q src tests",
+    "test": "PYTHONPATH=src python3 -m unittest discover -s tests -v",
+    "test:unit": "PYTHONPATH=src python3 -m unittest discover -s tests -v",
+    "test:integration": "PYTHONPATH=src python3 -m unittest discover -s tests -v"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "version": "onchain-router-routing-calibration/v1",
+  "name": "gemini-private-calibration-v1",
+  "models": ["gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-3.6-flash"],
+  "tasks": [
+    {
+      "id": "calibration-code-last-01",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys and exact requested labels or expressions."
+          },
+          {
+            "role": "user",
+            "content": "Inspect this Python function: def last(items): return items[0]. Return bug_label, correct_expression, and last_of_4_7_9. Use the exact bug label wrong_end and the exact expression items[-1]."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": {
+        "bug_label": "wrong_end",
+        "correct_expression": "items[-1]",
+        "last_of_4_7_9": 9
+      }
+    },
+    {
+      "id": "calibration-reasoning-crates-01",
+      "request": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Return exactly one JSON object, with no prose or Markdown, using only the requested keys."
+          },
+          {
+            "role": "user",
+            "content": "A red crate holds 7 parts. A blue crate holds 5 more parts than red. A green crate holds 3 fewer parts than blue. Return red, blue, green, and total as integers."
+          }
+        ],
+        "max_tokens": 8192,
+        "response_format": { "type": "json_object" }
+      },
+      "expected": { "red": 7, "blue": 12, "green": 9, "total": 28 }
+    }
+  ]
+}
