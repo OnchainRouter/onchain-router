@@ -16,7 +16,7 @@ It also exposes free models, pricing, voices, balance, payment-contract, and quo
 
 ## Release status
 
-Version `0.1.0` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
+Version `0.1.1` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
 stable `latest` line. Installation does not authorize wallet setup, funding, unlock, policy
 widening, or a paid request.
 
@@ -57,6 +57,8 @@ onchain-router setup
 onchain-router funding
 onchain-router policy show
 onchain-router unlock
+onchain-router permit2 status
+onchain-router permit2 approve
 ```
 
 Setup creates or imports an encrypted dedicated wallet and asks the human to approve models and
@@ -108,6 +110,12 @@ try {
 
 `close()` releases local resources but does not end the signer session. Use `await buyer.lock()` or
 the human CLI's `onchain-router lock` when the session should end.
+
+Before the first paid request, read `await buyer.permit2Status()`. If approval is required, use the
+human-owned CLI or another trusted interactive operator surface to call
+`await buyer.approvePermit2()`. The approval is fixed to official Base USDC and canonical Permit2,
+bounded by the reviewed daily policy, and paid for with Base ETH by the buyer. Do not expose the
+approval method directly to an autonomous agent.
 
 ## Discovery
 

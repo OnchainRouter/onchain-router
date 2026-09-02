@@ -12,7 +12,7 @@ without exposing users or funds.
 | Current `0.1.x` npm public alpha              | Supported while listed as current in the release notes |
 | Older commits and locally modified builds     | Best effort                                            |
 
-The `0.1.0` npm packages use the `alpha` dist-tag. Registry presence, provenance, and supported
+The current `0.1.x` npm packages use the `alpha` dist-tag. Registry presence, provenance, and supported
 versions must be verified against the canonical documentation and release page rather than inferred
 from a package name.
 

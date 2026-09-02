@@ -1,6 +1,6 @@
 {
   "name": "@agenticfi/onchain-router-routing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "description": "Experimental deterministic model-selection core for Onchain Router",
   "license": "MIT",

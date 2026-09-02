@@ -4,18 +4,25 @@ import { createConnection, createServer, type Server, type Socket } from 'node:n
 import { dirname, resolve } from 'node:path';
 import { x402Client } from '@x402/core/client';
 import type { PaymentPayload } from '@x402/core/types';
-import { toClientEvmSigner } from '@x402/evm';
+import { PERMIT2_ADDRESS, getPermit2AllowanceReadParams, toClientEvmSigner } from '@x402/evm';
 import { UptoEvmScheme } from '@x402/evm/upto/client';
+import { createPublicClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+import { base } from 'viem/chains';
 import {
   asBuyerRuntimeError,
   BuyerRuntimeError,
+  InsufficientFunds,
+  Permit2ApprovalOutcomeUnknown,
+  Permit2ApprovalRequired,
+  RuntimeUnavailable,
   type BuyerOutcomeCode,
   type RetryDirective,
   WalletLocked,
 } from './errors.js';
 import { ensurePrivateDirectory, pathExists } from './filesystem.js';
 import type { LocalSpendLedger } from './ledger.js';
+import { createBoundedPermit2ApprovalTx } from './permit2.js';
 import {
   isPolicyRestriction,
   validateEffectiveBuyerPolicy,
@@ -25,22 +32,44 @@ import type {
   BrokerAuthorizationRequest,
   EffectiveBuyerPolicy,
   PaymentAuthorizer,
+  Permit2ApprovalResult,
+  Permit2Status,
 } from './types.js';
 import { unlockWalletForBroker } from './vault.js';
 import type { WalletVault } from './vault.js';
 
 const MAX_MESSAGE_BYTES = 256 * 1024;
-
 interface BrokerRequest {
   readonly id: string;
   readonly capability: string;
-  readonly action: 'status' | 'authorize' | 'lock';
+  readonly action: 'status' | 'authorize' | 'permit2Status' | 'approvePermit2' | 'lock';
   readonly payload?: unknown;
 }
 
 type BrokerResponse =
   | { readonly id: string; readonly ok: true; readonly result: unknown }
-  | { readonly id: string; readonly ok: false; readonly error: string };
+  | {
+      readonly id: string;
+      readonly ok: false;
+      readonly error: {
+        readonly code: BuyerOutcomeCode;
+        readonly retry: RetryDirective;
+        readonly message: string;
+        readonly reference?: string;
+      };
+    };
+
+export interface Permit2Operations {
+  allowance(owner: `0x${string}`, asset: `0x${string}`): Promise<bigint>;
+  nativeBalance(owner: `0x${string}`): Promise<bigint>;
+  approve(
+    asset: `0x${string}`,
+    amountAtomic: bigint,
+  ): Promise<{
+    readonly transactionHash: `0x${string}`;
+    readonly status: 'success' | 'reverted';
+  }>;
+}
 
 export interface SignerBrokerOptions {
   readonly socketPath: string;
@@ -52,6 +81,8 @@ export interface SignerBrokerOptions {
   readonly idleTimeoutMs?: number;
   readonly absoluteTimeoutMs?: number;
   readonly now?: () => number;
+  /** Test-only chain boundary. Production always constructs the account-bound Base clients. */
+  readonly testPermit2Operations?: Permit2Operations;
 }
 
 export interface SignerBrokerSession {
@@ -104,7 +135,9 @@ function parseBrokerRequest(value: unknown): BrokerRequest {
   if (
     typeof candidate.id !== 'string' ||
     typeof candidate.capability !== 'string' ||
-    !['status', 'authorize', 'lock'].includes(candidate.action ?? '')
+    !['status', 'authorize', 'permit2Status', 'approvePermit2', 'lock'].includes(
+      candidate.action ?? '',
+    )
   )
     throw new WalletLocked('invalid broker request');
   return candidate as BrokerRequest;
@@ -122,6 +155,7 @@ export class SignerBroker {
   private readonly sockets = new Set<Socket>();
   private sessionId: string | null = null;
   private sessionPolicy: EffectiveBuyerPolicy | null = null;
+  private permit2Operations: Permit2Operations | null = null;
 
   public constructor(private readonly options: SignerBrokerOptions) {
     this.now = options.now ?? Date.now;
@@ -149,8 +183,49 @@ export class SignerBroker {
     const wallet = await unlockWalletForBroker(this.options.vault, passphrase);
     const account = privateKeyToAccount(wallet.privateKey as `0x${string}`);
     this.options.ledger.bindWalletAddress(account.address);
+    const readClient = createPublicClient({
+      chain: base,
+      transport: http('https://mainnet.base.org'),
+    });
+    const walletClient = createWalletClient({
+      account,
+      chain: base,
+      transport: http('https://mainnet.base.org'),
+    });
     const signer = toClientEvmSigner(account);
     this.schemeClient = new x402Client().register(policy.network, new UptoEvmScheme(signer));
+    this.permit2Operations =
+      this.options.testPermit2Operations ??
+      Object.freeze({
+        allowance: async (owner: `0x${string}`, asset: `0x${string}`) =>
+          await readClient.readContract(
+            getPermit2AllowanceReadParams({
+              tokenAddress: asset,
+              ownerAddress: owner,
+            }),
+          ),
+        nativeBalance: async (owner: `0x${string}`) =>
+          await readClient.getBalance({ address: owner }),
+        approve: async (asset: `0x${string}`, amountAtomic: bigint) => {
+          const transactionHash = await walletClient.sendTransaction(
+            createBoundedPermit2ApprovalTx(asset, amountAtomic),
+          );
+          let receipt;
+          try {
+            receipt = await readClient.waitForTransactionReceipt({
+              hash: transactionHash,
+              confirmations: 1,
+              timeout: 120_000,
+            });
+          } catch {
+            throw new Permit2ApprovalOutcomeUnknown(
+              'Permit2 approval was submitted but its receipt is unavailable; run `onchain-router permit2 status` before any new approval',
+              transactionHash,
+            );
+          }
+          return { transactionHash, status: receipt.status };
+        },
+      });
     this.sessionPolicy = policy;
     this.address = account.address;
     const capability = randomBytes(32).toString('base64url');
@@ -200,6 +275,7 @@ export class SignerBroker {
     this.capabilityDigest = null;
     this.schemeClient = null;
     this.sessionPolicy = null;
+    this.permit2Operations = null;
     this.address = null;
     this.sessionId = null;
     for (const socket of this.sockets) socket.destroy();
@@ -253,6 +329,10 @@ export class SignerBroker {
             absoluteExpiresAt: this.absoluteExpiresAt,
           },
         };
+      if (request.action === 'permit2Status')
+        return { id, ok: true, result: await this.readPermit2Status() };
+      if (request.action === 'approvePermit2')
+        return { id, ok: true, result: await this.approvePermit2() };
       const authorization = parseAuthorization(request.payload);
       if (
         authorization.agentId !== this.options.agentId ||
@@ -300,6 +380,24 @@ export class SignerBroker {
         );
       const client = this.schemeClient;
       if (!client) throw new WalletLocked();
+      const permit2 = this.permit2Operations;
+      const owner = this.address;
+      if (!permit2 || !owner) throw new WalletLocked();
+      let allowance: bigint;
+      try {
+        allowance = await permit2.allowance(owner, policy.asset);
+      } catch {
+        this.options.ledger.releaseDefiniteFailure(authorization.idempotencyKey, this.now());
+        throw new RuntimeUnavailable(
+          'Permit2 allowance could not be read; no payment signature was created',
+        );
+      }
+      if (allowance < validated.amountAtomic) {
+        this.options.ledger.releaseDefiniteFailure(authorization.idempotencyKey, this.now());
+        throw new Permit2ApprovalRequired(
+          'Permit2 approval is required; fund this wallet with a small amount of Base ETH and run `onchain-router permit2 approve` before retrying',
+        );
+      }
       this.options.ledger.claimAuthorization(
         authorization.idempotencyKey,
         authorization.requestHash,
@@ -322,8 +420,88 @@ export class SignerBroker {
       return { id, ok: true, result: payload };
     } catch (error) {
       const safe = asBuyerRuntimeError(error);
-      return { id, ok: false, error: safe.code };
+      return {
+        id,
+        ok: false,
+        error: {
+          code: safe.code,
+          retry: safe.retry,
+          message: safe.message,
+          ...(safe.reference ? { reference: safe.reference } : {}),
+        },
+      };
     }
+  }
+
+  private async readPermit2Status(): Promise<Permit2Status> {
+    const operations = this.permit2Operations;
+    const policy = this.sessionPolicy;
+    const owner = this.address;
+    if (!operations || !policy || !owner) throw new WalletLocked();
+    const [allowance, nativeBalance] = await Promise.all([
+      operations.allowance(owner, policy.asset),
+      operations.nativeBalance(owner),
+    ]);
+    return {
+      object: 'permit2_status',
+      network: policy.network,
+      owner,
+      asset: policy.asset,
+      spender: PERMIT2_ADDRESS,
+      allowanceAtomic: allowance.toString(),
+      requiredAtomic: policy.limits.dayAtomic.toString(),
+      approved: allowance >= policy.limits.dayAtomic,
+      nativeBalanceWei: nativeBalance.toString(),
+    };
+  }
+
+  private async approvePermit2(): Promise<Permit2ApprovalResult> {
+    const before = await this.readPermit2Status();
+    if (before.approved)
+      return { ...before, object: 'permit2_approval', outcome: 'already_approved' };
+    if (BigInt(before.nativeBalanceWei) === 0n)
+      throw new InsufficientFunds(
+        'Base ETH is required once to pay gas for the canonical Permit2 approval',
+      );
+    const operations = this.permit2Operations;
+    const policy = this.sessionPolicy;
+    if (!operations || !policy) throw new WalletLocked();
+    let transaction;
+    try {
+      transaction = await operations.approve(policy.asset, policy.limits.dayAtomic);
+    } catch (error) {
+      const safe = asBuyerRuntimeError(error);
+      if (safe.code === 'InsufficientFunds' || safe.code === 'Permit2ApprovalOutcomeUnknown')
+        throw safe;
+      throw new Permit2ApprovalOutcomeUnknown(
+        'Permit2 approval outcome is unknown; run `onchain-router permit2 status` before any new approval',
+      );
+    }
+    if (transaction.status !== 'success')
+      throw new Permit2ApprovalRequired(
+        'Permit2 approval transaction reverted; inspect the wallet and Base gas before approving again',
+        transaction.transactionHash,
+      );
+    let after: Permit2Status;
+    try {
+      after = await this.readPermit2Status();
+    } catch {
+      throw new Permit2ApprovalOutcomeUnknown(
+        'Permit2 approval confirmed but the resulting allowance could not be read; run `onchain-router permit2 status` before any new approval',
+        transaction.transactionHash,
+      );
+    }
+    if (!after.approved)
+      throw new Permit2ApprovalOutcomeUnknown(
+        'Permit2 approval confirmed but the required allowance is not visible; run `onchain-router permit2 status` before any new approval',
+        transaction.transactionHash,
+      );
+    return {
+      ...after,
+      object: 'permit2_approval',
+      outcome: 'approved',
+      transactionHash: transaction.transactionHash,
+    };
   }
 
   private assertSession(capability: string): void {
@@ -368,6 +546,14 @@ export class SignerBrokerClient implements PaymentAuthorizer {
 
   public async authorize(request: BrokerAuthorizationRequest): Promise<PaymentPayload> {
     return (await this.call('authorize', request)) as PaymentPayload;
+  }
+
+  public async permit2Status(): Promise<Permit2Status> {
+    return (await this.call('permit2Status')) as Permit2Status;
+  }
+
+  public async approvePermit2(): Promise<Permit2ApprovalResult> {
+    return (await this.call('approvePermit2')) as Permit2ApprovalResult;
   }
 
   public async status(): Promise<unknown> {
@@ -426,35 +612,16 @@ export class SignerBrokerClient implements PaymentAuthorizer {
       });
     });
     if (response.id !== id || !response.ok) {
-      const code = response.ok ? 'WalletLocked' : response.error;
-      const safe = brokerError(code);
-      throw new BuyerRuntimeError(safe.code, safe.retry, safe.code);
+      const safe =
+        response.id === id && !response.ok
+          ? response.error
+          : {
+              code: 'WalletLocked' as const,
+              retry: 'unlock_wallet' as const,
+              message: 'WalletLocked',
+            };
+      throw new BuyerRuntimeError(safe.code, safe.retry, safe.message, safe.reference);
     }
     return response.result;
   }
-}
-
-const BROKER_ERRORS: Readonly<Record<BuyerOutcomeCode, RetryDirective>> = {
-  PaymentPolicyRejected: 'do_not_retry',
-  UnsupportedNetwork: 'do_not_retry',
-  UnexpectedAsset: 'do_not_retry',
-  UnexpectedRecipient: 'do_not_retry',
-  AuthorizationAboveLocalCap: 'do_not_retry',
-  InsufficientFunds: 'retry_unpaid_request',
-  PaymentVerificationRejected: 'retry_unpaid_request',
-  ProviderOutcomeUnknown: 'human_review',
-  SettlementOutcomeUnknown: 'human_review',
-  IdempotencyConflict: 'do_not_retry',
-  ResultRecoveryExpired: 'do_not_retry',
-  ReceiptVerificationFailed: 'retry_same_idempotency_key',
-  WalletLocked: 'unlock_wallet',
-  RuntimeUnavailable: 'retry_same_idempotency_key',
-};
-
-function brokerError(value: string): { code: BuyerOutcomeCode; retry: RetryDirective } {
-  if (Object.prototype.hasOwnProperty.call(BROKER_ERRORS, value)) {
-    const code = value as BuyerOutcomeCode;
-    return { code, retry: BROKER_ERRORS[code] };
-  }
-  return { code: 'WalletLocked', retry: 'unlock_wallet' };
 }

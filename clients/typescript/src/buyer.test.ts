@@ -73,6 +73,11 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
       agentId: 'sdk-test',
       idleTimeoutMs: 10_000,
       absoluteTimeoutMs: 60_000,
+      testPermit2Operations: {
+        allowance: vi.fn().mockResolvedValue(5_000n),
+        nativeBalance: vi.fn().mockResolvedValue(0n),
+        approve: vi.fn(),
+      },
     });
     const session = await broker.start(PASSPHRASE);
     await writeBuyerSession(root, session);

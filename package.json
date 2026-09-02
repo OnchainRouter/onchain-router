@@ -1,6 +1,6 @@
 {
   "name": "onchain-router-clients",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "license": "MIT",
   "description": "Public AgenticFI clients for policy-bounded x402 AI payments",

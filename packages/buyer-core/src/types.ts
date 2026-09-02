@@ -81,6 +81,24 @@ export interface PaymentAuthorizer {
   authorize(request: BrokerAuthorizationRequest): Promise<PaymentPayload>;
 }
 
+export interface Permit2Status {
+  readonly object: 'permit2_status';
+  readonly network: `eip155:${number}`;
+  readonly owner: `0x${string}`;
+  readonly asset: `0x${string}`;
+  readonly spender: `0x${string}`;
+  readonly allowanceAtomic: string;
+  readonly requiredAtomic: string;
+  readonly approved: boolean;
+  readonly nativeBalanceWei: string;
+}
+
+export interface Permit2ApprovalResult extends Omit<Permit2Status, 'object'> {
+  readonly object: 'permit2_approval';
+  readonly outcome: 'already_approved' | 'approved';
+  readonly transactionHash?: `0x${string}`;
+}
+
 export interface VerifiedReceipt {
   readonly id: string;
   readonly operationId: string;

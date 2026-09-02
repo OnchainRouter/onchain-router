@@ -106,6 +106,41 @@ function safeErrorCode(body: unknown): string | null {
   return typeof code === 'string' && /^[A-Za-z0-9_.-]{1,160}$/.test(code) ? code : null;
 }
 
+const SAFE_PAYMENT_ERROR_PHRASES = new Map<string, string>([
+  ['no matching payment requirements', 'no_matching_payment_requirements'],
+  ['payment-signature header is required', 'payment_signature_missing'],
+  ['invalid payment signature header', 'payment_signature_malformed'],
+]);
+
+/**
+ * Preserve only a bounded machine-readable x402 reason. Facilitators sometimes append a safe
+ * diagnostic suffix (for example, `insufficient_funds: simulation failed`) while other failures
+ * are prose or may contain implementation details. The CLI needs the leading reason code for
+ * correct retry guidance, but must never echo an arbitrary remote message.
+ */
+function safePaymentErrorCode(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized.length === 0 || normalized.length > 256) return null;
+  const phrase = SAFE_PAYMENT_ERROR_PHRASES.get(normalized);
+  if (phrase) return phrase;
+  const leadingCode = /^([a-z][a-z0-9_.-]{0,79})(?::(?: [a-z][a-z0-9 _.-]{0,160})?)?$/.exec(
+    normalized,
+  )?.[1];
+  return leadingCode ?? null;
+}
+
+function safePaymentRequiredError(headers: Headers): string | null {
+  const encoded = headers.get('payment-required');
+  if (!encoded) return null;
+  try {
+    const error = decodePaymentRequiredHeader(encoded).error;
+    return safePaymentErrorCode(error);
+  } catch {
+    return null;
+  }
+}
+
 async function parseResponse(response: Response): Promise<ParsedResponse> {
   const contentType = response.headers.get('content-type') ?? '';
   let body: unknown = null;
@@ -123,7 +158,7 @@ async function parseResponse(response: Response): Promise<ParsedResponse> {
   }
   return {
     body,
-    errorCode: safeErrorCode(body),
+    errorCode: safeErrorCode(body) ?? safePaymentRequiredError(response.headers),
     traceId: response.headers.get('x-trace-id') ?? response.headers.get('x-request-id'),
   };
 }

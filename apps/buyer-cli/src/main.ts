@@ -43,7 +43,7 @@ import { safeError, safeJson } from './format.js';
 import { TerminalPrompt, type PromptIO } from './prompt.js';
 import { readAudioFile } from './media-file.js';
 
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 const DEFAULT_ORIGIN = 'https://llm.agenticfi.wtf';
 const DEFAULT_AGENT_ID = 'cli';
 const MAX_BRIDGE_BYTES = MAX_MEDIA_JSON_BYTES + 65_536;
@@ -259,7 +259,21 @@ function isBrokerResponse(
 }
 
 async function setup(context: CliContext, args: ParsedArguments): Promise<unknown> {
-  assertKnownFlags(args, ['profile', 'origin', 'json']);
+  assertKnownFlags(args, [
+    'profile',
+    'origin',
+    'json',
+    'models',
+    'agent',
+    'per-call-usdc',
+    'session-usdc',
+    'hour-usdc',
+    'day-usdc',
+    'max-output-tokens',
+    'confirm-each',
+    'wallet-mode',
+    'yes',
+  ]);
   if (args.positionals.length !== 1) throw new PaymentPolicyRejected('usage: onchain-router setup');
   const paths = profile(args);
   if (await pathExists(paths.directory))
@@ -272,36 +286,56 @@ async function setup(context: CliContext, args: ParsedArguments): Promise<unknow
     `Verified x402 v2 on ${contract.network}; USDC ${contract.asset}; recipient ${contract.recipients.join(', ')}.\n`,
   );
   const selectedModels = modelList(
-    await context.prompt.ask('Allowed models (comma-separated)', contract.models.join(',')),
+    flag(args, 'models')
+      ? requiredFlag(args, 'models')
+      : await context.prompt.ask('Allowed models (comma-separated)', contract.models.join(',')),
   );
   if (selectedModels.some((model) => !contract.models.includes(model)))
     throw new PaymentPolicyRejected('selected model is absent from verified discovery');
-  const selectedAgent = agentId(await context.prompt.ask('Agent ID', DEFAULT_AGENT_ID));
+  const selectedAgent = agentId(
+    flag(args, 'agent')
+      ? requiredFlag(args, 'agent')
+      : await context.prompt.ask('Agent ID', DEFAULT_AGENT_ID),
+  );
   const perCallAtomic = parseUsdc(
-    await context.prompt.ask('Per-call cap in USDC', formatUsdc(DEFAULT_LIMITS.perCallAtomic)),
+    flag(args, 'per-call-usdc')
+      ? requiredFlag(args, 'per-call-usdc')
+      : await context.prompt.ask('Per-call cap in USDC', formatUsdc(DEFAULT_LIMITS.perCallAtomic)),
     'per-call cap',
   );
   const sessionAtomic = parseUsdc(
-    await context.prompt.ask('Session cap in USDC', formatUsdc(DEFAULT_LIMITS.sessionAtomic)),
+    flag(args, 'session-usdc')
+      ? requiredFlag(args, 'session-usdc')
+      : await context.prompt.ask('Session cap in USDC', formatUsdc(DEFAULT_LIMITS.sessionAtomic)),
     'session cap',
   );
   const hourAtomic = parseUsdc(
-    await context.prompt.ask('Hourly cap in USDC', formatUsdc(DEFAULT_LIMITS.hourAtomic)),
+    flag(args, 'hour-usdc')
+      ? requiredFlag(args, 'hour-usdc')
+      : await context.prompt.ask('Hourly cap in USDC', formatUsdc(DEFAULT_LIMITS.hourAtomic)),
     'hour cap',
   );
   const dayAtomic = parseUsdc(
-    await context.prompt.ask('Daily cap in USDC', formatUsdc(DEFAULT_LIMITS.dayAtomic)),
+    flag(args, 'day-usdc')
+      ? requiredFlag(args, 'day-usdc')
+      : await context.prompt.ask('Daily cap in USDC', formatUsdc(DEFAULT_LIMITS.dayAtomic)),
     'day cap',
   );
   const maximumOutputTokens = positiveInteger(
-    await context.prompt.ask('Maximum output tokens', '8192'),
+    flag(args, 'max-output-tokens')
+      ? requiredFlag(args, 'max-output-tokens')
+      : await context.prompt.ask('Maximum output tokens', '8192'),
     'maximum output tokens',
   );
-  const requirePerCallConfirmation = await context.prompt.confirm(
-    'Require confirmation before every payment',
-    true,
-  );
-  const mode = (await context.prompt.ask('Wallet mode: create or import', 'create')).toLowerCase();
+  const requirePerCallConfirmation =
+    flag(args, 'confirm-each') === undefined
+      ? await context.prompt.confirm('Require confirmation before every payment', true)
+      : booleanFlag(args, 'confirm-each');
+  const mode = (
+    flag(args, 'wallet-mode')
+      ? requiredFlag(args, 'wallet-mode')
+      : await context.prompt.ask('Wallet mode: create or import', 'create')
+  ).toLowerCase();
   if (mode !== 'create' && mode !== 'import')
     throw new PaymentPolicyRejected('wallet mode must be create or import');
   const importedSecret =
@@ -309,7 +343,10 @@ async function setup(context: CliContext, args: ParsedArguments): Promise<unknow
   const passphrase = await context.prompt.secret('New wallet passphrase');
   const repeated = await context.prompt.secret('Repeat wallet passphrase');
   if (passphrase !== repeated) throw new PaymentPolicyRejected('wallet passphrases do not match');
-  if (!(await context.prompt.confirm('Create this bounded Base mainnet buyer profile', false)))
+  if (
+    !booleanFlag(args, 'yes') &&
+    !(await context.prompt.confirm('Create this bounded Base mainnet buyer profile', false))
+  )
     throw new PaymentPolicyRejected('setup was cancelled');
 
   const policy = createBuyerPolicy({
@@ -354,7 +391,7 @@ async function setup(context: CliContext, args: ParsedArguments): Promise<unknow
       agentId: selectedAgent,
       models: selectedModels,
       policy: policyJson(policy),
-      next: `Fund ${status.address} with Base mainnet USDC, then run onchain-router unlock.`,
+      next: `Fund ${status.address} with Base mainnet USDC and a small amount of Base ETH for the initial Permit2 approval. Then unlock and run onchain-router permit2 approve.`,
     };
   } catch (error) {
     await rm(staging, { recursive: true, force: true });
@@ -505,8 +542,33 @@ async function funding(context: CliContext, args: ParsedArguments): Promise<unkn
     address: walletStatus.address,
     network: BASE_MAINNET_NETWORK,
     asset: BASE_MAINNET_USDC,
-    instruction: `Send Base mainnet USDC to ${walletStatus.address}. Do not send funds on another network.`,
+    gasAsset: 'Base ETH',
+    instruction: `Send Base mainnet USDC plus a small amount of Base ETH to ${walletStatus.address}. The buyer pays Base ETH gas for the canonical Permit2 approval. Do not send funds on another network.`,
   };
+}
+
+async function permit2(context: CliContext, args: ParsedArguments): Promise<unknown> {
+  assertKnownFlags(args, ['profile', 'json']);
+  const action = args.positionals[1];
+  if (args.positionals.length !== 2 || (action !== 'status' && action !== 'approve'))
+    throw new PaymentPolicyRejected('usage: onchain-router permit2 status|approve');
+  const buyer = await OnchainRouterBuyer.connect({
+    profileDirectory: profile(args).directory,
+    ...(context.fetch ? { fetch: context.fetch } : {}),
+  });
+  try {
+    if (action === 'status') return await buyer.permit2Status();
+    const current = await buyer.permit2Status();
+    if (current.approved) return await buyer.approvePermit2();
+    const approved = await context.prompt.confirm(
+      `Approve canonical Permit2 ${current.spender} to spend up to ${formatUsdc(BigInt(current.requiredAtomic))} Base USDC from ${current.owner}. The wallet pays Base ETH gas`,
+      false,
+    );
+    if (!approved) throw new PaymentPolicyRejected('Permit2 approval was cancelled');
+    return await buyer.approvePermit2();
+  } finally {
+    buyer.close();
+  }
 }
 
 function showPolicy(args: ParsedArguments): unknown {
@@ -919,9 +981,13 @@ function usage(): string {
   return `Onchain Router buyer CLI ${VERSION}
 
 Usage:
-  onchain-router setup [--origin URL] [--profile DIR]
+  onchain-router setup [--origin URL] [--profile DIR] [--models A,B] [--agent ID]
+                       [--per-call-usdc N] [--session-usdc N] [--hour-usdc N]
+                       [--day-usdc N] [--max-output-tokens N]
+                       [--confirm-each true|false] [--wallet-mode create|import] [--yes]
   onchain-router unlock [--agent ID] [--idle-seconds N] [--session-seconds N]
   onchain-router lock | status | balance | funding | models | pricing | voices
+  onchain-router permit2 status|approve
   onchain-router policy show
   onchain-router policy set [--models A,B] [--per-call-usdc N] [--session-usdc N]
                               [--hour-usdc N] [--day-usdc N]
@@ -981,6 +1047,9 @@ export function createCli(dependencies: CliDependencies = {}) {
           break;
         case 'funding':
           result = await funding(context, args);
+          break;
+        case 'permit2':
+          result = await permit2(context, args);
           break;
         case 'models':
         case 'pricing':

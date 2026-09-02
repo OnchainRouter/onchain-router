@@ -10,6 +10,8 @@ export {
   UnexpectedRecipient,
   AuthorizationAboveLocalCap,
   InsufficientFunds,
+  Permit2ApprovalOutcomeUnknown,
+  Permit2ApprovalRequired,
   PaymentVerificationRejected,
   ProviderOutcomeUnknown,
   SettlementOutcomeUnknown,
@@ -35,6 +37,9 @@ export type {
   LocalSpendLimits,
   PaymentAuthorizer,
   PaymentConfirmation,
+  Permit2ApprovalResult,
+  Permit2Status,
   ValidatedPaymentRequirement,
   VerifiedReceipt,
 } from './types.js';
+export { createBoundedPermit2ApprovalTx } from './permit2.js';
