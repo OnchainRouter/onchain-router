@@ -3,6 +3,8 @@ import type {
   BuyerResult,
   EffectiveBuyerPolicy,
   PaymentConfirmation,
+  Permit2ApprovalResult,
+  Permit2Status,
   VerifiedReceipt,
 } from '@agenticfi/onchain-router-buyer-core';
 import {
@@ -258,6 +260,18 @@ export class OnchainRouterBuyer {
         delegationAtomic: spend.delegationAtomic?.toString() ?? null,
       },
     };
+  }
+
+  /** Read the canonical Base USDC allowance granted to Permit2 and the wallet's Base ETH balance. */
+  public async permit2Status(): Promise<Permit2Status> {
+    this.assertOpen();
+    return await this.authorizer.permit2Status();
+  }
+
+  /** Submit a Base USDC Permit2 approval bounded by the locally reviewed daily limit. */
+  public async approvePermit2(): Promise<Permit2ApprovalResult> {
+    this.assertOpen();
+    return await this.authorizer.approvePermit2();
   }
 
   public async chat(

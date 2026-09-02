@@ -19,7 +19,7 @@ import {
 import { createFocusedMcpService, type FocusedMcpService } from './service.js';
 
 export const MCP_SERVER_NAME = 'onchain-router';
-export const MCP_SERVER_VERSION = '0.1.0';
+export const MCP_SERVER_VERSION = '0.1.1';
 export const MCP_TOOL_NAMES = [
   'onchain_router_models',
   'onchain_router_chat',

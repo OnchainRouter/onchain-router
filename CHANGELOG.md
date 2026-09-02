@@ -2,6 +2,23 @@
 
 All notable changes to the public AgenticFI client packages are documented here.
 
+## 0.1.1 - 2026-09-03
+
+### Added
+
+- Explicit `permit2 status` and human-confirmed `permit2 approve` CLI commands for first-use Base
+  USDC allowance setup.
+- TypeScript and Buyer Runtime methods for reading and submitting a finite, policy-bounded approval
+  to canonical Permit2.
+- Copyable setup flags for every non-secret choice while keeping passphrases and imported wallet
+  material in private terminal prompts.
+
+### Fixed
+
+- Reject paid-request signing before a sufficient Permit2 allowance exists, with safe retry guidance.
+- Preserve safe x402 facilitator rejection codes instead of returning an unhelpful `unknown` error.
+- Clarify that the buyer pays Base ETH gas for the separate approval transaction.
+
 ## 0.1.0 - 2026-09-01
 
 ### Added

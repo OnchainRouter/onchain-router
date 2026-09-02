@@ -4,7 +4,7 @@ Open-source clients for agents that discover AI capabilities, pay x402 challenge
 Base, enforce local budgets, recover ambiguous requests, and retain a verified receipt for every
 completed payment.
 
-Version `0.1.0` is a bounded public alpha. Install npm packages with the `alpha` tag. Smart routing
+Version `0.1.1` is a bounded public alpha. Install npm packages with the `alpha` tag. Smart routing
 is experimental; the Buyer Runtime remains the authority for wallet access, model allowlists,
 recipients, output limits, and integer-atomic spend budgets.
 
@@ -33,8 +33,14 @@ onchain-router --version
 onchain-router setup
 onchain-router policy show
 onchain-router unlock
+onchain-router permit2 status
+onchain-router permit2 approve
 onchain-router models
 ```
+
+The dedicated buyer wallet needs Base USDC for API payments and a small amount of Base ETH for its
+initial policy-bounded Permit2 approval. The buyer pays that Base ETH gas. The approval is a
+separate transaction and does not pay USDC to Onchain Router.
 
 `setup`, wallet import, funding, unlock, and policy widening are human-authority actions. Do not run
 them unattended and never paste a wallet key, seed phrase, passphrase, payment payload, or receipt
@@ -152,7 +158,7 @@ forbidden files, and common credential formats, then writes SHA-256 hashes under
 
 ## Release policy
 
-- `0.1.0` is published under the npm `alpha` dist-tag, not `latest`.
+- `0.1.1` is published under the npm `alpha` dist-tag, not `latest`.
 - npm publication is manual from the pinned GitHub Actions workflow after CI passes.
 - The initial bootstrap uses a short-lived granular npm automation token stored only as a GitHub
   Actions secret and requests npm provenance. It should be replaced by npm trusted publishing after

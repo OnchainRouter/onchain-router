@@ -407,6 +407,102 @@ describe('official x402 buyer lifecycle', () => {
     }
   });
 
+  it('reports a safe x402 rejection code from the updated PAYMENT-REQUIRED header', async () => {
+    let calls = 0;
+    const fetcher = vi.fn(async () => {
+      calls += 1;
+      if (calls === 1) return challengeResponse();
+      return json(
+        { error: 'Payment Required' },
+        {
+          status: 402,
+          headers: {
+            'payment-required': encodePaymentRequiredHeader({
+              ...testPaymentRequired(),
+              error: 'invalid_permit2_allowance',
+            }),
+          },
+        },
+      );
+    }) as unknown as typeof fetch;
+    const context = await setup(fetcher);
+    try {
+      const result = await context.runtime.execute(request('header-error'));
+      expect(result).toMatchObject({
+        ok: false,
+        outcome: 'PaymentVerificationRejected',
+        message: 'invalid_permit2_allowance',
+      });
+      expect(context.ledger.get('header-error')?.state).toBe('released');
+    } finally {
+      context.ledger.close();
+    }
+  });
+
+  it('normalizes a bounded facilitator diagnostic suffix without exposing remote prose', async () => {
+    let calls = 0;
+    const fetcher = vi.fn(async () => {
+      calls += 1;
+      if (calls === 1) return challengeResponse();
+      return json(
+        { error: 'Payment Required' },
+        {
+          status: 402,
+          headers: {
+            'payment-required': encodePaymentRequiredHeader({
+              ...testPaymentRequired(),
+              error: 'insufficient_funds: simulation failed',
+            }),
+          },
+        },
+      );
+    }) as unknown as typeof fetch;
+    const context = await setup(fetcher);
+    try {
+      const result = await context.runtime.execute(request('header-error-suffix'));
+      expect(result).toMatchObject({
+        ok: false,
+        outcome: 'InsufficientFunds',
+        message: 'insufficient_funds',
+      });
+      expect(context.ledger.get('header-error-suffix')?.state).toBe('released');
+    } finally {
+      context.ledger.close();
+    }
+  });
+
+  it('maps a known prose transport rejection to a safe machine-readable reason', async () => {
+    let calls = 0;
+    const fetcher = vi.fn(async () => {
+      calls += 1;
+      if (calls === 1) return challengeResponse();
+      return json(
+        { error: 'Payment Required' },
+        {
+          status: 402,
+          headers: {
+            'payment-required': encodePaymentRequiredHeader({
+              ...testPaymentRequired(),
+              error: 'No matching payment requirements',
+            }),
+          },
+        },
+      );
+    }) as unknown as typeof fetch;
+    const context = await setup(fetcher);
+    try {
+      const result = await context.runtime.execute(request('header-error-phrase'));
+      expect(result).toMatchObject({
+        ok: false,
+        outcome: 'PaymentVerificationRejected',
+        message: 'no_matching_payment_requirements',
+      });
+      expect(context.ledger.get('header-error-phrase')?.state).toBe('released');
+    } finally {
+      context.ledger.close();
+    }
+  });
+
   it('refuses changed body/model identity and unapproved forwarding headers before network use', async () => {
     const fetcher = vi.fn(async () => challengeResponse()) as unknown as typeof fetch;
     const context = await setup(fetcher);

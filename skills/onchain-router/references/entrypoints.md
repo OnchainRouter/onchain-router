@@ -2,7 +2,7 @@
 
 <!-- Generated from scripts/fixtures/agent-entrypoints.v1.json by scripts/generate-agent-entry-docs.mjs. -->
 
-> Public alpha: npm adapters use exact version `0.1.0` through the `alpha` dist-tag. Review `/docs/installation`, `/products.json`, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
+> Public alpha: npm adapters use version `0.1.1` through the `alpha` dist-tag. Review `/docs/installation`, `/products.json`, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
 
 ## Choose one primary path
 

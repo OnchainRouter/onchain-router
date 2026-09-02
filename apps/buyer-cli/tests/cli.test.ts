@@ -31,6 +31,39 @@ it('returns nonzero for a paid unknown outcome and preserves it if cleanup fails
   expect(output.join('')).not.toContain('cleanup must not mask');
 });
 
+it('requires confirmation before a policy-bounded Permit2 approval', async () => {
+  const output: string[] = [];
+  const approvePermit2 = vi.fn().mockResolvedValue({
+    object: 'permit2_approval',
+    outcome: 'approved',
+    transactionHash: `0x${'3'.repeat(64)}`,
+  });
+  vi.spyOn(OnchainRouterBuyer, 'connect').mockResolvedValue({
+    permit2Status: async () => ({
+      object: 'permit2_status',
+      network: 'eip155:8453',
+      owner: '0x3333333333333333333333333333333333333333',
+      asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      spender: '0x000000000022D473030F116dDEE9F6B43aC78BA3',
+      allowanceAtomic: '0',
+      requiredAtomic: '100000',
+      approved: false,
+      nativeBalanceWei: '1',
+    }),
+    approvePermit2,
+    close: vi.fn(),
+  } as unknown as OnchainRouterBuyer);
+  const cli = createCli({
+    prompt: new Answers([], [], [true]),
+    stdout: (value) => output.push(value),
+    stderr: () => undefined,
+  });
+
+  expect(await cli(['permit2', 'approve', '--profile', '/tmp/fixture', '--json'])).toBe(0);
+  expect(approvePermit2).toHaveBeenCalledOnce();
+  expect(output.join('')).toContain('permit2_approval');
+});
+
 const ASSET = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const RECIPIENT = '0x1111111111111111111111111111111111111111';
 const PASSPHRASE = 'correct horse battery staple';
@@ -176,6 +209,95 @@ describe('one-command buyer setup and administration', () => {
       ok: true,
       command: 'setup',
     });
+    expect(context.stdout.at(-1)).toContain('Base ETH');
+  });
+
+  it('accepts every non-secret setup choice in one command', async () => {
+    const root = await directory();
+    const profile = join(root, 'flagged-profile');
+    const stdout: string[] = [];
+    const ask = vi.fn(async () => {
+      throw new Error('setup unexpectedly prompted for a non-secret value');
+    });
+    const secret = vi.fn().mockResolvedValueOnce(PASSPHRASE).mockResolvedValueOnce(PASSPHRASE);
+    const confirm = vi.fn(async () => {
+      throw new Error('setup unexpectedly prompted for confirmation');
+    });
+    const prompt: PromptIO = {
+      ask,
+      secret,
+      confirm,
+    };
+    const cli = createCli({
+      prompt,
+      fetch: discoveryFetch(),
+      stdout: (value) => stdout.push(value),
+      stderr: () => undefined,
+      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+    });
+
+    expect(
+      await cli([
+        'setup',
+        '--origin',
+        'https://router.example',
+        '--profile',
+        profile,
+        '--models',
+        'gemini-2.5-flash',
+        '--agent',
+        'founder-cli-smoke',
+        '--per-call-usdc',
+        '0.02',
+        '--session-usdc',
+        '0.06',
+        '--hour-usdc',
+        '0.06',
+        '--day-usdc',
+        '0.10',
+        '--max-output-tokens',
+        '64',
+        '--confirm-each',
+        'true',
+        '--wallet-mode',
+        'create',
+        '--yes',
+        '--json',
+      ]),
+    ).toBe(0);
+
+    expect(ask).not.toHaveBeenCalled();
+    expect(confirm).not.toHaveBeenCalled();
+    expect(secret).toHaveBeenCalledTimes(2);
+    const ledger = new LocalSpendLedger(buyerProfilePaths(profile).ledgerPath);
+    expect(ledger.currentPolicy()).toMatchObject({
+      models: ['gemini-2.5-flash'],
+      delegations: [{ agentId: 'founder-cli-smoke', maximumAtomic: 100_000n }],
+      limits: {
+        perCallAtomic: 20_000n,
+        sessionAtomic: 60_000n,
+        hourAtomic: 60_000n,
+        dayAtomic: 100_000n,
+      },
+      maximumOutputTokens: 64,
+      requirePerCallConfirmation: true,
+    });
+    ledger.close();
+    expect(stdout.join('')).not.toContain(PASSPHRASE);
+  });
+
+  it('rejects wallet secrets supplied as setup flags', async () => {
+    for (const secretFlag of ['passphrase', 'private-key', 'seed-phrase']) {
+      const stdout: string[] = [];
+      const cli = createCli({
+        prompt: new Answers([], [], []),
+        stdout: (value) => stdout.push(value),
+        stderr: () => undefined,
+      });
+      expect(await cli(['setup', `--${secretFlag}`, 'must-never-be-accepted', '--json'])).toBe(2);
+      expect(stdout.join('')).toContain(`unknown option: --${secretFlag}`);
+      expect(stdout.join('')).not.toContain('must-never-be-accepted');
+    }
   });
 
   it('passes the passphrase only to the broker starter and keeps JSON output redacted', async () => {
@@ -212,33 +334,69 @@ describe('one-command buyer setup and administration', () => {
       stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
     });
     const response = await new Promise<unknown>((resolveResponse, reject) => {
-      const timer = setTimeout(() => reject(new Error('broker worker test timed out')), 10_000);
-      worker.once('error', reject);
-      worker.once('message', (message) => {
+      let settled = false;
+      const cleanup = () => {
         clearTimeout(timer);
+        worker.off('error', onError);
+        worker.off('exit', onExit);
+        worker.off('message', onMessage);
+      };
+      const fail = (error: Error) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        worker.kill('SIGTERM');
+        reject(error);
+      };
+      const onError = (error: Error) => fail(error);
+      const onExit = (code: number | null, signal: NodeJS.Signals | null) =>
+        fail(
+          new Error(
+            `broker worker exited before startup (code=${code ?? 'none'}, signal=${signal ?? 'none'})`,
+          ),
+        );
+      const onMessage = (message: unknown) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
         resolveResponse(message);
-      });
-      worker.send({
-        version: 1,
-        action: 'start',
-        profileDirectory: setup.profile,
-        passphrase: PASSPHRASE,
-        agentId: 'cli',
-        idleTimeoutMs: 5_000,
-        absoluteTimeoutMs: 60_000,
-      });
+      };
+      const timer = setTimeout(
+        () => fail(new Error('broker worker test timed out during bounded startup')),
+        60_000,
+      );
+      worker.once('error', onError);
+      worker.once('exit', onExit);
+      worker.once('message', onMessage);
+      worker.send(
+        {
+          version: 1,
+          action: 'start',
+          profileDirectory: setup.profile,
+          passphrase: PASSPHRASE,
+          agentId: 'cli',
+          idleTimeoutMs: 5_000,
+          absoluteTimeoutMs: 60_000,
+        },
+        (error) => {
+          if (error) fail(new Error('broker worker IPC startup request failed'));
+        },
+      );
     });
     expect(response).toMatchObject({ version: 1, ok: true });
     const buyer = await OnchainRouterBuyer.connect({ profileDirectory: setup.profile });
     expect(await buyer.status()).toMatchObject({ agentId: 'cli' });
     await buyer.lock();
-    await new Promise<void>((resolveExit, reject) => {
-      const timer = setTimeout(() => reject(new Error('broker worker did not exit')), 5_000);
-      worker.once('exit', () => {
-        clearTimeout(timer);
-        resolveExit();
+    if (worker.exitCode === null && worker.signalCode === null) {
+      await new Promise<void>((resolveExit, reject) => {
+        const timer = setTimeout(() => reject(new Error('broker worker did not exit')), 5_000);
+        worker.once('error', reject);
+        worker.once('exit', () => {
+          clearTimeout(timer);
+          resolveExit();
+        });
       });
-    });
+    }
     await expect(
       OnchainRouterBuyer.connect({ profileDirectory: paths.directory }),
     ).rejects.toMatchObject({ code: 'WalletLocked' });
@@ -359,6 +517,11 @@ describe('one-command buyer setup and administration', () => {
       agentId: 'cli',
       idleTimeoutMs: 10_000,
       absoluteTimeoutMs: 60_000,
+      testPermit2Operations: {
+        allowance: vi.fn().mockResolvedValue(2n ** 256n - 1n),
+        nativeBalance: vi.fn().mockResolvedValue(1n),
+        approve: vi.fn(),
+      },
     });
     const session = await broker.start(PASSPHRASE);
     await writeBuyerSession(paths.directory, session);

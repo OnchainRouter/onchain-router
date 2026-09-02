@@ -169,10 +169,12 @@ function failureStatus(failure: BuyerFailure): number {
       return 400;
     case 'AuthorizationAboveLocalCap':
     case 'InsufficientFunds':
+    case 'Permit2ApprovalRequired':
     case 'PaymentVerificationRejected':
       return 402;
     case 'ProviderOutcomeUnknown':
     case 'SettlementOutcomeUnknown':
+    case 'Permit2ApprovalOutcomeUnknown':
     case 'IdempotencyConflict':
     case 'ReceiptVerificationFailed':
       return 409;

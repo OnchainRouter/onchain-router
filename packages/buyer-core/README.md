@@ -13,7 +13,7 @@ Use a higher-level package unless you are developing an Onchain Router adapter:
 
 ## Release status
 
-Version `0.1.0` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
+Version `0.1.1` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
 stable `latest` line. Installing source or a package does not authorize wallet setup, import,
 funding, unlock, policy widening, or a paid request.
 
@@ -94,6 +94,11 @@ Every logical paid request needs one stable idempotency key. Buyer Runtime valid
 challenge against local policy, reserves the signed maximum in integer atomic USDC, obtains owner
 authorization from the short-lived broker, and delegates signing to the official x402 libraries.
 It releases a successful result only after settlement and the corresponding receipt are durable.
+
+Before signing a payment, the broker reads the dedicated wallet's Base USDC allowance to canonical
+Permit2. An insufficient allowance fails definitely and produces no payment signature. A trusted
+human-operated surface can submit a standard ERC-20 approval fixed to official Base USDC and
+canonical Permit2, bounded to the reviewed daily policy. The buyer pays the required Base ETH gas.
 
 The success result includes `Completed` or `RecoveredSuccess`, the idempotency key, response body,
 verified receipt, authorized maximum, actual amount, Base network, recipient, and settlement

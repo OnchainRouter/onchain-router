@@ -11,14 +11,15 @@ a polished public CLI rotation/restore command is not yet claimed.
 
 ## Release status
 
-Version `0.1.0` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
+Version `0.1.1` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
 stable `latest` line. Run every authority-changing command in a human-controlled terminal.
 
 ## Requirements
 
 - Node.js 20.18 or newer;
 - macOS or Linux;
-- a dedicated Base wallet funded with enough USDC for the intended calls;
+- a dedicated Base wallet funded with enough USDC for the intended calls plus a small amount of
+  Base ETH for the initial Permit2 approval;
 - direct access to a human terminal for secret and policy prompts.
 
 Windows is not yet a supported host. Payments use Base mainnet USDC only. The CLI discovers the
@@ -48,19 +49,33 @@ Use `node apps/buyer-cli/dist/index.js` in place of `onchain-router` for every s
 ## Quick start
 
 ```bash
-onchain-router setup
+onchain-router setup \
+  --origin https://llm.agenticfi.wtf \
+  --models gemini-3.6-flash \
+  --agent founder-cli-smoke \
+  --per-call-usdc 0.02 \
+  --session-usdc 0.06 \
+  --hour-usdc 0.06 \
+  --day-usdc 0.10 \
+  --max-output-tokens 64 \
+  --confirm-each true \
+  --wallet-mode create \
+  --yes
 onchain-router funding
 onchain-router policy show
 onchain-router unlock
+onchain-router permit2 status
+onchain-router permit2 approve
 onchain-router models
 onchain-router pricing
 onchain-router chat "Explain x402 in two sentences." --model gemini-3.6-flash --max-output-tokens 256
 onchain-router lock
 ```
 
-`setup` creates or imports an encrypted dedicated wallet and asks the human to approve the origin,
-network, recipient, models, output limit, and per-call/session/hour/day USDC limits. `funding`
-prints the public Base address and guidance; it does not transfer funds.
+`setup` creates or imports an encrypted dedicated wallet. The flags above provide every non-secret
+choice in one copyable command; passphrases and imported wallet material remain private, no-echo
+terminal prompts. Omit any flag to answer that choice interactively. `funding` prints the public
+Base address and guidance; it does not transfer funds.
 
 Wallet import and passphrase entry are direct, no-echo interactions. Never supply a private key,
 seed phrase, passphrase, or signer capability through command arguments, environment variables,
@@ -69,9 +84,13 @@ stdin from an agent, source control, or a script.
 ## Commands
 
 ```text
-onchain-router setup [--origin URL] [--profile DIR]
+onchain-router setup [--origin URL] [--profile DIR] [--models A,B] [--agent ID]
+                     [--per-call-usdc N] [--session-usdc N] [--hour-usdc N]
+                     [--day-usdc N] [--max-output-tokens N]
+                     [--confirm-each true|false] [--wallet-mode create|import] [--yes]
 onchain-router unlock [--agent ID] [--idle-seconds N] [--session-seconds N]
 onchain-router lock | status | balance | funding | models | pricing | voices
+onchain-router permit2 status|approve
 onchain-router policy show
 onchain-router policy set [--models A,B] [--per-call-usdc N] [--session-usdc N]
                           [--hour-usdc N] [--day-usdc N]
@@ -178,6 +197,9 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 - `wallet is locked`: run `onchain-router unlock` directly, not through an agent.
 - Insufficient USDC: use `onchain-router funding` and verify the connected wallet is on Base.
+- `Permit2ApprovalRequired`: fund the dedicated wallet with a small amount of Base ETH, unlock it,
+  then run `onchain-router permit2 approve`. The CLI fixes canonical Permit2 and bounds the
+  allowance to the reviewed daily policy; the buyer pays the Base ETH gas.
 - Model or option rejected: refresh `models`, `pricing`, and `voices`, then compare with `policy show`.
 - Budget rejected: lower the request or have the human review policy; never silently widen it.
 - Lost or ambiguous response: keep the same key/body and run `receipt`; do not create a new key.
