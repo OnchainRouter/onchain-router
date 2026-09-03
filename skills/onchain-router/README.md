@@ -11,7 +11,7 @@ settlement path, or second receipt verifier.
 ## Release status
 
 Version `0.1.0` is public alpha source in this repository and at the canonical site's
-`/skill/onchain-router/SKILL.md`. This source candidate targets npm Buyer CLI `0.1.2` or newer in the
+`/skill/onchain-router/SKILL.md`. This public source release targets npm Buyer CLI `0.1.2` or newer in the
 `0.1.x` alpha line; check the live `alpha` dist-tag before installing. It has not been claimed as
 qualified across every external agent or Skill registry.
 
@@ -30,7 +30,7 @@ SHA-256 digest, extract it into the host's approved skills directory, and restar
 host. Follow the host's documented skill installation path; do not grant the Skill broader
 filesystem, shell, or wallet authority than it needs.
 
-To install the exact source candidate for local testing now:
+To install the exact public source for local testing:
 
 ```bash
 cp -R /absolute/path/to/onchain-router/skills/onchain-router \
@@ -38,13 +38,13 @@ cp -R /absolute/path/to/onchain-router/skills/onchain-router \
 ```
 
 Do not copy only `SKILL.md`; the `references/` and `scripts/` directories are part of the contract.
-The repository candidate archive can be built with:
+The repository source archive can be built with:
 
 ```bash
 pnpm distribution:build
 ```
 
-That command creates a private candidate and manifest. It does not publish or attest the archive.
+That command creates a private archive and manifest. It does not publish or attest the archive.
 
 ## Quick start
 

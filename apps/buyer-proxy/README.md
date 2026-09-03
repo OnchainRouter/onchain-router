@@ -16,10 +16,9 @@ Setup, unlock, funding, policy changes, and receipt inspection remain direct CLI
 
 ## Release status
 
-This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
-assuming that exact version is published. It is not a claim of qualification across every
-OpenAI-compatible client. Keep it bound to loopback and preserve the bearer, Host, browser, body,
-and idempotency controls.
+Version `0.1.2` is published as the current bounded npm alpha. It is not a claim of qualification
+across every OpenAI-compatible client. Keep it bound to loopback and preserve the bearer, Host,
+browser, body, and idempotency controls.
 
 ## Requirements
 
@@ -47,7 +46,7 @@ npm install --global @agenticfi/onchain-router-proxy@0.1.2
 onchain-router-proxy --version
 ```
 
-To build the exact source candidate now:
+To build the exact published source:
 
 ```bash
 corepack enable

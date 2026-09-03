@@ -13,9 +13,8 @@ Use a higher-level package unless you are developing an Onchain Router adapter:
 
 ## Release status
 
-This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
-assuming that exact version is published. Installing source or a package does not authorize wallet
-setup, import, funding, unlock, policy widening, or a paid request.
+Version `0.1.2` is published as the current bounded npm alpha. Installing source or a package does
+not authorize wallet setup, import, funding, unlock, policy widening, or a paid request.
 
 ## What it owns
 
@@ -49,7 +48,7 @@ Install the bounded alpha explicitly:
 npm install @agenticfi/onchain-router-buyer-core@0.1.2
 ```
 
-To build the exact candidate from this repository now:
+To build the exact published source from this repository:
 
 ```bash
 corepack enable
