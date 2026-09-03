@@ -54,7 +54,7 @@ function service(overrides: Partial<FocusedMcpService> = {}): FocusedMcpService 
         network: 'eip155:8453',
         asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
         recipients: ['0x2222222222222222222222222222222222222222'],
-        schemes: ['upto'],
+        schemes: ['exact'],
         models: ['gemini-2.5-flash'],
         limits: {
           perCallAtomic: '1000',

@@ -59,7 +59,6 @@ export interface PaymentConfirmation {
   readonly network: string;
   readonly asset: string;
   readonly recipient: string;
-  readonly scheme: 'exact' | 'upto';
   readonly maximumAtomic: string;
 }
 
@@ -81,24 +80,6 @@ export interface PaymentAuthorizer {
   /** Broker-generated identity; adapters cannot reset the session budget. */
   readonly sessionId: string;
   authorize(request: BrokerAuthorizationRequest): Promise<PaymentPayload>;
-}
-
-export interface Permit2Status {
-  readonly object: 'permit2_status';
-  readonly network: `eip155:${number}`;
-  readonly owner: `0x${string}`;
-  readonly asset: `0x${string}`;
-  readonly spender: `0x${string}`;
-  readonly allowanceAtomic: string;
-  readonly requiredAtomic: string;
-  readonly approved: boolean;
-  readonly nativeBalanceWei: string;
-}
-
-export interface Permit2ApprovalResult extends Omit<Permit2Status, 'object'> {
-  readonly object: 'permit2_approval';
-  readonly outcome: 'already_approved' | 'approved';
-  readonly transactionHash?: `0x${string}`;
 }
 
 export interface VerifiedReceipt {

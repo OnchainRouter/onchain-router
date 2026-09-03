@@ -4,22 +4,23 @@ Open-source clients for agents that discover AI capabilities, pay x402 challenge
 Base, enforce local budgets, recover ambiguous requests, and retain a verified receipt for every
 completed payment.
 
-Version `0.1.2` is a bounded public alpha. Install npm packages with the `alpha` tag. Smart routing
-is experimental; the Buyer Runtime remains the authority for wallet access, model allowlists,
-recipients, output limits, and integer-atomic spend budgets.
+This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` tag before assuming
+that exact version is published. Smart routing is experimental; the Buyer Runtime remains the
+authority for wallet access, model allowlists, recipients, output limits, and integer-atomic spend
+budgets.
 
 ## Choose a surface
 
-| Surface        | Package or path                                  | Use it when                                                                   |
-| -------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
-| TypeScript SDK | `@agenticfi/onchain-router`                      | Your Node.js application needs typed discovery and paid API calls             |
-| Buyer CLI      | `@agenticfi/onchain-router-cli`                  | A human needs to create/unlock a wallet, approve budgets, or inspect receipts |
-| MCP server     | `@agenticfi/onchain-router-mcp`                  | Claude, Cursor, ChatGPT, or another MCP client should call the API as tools   |
-| Local proxy    | `@agenticfi/onchain-router-proxy`                | An OpenAI-compatible client needs one loopback base URL                       |
-| Buyer Runtime  | `@agenticfi/onchain-router-buyer-core`           | You are building another trusted local adapter                                |
-| Smart routing  | `@agenticfi/onchain-router-routing`              | You need deterministic, constraint-first model selection before payment       |
-| Python SDK     | `onchain-router` source package                  | Python should delegate payment execution to the local CLI                     |
-| Agent Skill    | [`skills/onchain-router`](skills/onchain-router) | A coding agent should follow the supported commands and retry rules           |
+| Surface        | Package or path                                  | Use it when                                                                 |
+| -------------- | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| TypeScript SDK | `@agenticfi/onchain-router`                      | Your Node.js application needs typed discovery and paid API calls           |
+| Buyer CLI      | `@agenticfi/onchain-router-cli`                  | A human needs to create/unlock a wallet, set budgets, or inspect receipts   |
+| MCP server     | `@agenticfi/onchain-router-mcp`                  | Claude, Cursor, ChatGPT, or another MCP client should call the API as tools |
+| Local proxy    | `@agenticfi/onchain-router-proxy`                | An OpenAI-compatible client needs one loopback base URL                     |
+| Buyer Runtime  | `@agenticfi/onchain-router-buyer-core`           | You are building another trusted local adapter                              |
+| Smart routing  | `@agenticfi/onchain-router-routing`              | You need deterministic, constraint-first model selection before payment     |
+| Python SDK     | `onchain-router` source package                  | Python should delegate payment execution to the local CLI                   |
+| Agent Skill    | [`skills/onchain-router`](skills/onchain-router) | A coding agent should follow the supported commands and retry rules         |
 
 The public HTTP API and documentation are at [llm.agenticfi.wtf](https://llm.agenticfi.wtf).
 
@@ -28,7 +29,7 @@ The public HTTP API and documentation are at [llm.agenticfi.wtf](https://llm.age
 Requirements: Node.js 20.18 or newer, macOS or Linux, and a human-controlled terminal.
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@alpha
+npm install --global @agenticfi/onchain-router-cli@0.1.2
 onchain-router --version
 onchain-router setup
 onchain-router policy show
@@ -36,10 +37,9 @@ onchain-router unlock
 onchain-router models
 ```
 
-The dedicated buyer wallet needs Base USDC for API payments. The public `exact` EIP-3009 flow signs
-offchain and does not require Base ETH or a token approval. Permit2 remains available only for
-explicitly retained legacy `upto` profiles; migrate those profiles instead of approving Permit2
-for ordinary public calls.
+The dedicated buyer wallet needs Base USDC for API payments. The public x402 v2 `exact` EIP-3009
+flow signs the USDC authorization offchain, so there is no separate gas-funding or token-approval
+step.
 
 `setup`, wallet import, funding, unlock, and policy widening are human-authority actions. Do not run
 them unattended and never paste a wallet key, seed phrase, passphrase, payment payload, or receipt
@@ -48,7 +48,7 @@ capability into an agent prompt, command argument, environment variable, log, or
 After setup and unlock, install the application surface you need:
 
 ```bash
-npm install @agenticfi/onchain-router@alpha
+npm install @agenticfi/onchain-router@0.1.2
 ```
 
 ```ts
@@ -110,14 +110,14 @@ USDC contract, recipient, or output formats from examples.
 For MCP clients:
 
 ```bash
-npm install --global @agenticfi/onchain-router-mcp@alpha
+npm install --global @agenticfi/onchain-router-mcp@0.1.2
 onchain-router-mcp --print-config
 ```
 
 For OpenAI-compatible clients:
 
 ```bash
-npm install --global @agenticfi/onchain-router-proxy@alpha
+npm install --global @agenticfi/onchain-router-proxy@0.1.2
 onchain-router-proxy --print-config
 ```
 
@@ -157,7 +157,7 @@ forbidden files, and common credential formats, then writes SHA-256 hashes under
 
 ## Release policy
 
-- `0.1.2` is released under the npm `alpha` dist-tag, not `latest`.
+- Release `0.1.2` only under the npm `alpha` dist-tag, not `latest`.
 - npm publication is manual from the pinned GitHub Actions workflow after CI passes.
 - The initial bootstrap uses a short-lived granular npm automation token stored only as a GitHub
   Actions secret and requests npm provenance. It should be replaced by npm trusted publishing after

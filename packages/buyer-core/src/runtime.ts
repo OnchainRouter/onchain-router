@@ -299,7 +299,6 @@ export class BuyerRuntime {
           network: validated.requirement.network,
           asset: validated.requirement.asset,
           recipient: validated.requirement.payTo,
-          scheme: validated.requirement.scheme === 'upto' ? 'upto' : 'exact',
           maximumAtomic: validated.amountAtomic.toString(),
         });
         if (confirmed !== true)

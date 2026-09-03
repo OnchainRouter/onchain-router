@@ -89,7 +89,7 @@ const CATALOG: BuyerCatalogInspection = {
     network: 'eip155:8453',
     asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     recipients: ['0x2222222222222222222222222222222222222222'],
-    schemes: ['upto'],
+    schemes: ['exact'],
     models: ['gemini-2.5-flash', 'gemini-image'],
     limits: {
       perCallAtomic: '1000',
@@ -119,7 +119,7 @@ const STATUS: BuyerStatus = {
     network: 'eip155:8453',
     asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     recipients: ['0x2222222222222222222222222222222222222222'],
-    schemes: ['upto'],
+    schemes: ['exact'],
     delegations: [],
   },
   spend: { sessionAtomic: '100', hourAtomic: '100', dayAtomic: '100', delegationAtomic: null },

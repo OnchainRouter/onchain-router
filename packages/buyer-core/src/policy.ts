@@ -211,23 +211,17 @@ export function validatePaymentRequirement(
   );
   if (networkCandidates.length === 0) throw new UnsupportedNetwork();
   const approvedScheme = policy.schemes[0];
-  const schemeCandidates = networkCandidates.filter(
-    (candidate) => candidate.scheme === approvedScheme,
-  );
+  if (approvedScheme !== 'exact')
+    throw new PaymentPolicyRejected(
+      'legacy upto profiles cannot spend; run onchain-router policy set --scheme exact',
+    );
+  const schemeCandidates = networkCandidates.filter((candidate) => candidate.scheme === 'exact');
   if (schemeCandidates.length === 0) {
     const advertisedSchemes = [
       ...new Set(networkCandidates.map((candidate) => candidate.scheme)),
     ].sort();
-    if (
-      approvedScheme === 'upto' &&
-      advertisedSchemes.length === 1 &&
-      advertisedSchemes[0] === 'exact'
-    )
-      throw new PaymentPolicyRejected(
-        'profile authorizes legacy upto but this resource requires exact; run onchain-router policy set --scheme exact for this profile before unlocking and retrying with a fresh idempotency key',
-      );
     throw new PaymentPolicyRejected(
-      `profile authorizes ${approvedScheme} but this resource requires ${advertisedSchemes.join(', ')}`,
+      `profile requires exact but this resource advertises ${advertisedSchemes.join(', ')}`,
     );
   }
   const assetCandidates = schemeCandidates.filter(
@@ -250,25 +244,15 @@ export function validatePaymentRequirement(
   if (amountAtomic > policy.limits.perCallAtomic) throw new AuthorizationAboveLocalCap();
   if (requirement.maxTimeoutSeconds > policy.maximumAuthorizationSeconds)
     throw new PaymentPolicyRejected('authorization lifetime exceeds local policy');
-  if (approvedScheme === 'upto') {
-    const facilitator = requirement.extra?.['facilitatorAddress'];
-    if (
-      typeof facilitator !== 'string' ||
-      !ADDRESS.test(facilitator) ||
-      /^0x0{40}$/i.test(facilitator)
-    )
-      throw new PaymentPolicyRejected('challenge facilitator is missing or invalid');
-  } else {
-    const extra = requirement.extra;
-    const extraKeys = extra && typeof extra === 'object' ? Object.keys(extra).sort() : [];
-    if (
-      !extra ||
-      extra['name'] !== 'USD Coin' ||
-      extra['version'] !== '2' ||
-      extraKeys.join(',') !== ['name', 'version'].sort().join(',')
-    )
-      throw new PaymentPolicyRejected('challenge has invalid Base USDC EIP-712 metadata');
-  }
+  const extra = requirement.extra;
+  const extraKeys = extra && typeof extra === 'object' ? Object.keys(extra).sort() : [];
+  if (
+    !extra ||
+    extra['name'] !== 'USD Coin' ||
+    extra['version'] !== '2' ||
+    extraKeys.join(',') !== ['name', 'version'].sort().join(',')
+  )
+    throw new PaymentPolicyRejected('challenge has invalid Base USDC EIP-712 metadata');
 
   return {
     paymentRequired,

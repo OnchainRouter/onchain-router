@@ -11,8 +11,9 @@ Anthropic-style messages, image generation, text-to-speech, speech-to-text, reco
 ## Release status
 
 Version `0.1.0` is public alpha source with a deterministic local wheel builder. It is not currently
-published on PyPI. Install it from this repository together with npm Buyer CLI `0.1.2` or newer in the `0.1.x` alpha line; do not
-infer a PyPI release from the project name.
+published on PyPI. This source candidate targets npm Buyer CLI `0.1.2` or newer in the `0.1.x`
+alpha line; check the live npm `alpha` dist-tag before installing and do not infer a PyPI release
+from the project name.
 
 ## Requirements
 
@@ -29,7 +30,7 @@ Windows is not yet a supported host. Base mainnet is the only payment network in
 After both packages are published with verified provenance:
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@alpha
+npm install --global @agenticfi/onchain-router-cli@0.1.2
 python -m pip install onchain-router
 ```
 

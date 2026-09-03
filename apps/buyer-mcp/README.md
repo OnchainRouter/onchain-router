@@ -10,9 +10,9 @@ verification itself.
 
 ## Release status
 
-Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not yet a
-stable release or a claim of qualification across every MCP host. The server never owns wallet
-setup, import, funding, unlock, or policy-widening authority.
+This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
+assuming that exact version is published. It is not a claim of qualification across every MCP
+host. The server never owns wallet setup, import, funding, unlock, or policy-widening authority.
 
 ## Tools
 

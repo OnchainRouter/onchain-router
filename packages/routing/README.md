@@ -9,9 +9,10 @@ a request, or authorize fallback. The human-owned Buyer Runtime policy remains f
 
 ## Release status
 
-Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. Routing remains
-experimental and advisory: it cannot sign, spend, retry a paid route, or widen Buyer Runtime policy.
-Do not describe it as production-ready automatic routing.
+This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
+assuming that exact version is published. Routing remains experimental and advisory: it cannot
+sign, spend, retry a paid route, or widen Buyer Runtime policy. Do not describe it as
+production-ready automatic routing.
 
 ## Requirements
 
@@ -28,7 +29,7 @@ use JavaScript floating point for USDC or token accounting.
 Install the bounded alpha explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router-routing@alpha
+npm install @agenticfi/onchain-router-routing@0.1.2
 ```
 
 To build and test the source candidate now:

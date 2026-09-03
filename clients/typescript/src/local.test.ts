@@ -26,7 +26,7 @@ async function profile(): Promise<string> {
     network: 'eip155:8453',
     asset: BASE_MAINNET_USDC,
     recipients: [RECIPIENT],
-    schemes: ['upto'],
+    schemes: ['exact'],
     models: ['gemini-2.5-flash'],
     delegations: [{ agentId: 'mcp', maximumAtomic: 4_000n }],
     limits: {

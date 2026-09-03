@@ -16,9 +16,9 @@ It also exposes free models, pricing, voices, balance, payment-contract, and quo
 
 ## Release status
 
-Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
-stable `latest` line. Installation does not authorize wallet setup, funding, unlock, policy
-widening, or a paid request.
+This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
+assuming that exact version is published. Installation does not authorize wallet setup, funding,
+unlock, policy widening, or a paid request.
 
 ## Requirements
 
@@ -35,7 +35,7 @@ model catalog, capabilities, and pricing at request time; do not hard-code them 
 Install the bounded alpha explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router@alpha
+npm install @agenticfi/onchain-router@0.1.2
 ```
 
 To build the exact source candidate now:
@@ -109,10 +109,8 @@ try {
 `close()` releases local resources but does not end the signer session. Use `await buyer.lock()` or
 the human CLI's `onchain-router lock` when the session should end.
 
-The public exact flow requires only Base USDC. It does not require a Permit2 approval or Base ETH.
-The SDK retains `permit2Status()` and `approvePermit2()` only for explicitly retained legacy
-`upto` profiles; migrate those profiles with the human-owned CLI rather than exposing an approval
-method to an autonomous agent.
+The SDK exposes one payment path: x402 v2 `exact` EIP-3009 with Base USDC. Legacy profile migration
+is intentionally available only through the human-owned CLI, not application code.
 
 ## Discovery
 

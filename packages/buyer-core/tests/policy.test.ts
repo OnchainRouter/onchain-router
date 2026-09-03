@@ -12,14 +12,12 @@ import {
   TEST_ASSET,
   TEST_ORIGIN,
   TEST_RECIPIENT,
-  testExactPaymentRequired,
-  testExactPolicy,
   testPaymentRequired,
   testPolicy,
 } from './helpers.js';
 
 describe('buyer policy', () => {
-  it('normalizes and hashes a Base-mainnet upto policy', () => {
+  it('normalizes and hashes a Base-mainnet exact policy', () => {
     const policy = testPolicy();
     expect(policy.network).toBe('eip155:8453');
     expect(policy.asset).toBe(TEST_ASSET);
@@ -80,28 +78,15 @@ describe('buyer policy', () => {
     expect(validated.requirement.payTo).toBe(TEST_RECIPIENT);
   });
 
-  it('accepts the official exact EVM payment scheme without a Permit2 policy', () => {
-    const validated = validatePaymentRequirement(
-      testExactPaymentRequired(),
-      testExactPolicy(),
-      `${TEST_ORIGIN}/v1/chat/completions`,
-      'gemini-2.5-flash',
-    );
-    expect(validated.amountAtomic).toBe(600n);
-    expect(validated.requirement.scheme).toBe('exact');
-  });
-
-  it('gives an explicit migration command when a legacy upto profile meets exact discovery', () => {
+  it('blocks a legacy upto profile with an explicit one-way migration command', () => {
     expect(() =>
       validatePaymentRequirement(
-        testExactPaymentRequired(),
-        testPolicy(),
+        testPaymentRequired(),
+        testPolicy({ schemes: ['upto'] }),
         `${TEST_ORIGIN}/v1/chat/completions`,
         'gemini-2.5-flash',
       ),
-    ).toThrow(
-      'profile authorizes legacy upto but this resource requires exact; run onchain-router policy set --scheme exact for this profile before unlocking and retrying with a fresh idempotency key',
-    );
+    ).toThrow('legacy upto profiles cannot spend; run onchain-router policy set --scheme exact');
   });
 
   it.each([
@@ -109,12 +94,12 @@ describe('buyer policy', () => {
     ['Permit2 marker', { name: 'USD Coin', version: '2', assetTransferMethod: 'permit2' }],
     ['unknown metadata', { name: 'USD Coin', version: '2', unexpected: true }],
   ])('rejects nonstandard exact EIP-712 %s before signing', (_label, extra) => {
-    const challenge = testExactPaymentRequired();
+    const challenge = testPaymentRequired();
     challenge.accepts[0] = { ...challenge.accepts[0]!, extra } as PaymentRequirements;
     expect(() =>
       validatePaymentRequirement(
         challenge,
-        testExactPolicy(),
+        testPolicy(),
         `${TEST_ORIGIN}/v1/chat/completions`,
         'gemini-2.5-flash',
       ),
@@ -123,7 +108,7 @@ describe('buyer policy', () => {
 
   it.each([
     ['network', { network: 'eip155:84532' }, UnsupportedNetwork],
-    ['scheme', { scheme: 'exact' }, PaymentPolicyRejected],
+    ['scheme', { scheme: 'upto' }, PaymentPolicyRejected],
     ['asset', { asset: '0x3333333333333333333333333333333333333333' }, UnexpectedAsset],
     ['recipient', { payTo: '0x3333333333333333333333333333333333333333' }, UnexpectedRecipient],
     ['maximum', { amount: '1001' }, AuthorizationAboveLocalCap],
@@ -141,7 +126,7 @@ describe('buyer policy', () => {
     ).toThrow(ErrorType);
   });
 
-  it('rejects resource, model, facilitator, and non-integer mismatches before signing', () => {
+  it('rejects resource, model, metadata, and non-integer mismatches before signing', () => {
     expect(() =>
       validatePaymentRequirement(
         testPaymentRequired(),

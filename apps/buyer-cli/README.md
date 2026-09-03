@@ -11,8 +11,9 @@ a polished public CLI rotation/restore command is not yet claimed.
 
 ## Release status
 
-Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
-stable `latest` line. Run every authority-changing command in a human-controlled terminal.
+This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
+assuming that exact version is published. Run every authority-changing command in a
+human-controlled terminal.
 
 ## Requirements
 
@@ -30,7 +31,7 @@ current USDC contract, recipient, models, voices, and prices from the canonical 
 Install the bounded alpha explicitly:
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@alpha
+npm install --global @agenticfi/onchain-router-cli@0.1.2
 onchain-router --version
 ```
 
@@ -88,9 +89,8 @@ onchain-router setup [--origin URL] [--profile DIR] [--models A,B] [--agent ID]
                      [--confirm-each true|false] [--wallet-mode create|import] [--yes]
 onchain-router unlock [--agent ID] [--idle-seconds N] [--session-seconds N]
 onchain-router lock | status | balance | funding | models | pricing | voices
-onchain-router permit2 status|approve (legacy upto profiles only)
 onchain-router policy show
-onchain-router policy set [--scheme exact|upto] [--models A,B] [--per-call-usdc N] [--session-usdc N]
+onchain-router policy set [--scheme exact] [--models A,B] [--per-call-usdc N] [--session-usdc N]
                           [--hour-usdc N] [--day-usdc N]
                           [--max-output-tokens N] [--confirm-each true|false]
 onchain-router chat "prompt" --model MODEL [--max-output-tokens N]
@@ -100,9 +100,9 @@ onchain-router receipt IDEMPOTENCY_KEY
 onchain-router doctor [--out FILE]
 ```
 
-New profiles use `exact`. `permit2 status|approve` remains available only for an explicitly
-retained legacy `upto` profile; migrate that profile with the authenticated `policy set` command
-instead of approving a token for ordinary public calls.
+New profiles use `exact`. A profile created by an older alpha with `upto` is locked from signing;
+migrate it once with `onchain-router policy set --profile DIR --scheme exact`. The command requires
+the wallet passphrase and preserves the wallet, models, delegations, and monetary limits.
 
 Add `--json` for a stable versioned automation envelope. Use a separate `--profile DIR` when a
 human intentionally maintains more than one isolated buyer. Do not let model-supplied text select
@@ -199,12 +199,9 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 - `wallet is locked`: run `onchain-router unlock` directly, not through an agent.
 - Insufficient USDC: use `onchain-router funding` and verify the connected wallet is on Base.
-- `Permit2ApprovalRequired`: this indicates a legacy `upto` profile. Authenticate and run
-  `onchain-router policy set --profile YOUR_PROFILE --scheme exact`; do not fund gas or approve a
-  token for the normal public exact flow.
-- `profile authorizes legacy upto but this resource requires exact`: run the same authenticated
-  migration command, unlock, and retry with a fresh idempotency key. It preserves the wallet,
-  models, delegations, and every monetary limit.
+- Legacy profile rejected: authenticate and run
+  `onchain-router policy set --profile YOUR_PROFILE --scheme exact`, then unlock and retry with a
+  fresh idempotency key. The migration preserves the wallet and every policy limit.
 - Model or option rejected: refresh `models`, `pricing`, and `voices`, then compare with `policy show`.
 - Budget rejected: lower the request or have the human review policy; never silently widen it.
 - Lost or ambiguous response: keep the same key/body and run `receipt`; do not create a new key.

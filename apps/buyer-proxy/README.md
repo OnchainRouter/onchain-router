@@ -16,9 +16,10 @@ Setup, unlock, funding, policy changes, and receipt inspection remain direct CLI
 
 ## Release status
 
-Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not yet a
-stable release or a claim of qualification across every OpenAI-compatible client. Keep it bound to
-loopback and preserve the bearer, Host, browser, body, and idempotency controls.
+This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
+assuming that exact version is published. It is not a claim of qualification across every
+OpenAI-compatible client. Keep it bound to loopback and preserve the bearer, Host, browser, body,
+and idempotency controls.
 
 ## Requirements
 
@@ -42,7 +43,7 @@ by default; all media bypasses caching. Live catalog limits remain authoritative
 Install the bounded alpha explicitly:
 
 ```bash
-npm install --global @agenticfi/onchain-router-proxy@alpha
+npm install --global @agenticfi/onchain-router-proxy@0.1.2
 onchain-router-proxy --version
 ```
 

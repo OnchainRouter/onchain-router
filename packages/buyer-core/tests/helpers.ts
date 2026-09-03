@@ -4,7 +4,6 @@ import { createBuyerPolicy } from '../src/policy.js';
 export const TEST_ORIGIN = 'https://buyer.example';
 export const TEST_ASSET = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 export const TEST_RECIPIENT = '0x1111111111111111111111111111111111111111';
-export const TEST_FACILITATOR = '0x2222222222222222222222222222222222222222';
 
 export function testPolicy(overrides: Record<string, unknown> = {}) {
   return createBuyerPolicy({
@@ -12,7 +11,7 @@ export function testPolicy(overrides: Record<string, unknown> = {}) {
     network: 'eip155:8453',
     asset: TEST_ASSET,
     recipients: [TEST_RECIPIENT],
-    schemes: ['upto'],
+    schemes: ['exact'],
     models: ['gemini-2.5-flash'],
     limits: {
       perCallAtomic: 1_000n,
@@ -43,32 +42,15 @@ export function testPaymentRequired(
     },
     accepts: [
       {
-        scheme: 'upto',
+        scheme: 'exact',
         network: 'eip155:8453',
         asset: TEST_ASSET,
         amount,
         payTo: TEST_RECIPIENT,
         maxTimeoutSeconds: 60,
-        extra: { facilitatorAddress: TEST_FACILITATOR },
+        extra: { name: 'USD Coin', version: '2' },
       },
     ],
     ...overrides,
   };
-}
-
-export function testExactPolicy(overrides: Record<string, unknown> = {}) {
-  return testPolicy({ schemes: ['exact'], ...overrides });
-}
-
-export function testExactPaymentRequired(amount = '600'): PaymentRequired {
-  const paymentRequired = testPaymentRequired(amount);
-  paymentRequired.accepts[0] = {
-    ...paymentRequired.accepts[0]!,
-    scheme: 'exact',
-    extra: {
-      name: 'USD Coin',
-      version: '2',
-    },
-  };
-  return paymentRequired;
 }
