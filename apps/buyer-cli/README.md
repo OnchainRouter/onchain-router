@@ -4,10 +4,10 @@ Create a dedicated buyer wallet, set USDC budgets, unlock a short-lived signer, 
 models, pay x402 challenges, recover lost responses, and inspect verified receipts from one
 terminal command: `onchain-router`.
 
-The CLI is the supported human-authority surface for wallet setup/import, unlock, funding guidance,
-and policy widening. SDKs, MCP, the Agent Skill, and the local proxy reuse the same Buyer Runtime
-rather than implementing another payment stack. The core has encrypted backup/restore primitives;
-a polished public CLI rotation/restore command is not yet claimed.
+The CLI is the supported human-authority surface for wallet setup/import, passphrase rotation,
+unlock, funding guidance, and policy widening. SDKs, MCP, the Agent Skill, and the local proxy reuse
+the same Buyer Runtime rather than implementing another payment stack. The core also has encrypted
+backup/restore primitives.
 
 ## Release status
 
@@ -58,7 +58,7 @@ onchain-router setup \
   --session-usdc 0.06 \
   --hour-usdc 0.06 \
   --day-usdc 0.10 \
-  --max-output-tokens 64 \
+  --max-output-tokens 512 \
   --confirm-each true \
   --wallet-mode create \
   --yes
@@ -76,6 +76,10 @@ choice in one copyable command; passphrases and imported wallet material remain 
 terminal prompts. Omit any flag to answer that choice interactively. `funding` prints the public
 Base address and guidance; it does not transfer funds.
 
+The 512-token policy ceiling leaves room for models that use internal reasoning tokens before
+returning visible text. Individual requests may choose a lower value, but very small ceilings can
+produce a definite-unpaid `empty_provider_response`.
+
 Wallet import and passphrase entry are direct, no-echo interactions. Never supply a private key,
 seed phrase, passphrase, or signer capability through command arguments, environment variables,
 stdin from an agent, source control, or a script.
@@ -89,6 +93,7 @@ onchain-router setup [--origin URL] [--profile DIR] [--models A,B] [--agent ID]
                      [--confirm-each true|false] [--wallet-mode create|import] [--yes]
 onchain-router unlock [--agent ID] [--idle-seconds N] [--session-seconds N]
 onchain-router lock | status | balance | funding | models | pricing | voices
+onchain-router wallet rotate-passphrase
 onchain-router policy show
 onchain-router policy set [--scheme exact] [--models A,B] [--per-call-usdc N] [--session-usdc N]
                           [--hour-usdc N] [--day-usdc N]
@@ -107,6 +112,17 @@ the wallet passphrase and preserves the wallet, models, delegations, and monetar
 Add `--json` for a stable versioned automation envelope. Use a separate `--profile DIR` when a
 human intentionally maintains more than one isolated buyer. Do not let model-supplied text select
 the profile or executable.
+
+If a passphrase may have been disclosed, lock the wallet and rotate it in a human-controlled
+terminal. All three prompts are hidden, the wallet address stays unchanged, and both the active and
+last-good vault copies are re-encrypted under the new passphrase:
+
+```bash
+onchain-router lock --profile YOUR_PROFILE
+onchain-router wallet rotate-passphrase --profile YOUR_PROFILE
+```
+
+Replace any separately exported encrypted backups yourself; the CLI cannot locate external copies.
 
 ## Stable idempotency keys
 
@@ -198,6 +214,8 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 ## Troubleshooting
 
 - `wallet is locked`: run `onchain-router unlock` directly, not through an agent.
+- Passphrase disclosed: lock immediately and run `wallet rotate-passphrase` in your own terminal;
+  never place either passphrase in arguments, shell history, chat, logs, or source control.
 - Insufficient USDC: use `onchain-router funding` and verify the connected wallet is on Base.
 - Legacy profile rejected: authenticate and run
   `onchain-router policy set --profile YOUR_PROFILE --scheme exact`, then unlock and retry with a

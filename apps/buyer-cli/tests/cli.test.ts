@@ -35,6 +35,7 @@ it('returns nonzero for a paid unknown outcome and preserves it if cleanup fails
 const ASSET = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const RECIPIENT = '0x1111111111111111111111111111111111111111';
 const PASSPHRASE = 'correct horse battery staple';
+const NEW_PASSPHRASE = 'new locally entered wallet passphrase';
 const directories: string[] = [];
 
 async function directory(): Promise<string> {
@@ -305,6 +306,61 @@ describe('one-command buyer setup and administration', () => {
     expect(starts[0]).toMatchObject({ passphrase: PASSPHRASE, agentId: 'cli' });
     expect(stdout.join('')).not.toContain(PASSPHRASE);
     expect(stdout.join('')).not.toContain('capability');
+  });
+
+  it('rotates a locked wallet passphrase without changing its address or exposing either secret', async () => {
+    const root = await directory();
+    const setup = await setupProfile(root);
+    const paths = buyerProfilePaths(setup.profile);
+    const wallet = new WalletVault({
+      directory: paths.walletDirectory,
+      scryptN: 1_024,
+      allowWeakTestKdf: true,
+    });
+    const address = await wallet.verifyPassphrase(PASSPHRASE);
+    const stdout: string[] = [];
+    const cli = createCli({
+      prompt: new Answers([], [PASSPHRASE, NEW_PASSPHRASE, NEW_PASSPHRASE], []),
+      stdout: (value) => stdout.push(value),
+      stderr: () => undefined,
+      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+    });
+
+    expect(await cli(['wallet', 'rotate-passphrase', '--profile', setup.profile, '--json'])).toBe(
+      0,
+    );
+    expect(await wallet.verifyPassphrase(NEW_PASSPHRASE)).toBe(address);
+    await expect(wallet.verifyPassphrase(PASSPHRASE)).rejects.toThrow();
+    expect(stdout.join('')).not.toContain(PASSPHRASE);
+    expect(stdout.join('')).not.toContain(NEW_PASSPHRASE);
+    expect(JSON.parse(stdout.at(-1) ?? '')).toMatchObject({
+      version: 1,
+      ok: true,
+      command: 'wallet',
+      result: { rotated: true, locked: true, address },
+    });
+  });
+
+  it('keeps the existing wallet usable when passphrase confirmation does not match', async () => {
+    const root = await directory();
+    const setup = await setupProfile(root);
+    const paths = buyerProfilePaths(setup.profile);
+    const wallet = new WalletVault({
+      directory: paths.walletDirectory,
+      scryptN: 1_024,
+      allowWeakTestKdf: true,
+    });
+    const cli = createCli({
+      prompt: new Answers([], [PASSPHRASE, NEW_PASSPHRASE, 'different confirmation value'], []),
+      stdout: () => undefined,
+      stderr: () => undefined,
+      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+    });
+
+    expect(await cli(['wallet', 'rotate-passphrase', '--profile', setup.profile, '--json'])).toBe(
+      2,
+    );
+    await expect(wallet.verifyPassphrase(PASSPHRASE)).resolves.toMatch(/^0x/);
   });
 
   it('starts the real broker worker over inherited IPC and removes its session after lock', async () => {

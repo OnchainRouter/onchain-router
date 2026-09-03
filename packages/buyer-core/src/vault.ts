@@ -198,8 +198,15 @@ export class WalletVault {
     newPassphrase: string,
   ): Promise<WalletStatus> {
     validatePassphrase(newPassphrase);
+    if (currentPassphrase === newPassphrase)
+      throw new PaymentPolicyRejected('new wallet passphrase must differ from the current one');
     const wallet = await decryptWallet(this.walletPath, currentPassphrase);
-    await this.persist(wallet, newPassphrase, true);
+    const bytes = await this.encrypt(wallet, newPassphrase);
+    // Write the recovery copy first. If the active write fails, either the active wallet still
+    // opens with the old passphrase or the recovery copy opens with the new one. A completed
+    // rotation leaves no vault-managed copy encrypted with the disclosed passphrase.
+    await atomicPrivateWrite(this.lastGoodPath, bytes);
+    await atomicPrivateWrite(this.walletPath, bytes);
     return await this.status();
   }
 
@@ -220,6 +227,15 @@ export class WalletVault {
   ): Promise<void> {
     await ensurePrivateDirectory(this.directory);
     await assertPathInside(this.directory, this.walletPath);
+    const bytes = await this.encrypt(wallet, passphrase);
+    if (preserveLastGood && (await pathExists(this.walletPath))) {
+      const current = await safeReadPrivateFile(this.walletPath);
+      await atomicPrivateWrite(this.lastGoodPath, current);
+    }
+    await atomicPrivateWrite(this.walletPath, bytes);
+  }
+
+  private async encrypt(wallet: Wallet | HDNodeWallet, passphrase: string): Promise<Buffer> {
     const json = await encryptKeystoreJson(
       { address: wallet.address, privateKey: wallet.privateKey },
       passphrase,
@@ -231,10 +247,6 @@ export class WalletVault {
     const verified = await Wallet.fromEncryptedJson(json, passphrase);
     if (getAddress(verified.address) !== getAddress(wallet.address))
       throw new PaymentPolicyRejected('new encrypted wallet failed verification');
-    if (preserveLastGood && (await pathExists(this.walletPath))) {
-      const current = await safeReadPrivateFile(this.walletPath);
-      await atomicPrivateWrite(this.lastGoodPath, current);
-    }
-    await atomicPrivateWrite(this.walletPath, Buffer.from(json, 'utf8'));
+    return Buffer.from(json, 'utf8');
   }
 }
