@@ -3,7 +3,7 @@ import { realpathSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, describe, expect, it } from 'vitest';
-import { Wallet } from 'ethers';
+import { getAddress, Wallet } from 'ethers';
 import { PaymentPolicyRejected } from '../src/errors.js';
 import { WalletVault } from '../src/vault.js';
 
@@ -80,7 +80,7 @@ describe('encrypted wallet vault', () => {
     expect(await readFile(clean.walletPath)).toEqual(activeBytes);
   });
 
-  it('rotates passphrase and wallet while retaining a last-known-good encrypted copy', async () => {
+  it('rotates every vault-managed copy to the new passphrase before rotating the wallet', async () => {
     const root = await directory();
     const runtimeVault = vault(join(root, 'state'));
     const initial = await runtimeVault.create(PASSPHRASE);
@@ -88,6 +88,23 @@ describe('encrypted wallet vault', () => {
     await expect(runtimeVault.verifyPassphrase(PASSPHRASE)).rejects.toThrow(PaymentPolicyRejected);
     expect(await runtimeVault.verifyPassphrase(NEW_PASSPHRASE)).toBe(initial.address);
     expect(statSync(runtimeVault.lastGoodPath).mode & 0o777).toBe(0o600);
+    await expect(
+      Wallet.fromEncryptedJson(await readFile(runtimeVault.lastGoodPath, 'utf8'), PASSPHRASE),
+    ).rejects.toThrow();
+    expect(
+      getAddress(
+        (
+          await Wallet.fromEncryptedJson(
+            await readFile(runtimeVault.lastGoodPath, 'utf8'),
+            NEW_PASSPHRASE,
+          )
+        ).address,
+      ),
+    ).toBe(getAddress(initial.address!));
+
+    await expect(runtimeVault.rotatePassphrase(NEW_PASSPHRASE, NEW_PASSPHRASE)).rejects.toThrow(
+      'new wallet passphrase must differ from the current one',
+    );
 
     const rotated = await runtimeVault.rotateWallet(NEW_PASSPHRASE);
     expect(rotated.address).not.toBe(initial.address);

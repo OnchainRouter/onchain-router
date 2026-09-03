@@ -4,6 +4,11 @@ All notable changes to the public AgenticFI client packages are documented here.
 
 ## 0.1.2 - 2026-09-03
 
+### Added
+
+- Add a hidden-prompt `wallet rotate-passphrase` command that preserves the address and re-encrypts
+  both active and last-good vault copies so a disclosed old passphrase no longer opens either copy.
+
 ### Changed
 
 - Reduce all buyer surfaces to the production x402 v2 `exact` EIP-3009 contract.

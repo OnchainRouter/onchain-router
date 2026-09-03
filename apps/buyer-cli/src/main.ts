@@ -462,6 +462,31 @@ async function lock(args: ParsedArguments): Promise<unknown> {
   return { locked: true };
 }
 
+async function rotateWalletPassphrase(
+  context: CliContext,
+  args: ParsedArguments,
+): Promise<unknown> {
+  assertKnownFlags(args, ['profile', 'json']);
+  if (args.positionals.length !== 2 || args.positionals[1] !== 'rotate-passphrase')
+    throw new PaymentPolicyRejected('usage: onchain-router wallet rotate-passphrase');
+  const paths = profile(args);
+  const wallet = vault(paths, context);
+  const before = await wallet.status();
+  if (!before.initialized || !before.address)
+    throw new PaymentPolicyRejected('buyer wallet is not initialized');
+
+  await lock(args);
+  const currentPassphrase = await context.prompt.secret('Current wallet passphrase');
+  const newPassphrase = await context.prompt.secret('New wallet passphrase');
+  const repeated = await context.prompt.secret('Repeat new wallet passphrase');
+  if (newPassphrase !== repeated)
+    throw new PaymentPolicyRejected('new wallet passphrases do not match');
+  const rotated = await wallet.rotatePassphrase(currentPassphrase, newPassphrase);
+  if (rotated.address !== before.address)
+    throw new PaymentPolicyRejected('wallet address changed during passphrase rotation');
+  return { rotated: true, locked: true, address: rotated.address };
+}
+
 async function status(context: CliContext, args: ParsedArguments): Promise<unknown> {
   assertKnownFlags(args, ['profile', 'json']);
   const paths = profile(args);
@@ -996,6 +1021,7 @@ Usage:
                        [--confirm-each true|false] [--wallet-mode create|import] [--yes]
   onchain-router unlock [--agent ID] [--idle-seconds N] [--session-seconds N]
   onchain-router lock | status | balance | funding | models | pricing | voices
+  onchain-router wallet rotate-passphrase
   onchain-router policy show
   onchain-router policy set [--scheme exact] [--models A,B] [--per-call-usdc N] [--session-usdc N]
                               [--hour-usdc N] [--day-usdc N]
@@ -1046,6 +1072,9 @@ export function createCli(dependencies: CliDependencies = {}) {
           break;
         case 'lock':
           result = await lock(args);
+          break;
+        case 'wallet':
+          result = await rotateWalletPassphrase(context, args);
           break;
         case 'status':
           result = await status(context, args);
