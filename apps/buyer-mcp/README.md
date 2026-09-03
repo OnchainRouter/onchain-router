@@ -10,9 +10,9 @@ verification itself.
 
 ## Release status
 
-This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
-assuming that exact version is published. It is not a claim of qualification across every MCP
-host. The server never owns wallet setup, import, funding, unlock, or policy-widening authority.
+Version `0.1.2` is published as the current bounded npm alpha. It is not a claim of qualification
+across every MCP host. The server never owns wallet setup, import, funding, unlock, or
+policy-widening authority.
 
 ## Tools
 
@@ -60,7 +60,7 @@ Install the bounded alpha, then pin the exact `0.1.2` version in the MCP host:
 Do not use an unpinned floating package version for a wallet-connected tool. Upgrade only after
 reviewing release notes and provenance.
 
-To build the source candidate now:
+To build the exact published source:
 
 ```bash
 corepack enable

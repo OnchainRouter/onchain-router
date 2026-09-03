@@ -9,8 +9,7 @@ a request, or authorize fallback. The human-owned Buyer Runtime policy remains f
 
 ## Release status
 
-This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
-assuming that exact version is published. Routing remains experimental and advisory: it cannot
+Version `0.1.2` is published as the current bounded npm alpha. Routing remains experimental and advisory: it cannot
 sign, spend, retry a paid route, or widen Buyer Runtime policy. Do not describe it as
 production-ready automatic routing.
 
@@ -32,7 +31,7 @@ Install the bounded alpha explicitly:
 npm install @agenticfi/onchain-router-routing@0.1.2
 ```
 
-To build and test the source candidate now:
+To build and test the exact published source:
 
 ```bash
 corepack enable

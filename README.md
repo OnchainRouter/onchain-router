@@ -4,8 +4,7 @@ Open-source clients for agents that discover AI capabilities, pay x402 challenge
 Base, enforce local budgets, recover ambiguous requests, and retain a verified receipt for every
 completed payment.
 
-This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` tag before assuming
-that exact version is published. Smart routing is experimental; the Buyer Runtime remains the
+Version `0.1.2` is published as the current bounded npm alpha. Smart routing is experimental; the Buyer Runtime remains the
 authority for wallet access, model allowlists, recipients, output limits, and integer-atomic spend
 budgets.
 
@@ -157,7 +156,7 @@ forbidden files, and common credential formats, then writes SHA-256 hashes under
 
 ## Release policy
 
-- Release `0.1.2` only under the npm `alpha` dist-tag, not `latest`.
+- Keep release `0.1.2` under the npm `alpha` dist-tag, not `latest`.
 - npm publication is manual from the pinned GitHub Actions workflow after CI passes.
 - The initial bootstrap uses a short-lived granular npm automation token stored only as a GitHub
   Actions secret and requests npm provenance. It should be replaced by npm trusted publishing after

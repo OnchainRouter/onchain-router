@@ -11,9 +11,8 @@ backup/restore primitives.
 
 ## Release status
 
-This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
-assuming that exact version is published. Run every authority-changing command in a
-human-controlled terminal.
+Version `0.1.2` is published as the current bounded npm alpha. Run every authority-changing
+command in a human-controlled terminal.
 
 ## Requirements
 
@@ -35,7 +34,7 @@ npm install --global @agenticfi/onchain-router-cli@0.1.2
 onchain-router --version
 ```
 
-To build and run the exact source candidate now:
+To build and run the exact published source:
 
 ```bash
 corepack enable

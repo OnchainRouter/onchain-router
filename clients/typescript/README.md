@@ -16,9 +16,8 @@ It also exposes free models, pricing, voices, balance, payment-contract, and quo
 
 ## Release status
 
-This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
-assuming that exact version is published. Installation does not authorize wallet setup, funding,
-unlock, policy widening, or a paid request.
+Version `0.1.2` is published as the current bounded npm alpha. Installation does not authorize
+wallet setup, funding, unlock, policy widening, or a paid request.
 
 ## Requirements
 
@@ -38,7 +37,7 @@ Install the bounded alpha explicitly:
 npm install @agenticfi/onchain-router@0.1.2
 ```
 
-To build the exact source candidate now:
+To build the exact published source:
 
 ```bash
 corepack enable
