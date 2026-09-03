@@ -35,17 +35,17 @@ function json(body: unknown, init: ResponseInit = {}): Response {
   return new Response(JSON.stringify(body), { ...init, headers });
 }
 
-function settlement(amount = '123') {
+function settlement(amount?: string) {
   return {
     success: true as const,
     transaction: '0xsettlement',
     network: 'eip155:8453' as const,
     payer: PAYER,
-    amount,
+    ...(amount === undefined ? {} : { amount }),
   };
 }
 
-function durableReceipt(id: string, amount = '123', maximum = '600') {
+function durableReceipt(id: string, amount = '600', maximum = '600') {
   return {
     id,
     operationId: id,
@@ -191,7 +191,7 @@ describe('official x402 buyer lifecycle', () => {
     }
   });
 
-  it('uses one identity and identical body for challenge/retry, then returns only after receipt', async () => {
+  it('accepts the standard exact settlement response without an optional amount field', async () => {
     const receiptId = randomUUID();
     const calls: Array<{
       url: string;
@@ -228,7 +228,7 @@ describe('official x402 buyer lifecycle', () => {
           asset: TEST_ASSET,
           recipient: TEST_RECIPIENT,
           authorizedMaximumAtomic: '600',
-          actualAtomic: '123',
+          actualAtomic: '600',
         },
       });
       expect(calls).toHaveLength(3);
@@ -243,7 +243,7 @@ describe('official x402 buyer lifecycle', () => {
       expect(calls[2]?.headers.get('x-receipt-token')).toBe('receipt-capability-never-returned');
       expect(context.ledger.get('runtime-payment')).toMatchObject({
         state: 'spent',
-        actualAtomic: 123n,
+        actualAtomic: 600n,
       });
     } finally {
       context.ledger.close();
@@ -362,6 +362,35 @@ describe('official x402 buyer lifecycle', () => {
       expect(result).toMatchObject({ ok: false, outcome: 'ReceiptVerificationFailed' });
       expect(calls).toBe(2);
       expect(context.ledger.get('wrong-settlement-payer')?.state).toBe('unknown');
+    } finally {
+      context.ledger.close();
+    }
+  });
+
+  it('rejects a nonstandard exact settlement amount that differs from the signed amount', async () => {
+    const receiptId = randomUUID();
+    let calls = 0;
+    const fetcher = vi.fn(async () => {
+      calls += 1;
+      if (calls === 1) return challengeResponse();
+      return json(
+        { id: 'completion' },
+        {
+          status: 200,
+          headers: {
+            'payment-response': encodePaymentResponseHeader(settlement('599')),
+            'x-receipt-id': receiptId,
+            'x-receipt-token': 'must-not-be-used',
+          },
+        },
+      );
+    }) as unknown as typeof fetch;
+    const context = await setup(fetcher);
+    try {
+      const result = await context.runtime.execute(request('wrong-settlement-amount'));
+      expect(result).toMatchObject({ ok: false, outcome: 'ReceiptVerificationFailed' });
+      expect(calls).toBe(2);
+      expect(context.ledger.get('wrong-settlement-amount')?.state).toBe('unknown');
     } finally {
       context.ledger.close();
     }

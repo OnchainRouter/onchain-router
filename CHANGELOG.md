@@ -13,6 +13,8 @@ All notable changes to the public AgenticFI client packages are documented here.
 
 ### Fixed
 
+- Accept the standard x402 v2 `exact` settlement response when its optional `amount` field is
+  absent, and verify the durable receipt against the fixed signed amount instead.
 - Make `doctor` detect a stale local payment scheme and print the exact migration command instead
   of allowing a false-green diagnostic.
 - Replace the misleading `upto scheme is required` failure with actionable, definite-unpaid
