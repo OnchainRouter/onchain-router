@@ -444,9 +444,8 @@ export class BuyerRuntime {
         settlement.network !== operationPolicy.network ||
         !settlement.payer ||
         settlement.payer.toLowerCase() !== this.options.authorizer.address.toLowerCase() ||
-        !settlement.amount ||
-        !/^\d+$/.test(settlement.amount) ||
-        BigInt(settlement.amount) > maximumAtomic
+        (settlement.amount !== undefined &&
+          (!/^\d+$/.test(settlement.amount) || BigInt(settlement.amount) !== maximumAtomic))
       )
         throw new ReceiptVerificationFailed(
           'PAYMENT-RESPONSE does not confirm the expected payment',
@@ -518,9 +517,7 @@ export class BuyerRuntime {
           payer: this.options.authorizer.address,
           maximumAtomic: expected.maximumAtomic,
           policy: expected.policy,
-          ...(expected.settlement?.amount
-            ? { settlementAmountAtomic: BigInt(expected.settlement.amount) }
-            : {}),
+          settlementAmountAtomic: expected.maximumAtomic,
           ...(expected.settlement?.transaction
             ? { settlementTransaction: expected.settlement.transaction }
             : {}),
