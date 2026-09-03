@@ -11,16 +11,16 @@ budgets.
 
 ## Choose a surface
 
-| Surface        | Package or path                                  | Use it when                                                                   |
-| -------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
-| TypeScript SDK | `@agenticfi/onchain-router`                      | Your Node.js application needs typed discovery and paid API calls             |
-| Buyer CLI      | `@agenticfi/onchain-router-cli`                  | A human needs to create/unlock a wallet, set budgets, or inspect receipts     |
-| MCP server     | `@agenticfi/onchain-router-mcp`                  | Claude, Cursor, ChatGPT, or another MCP client should call the API as tools   |
-| Local proxy    | `@agenticfi/onchain-router-proxy`                | An OpenAI-compatible client needs one loopback base URL                       |
-| Buyer Runtime  | `@agenticfi/onchain-router-buyer-core`           | You are building another trusted local adapter                                |
-| Smart routing  | `@agenticfi/onchain-router-routing`              | You need deterministic, constraint-first model selection before payment       |
-| Python SDK     | `onchain-router` source package                  | Python should delegate payment execution to the local CLI                     |
-| Agent Skill    | [`skills/onchain-router`](skills/onchain-router) | A coding agent should follow the supported commands and retry rules           |
+| Surface        | Package or path                                  | Use it when                                                                 |
+| -------------- | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| TypeScript SDK | `@agenticfi/onchain-router`                      | Your Node.js application needs typed discovery and paid API calls           |
+| Buyer CLI      | `@agenticfi/onchain-router-cli`                  | A human needs to create/unlock a wallet, set budgets, or inspect receipts   |
+| MCP server     | `@agenticfi/onchain-router-mcp`                  | Claude, Cursor, ChatGPT, or another MCP client should call the API as tools |
+| Local proxy    | `@agenticfi/onchain-router-proxy`                | An OpenAI-compatible client needs one loopback base URL                     |
+| Buyer Runtime  | `@agenticfi/onchain-router-buyer-core`           | You are building another trusted local adapter                              |
+| Smart routing  | `@agenticfi/onchain-router-routing`              | You need deterministic, constraint-first model selection before payment     |
+| Python SDK     | `onchain-router` source package                  | Python should delegate payment execution to the local CLI                   |
+| Agent Skill    | [`skills/onchain-router`](skills/onchain-router) | A coding agent should follow the supported commands and retry rules         |
 
 The public HTTP API and documentation are at [llm.agenticfi.wtf](https://llm.agenticfi.wtf).
 
