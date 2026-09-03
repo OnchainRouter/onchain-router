@@ -17,7 +17,6 @@ import { buyerProfilePaths, writeBuyerSession } from './profile.js';
 
 const ORIGIN = 'https://router.example';
 const RECIPIENT = '0x1111111111111111111111111111111111111111';
-const FACILITATOR = '0x2222222222222222222222222222222222222222';
 const PASSPHRASE = 'correct horse battery staple';
 const directories: string[] = [];
 
@@ -43,7 +42,7 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
       network: 'eip155:8453',
       asset: BASE_MAINNET_USDC,
       recipients: [RECIPIENT],
-      schemes: ['upto'],
+      schemes: ['exact'],
       models: ['gemini-2.5-flash'],
       delegations: [{ agentId: 'sdk-test', maximumAtomic: 2_000n }],
       limits: {
@@ -65,6 +64,11 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
       allowWeakTestKdf: true,
     });
     await vault.create(PASSPHRASE);
+    const permit2Operations = {
+      allowance: vi.fn(),
+      nativeBalance: vi.fn(),
+      approve: vi.fn(),
+    };
     const broker = new SignerBroker({
       socketPath: paths.socketPath,
       vault,
@@ -73,11 +77,7 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
       agentId: 'sdk-test',
       idleTimeoutMs: 10_000,
       absoluteTimeoutMs: 60_000,
-      testPermit2Operations: {
-        allowance: vi.fn().mockResolvedValue(5_000n),
-        nativeBalance: vi.fn().mockResolvedValue(0n),
-        approve: vi.fn(),
-      },
+      testPermit2Operations: permit2Operations,
     });
     const session = await broker.start(PASSPHRASE);
     await writeBuyerSession(root, session);
@@ -119,7 +119,7 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
         return new Response(
           JSON.stringify({
             token: 'request-bound.quote',
-            maximumAmount: '600',
+            amount: '600',
             expiresAt: Date.now() + 60_000,
             catalogVersion: 'catalog-test',
           }),
@@ -142,13 +142,13 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
               },
               accepts: [
                 {
-                  scheme: 'upto',
+                  scheme: 'exact',
                   network: 'eip155:8453',
                   asset: BASE_MAINNET_USDC,
                   amount: '600',
                   payTo: RECIPIENT,
                   maxTimeoutSeconds: 60,
-                  extra: { facilitatorAddress: FACILITATOR },
+                  extra: { name: 'USD Coin', version: '2' },
                 },
               ],
             }),
@@ -166,7 +166,7 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
                 transaction: '0xsettlement',
                 network: 'eip155:8453',
                 payer: session.address,
-                amount: '123',
+                amount: '600',
               }),
               'x-receipt-id': receiptId,
               'x-receipt-token': 'receipt-token-never-exposed',
@@ -187,7 +187,7 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
             payer: session.address,
           },
           maximumAmount: '600',
-          actualAmount: '123',
+          actualAmount: '600',
         }),
         { status: 200, headers: { 'content-type': 'application/json' } },
       );
@@ -201,13 +201,13 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
       expect(result).toMatchObject({
         ok: true,
         outcome: 'Completed',
-        payment: { authorizedMaximumAtomic: '600', actualAtomic: '123' },
+        payment: { authorizedMaximumAtomic: '600', actualAtomic: '600' },
       });
       expect(safeJson(result)).not.toContain('receipt-token-never-exposed');
       expect(buyer.receipt('sdk-payment-1')).toMatchObject({ id: receiptId });
       expect(await buyer.status()).toMatchObject({
         agentId: 'sdk-test',
-        spend: { sessionAtomic: '123' },
+        spend: { sessionAtomic: '600' },
       });
       calls = 0;
       forwardedQuoteTokens.length = 0;
@@ -234,7 +234,7 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
         routeSetMaximumAtomic: '600',
         fallbackAuthorized: false,
       });
-      expect(routed.result).toMatchObject({ ok: true, payment: { actualAtomic: '123' } });
+      expect(routed.result).toMatchObject({ ok: true, payment: { actualAtomic: '600' } });
       expect(routed.routingReceipt).toMatchObject({
         version: 'onchain-router-routing-receipt-evidence/v1',
         associationStatus: 'verified',
@@ -248,10 +248,13 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
         payment: {
           network: 'eip155:8453',
           maximumAtomic: '600',
-          actualAtomic: '123',
+          actualAtomic: '600',
           transaction: '0xsettlement',
         },
       });
+      expect(permit2Operations.allowance).not.toHaveBeenCalled();
+      expect(permit2Operations.nativeBalance).not.toHaveBeenCalled();
+      expect(permit2Operations.approve).not.toHaveBeenCalled();
       expect(quoteBodies).toEqual([
         {
           kind: 'openai',

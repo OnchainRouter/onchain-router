@@ -60,8 +60,8 @@ export function createBuyerPolicy(input: BuyerPolicy): EffectiveBuyerPolicy {
   if (input.network !== 'eip155:8453')
     throw new UnsupportedNetwork('Buyer Runtime v1 supports Base mainnet only');
   if (!ADDRESS.test(input.asset)) throw new UnexpectedAsset('policy asset is not an EVM address');
-  if (input.schemes.length !== 1 || input.schemes[0] !== 'upto')
-    throw new PaymentPolicyRejected('Buyer Runtime v1 supports only the official x402 upto scheme');
+  if (input.schemes.length !== 1 || (input.schemes[0] !== 'exact' && input.schemes[0] !== 'upto'))
+    throw new PaymentPolicyRejected('Buyer Runtime supports one official x402 EVM scheme');
   if (input.recipients.length === 0 || input.recipients.some((value) => !ADDRESS.test(value)))
     throw new UnexpectedRecipient('policy requires at least one valid recipient');
   if (input.models.length === 0 || input.models.some((value) => !MODEL.test(value)))
@@ -119,7 +119,7 @@ export function createBuyerPolicy(input: BuyerPolicy): EffectiveBuyerPolicy {
     network: input.network,
     asset: normalizedAddress(input.asset, UnexpectedAsset),
     recipients,
-    schemes: Object.freeze(['upto'] as const),
+    schemes: Object.freeze([input.schemes[0]] as ['exact'] | ['upto']),
     models,
     delegations,
     limits: Object.freeze({ ...input.limits }),
@@ -153,6 +153,7 @@ export function isPolicyRestriction(
     envelope.canonicalOrigin !== next.canonicalOrigin ||
     envelope.network !== next.network ||
     envelope.asset.toLowerCase() !== next.asset.toLowerCase() ||
+    !isSubset(next.schemes, envelope.schemes) ||
     !isSubset(
       next.recipients.map((value) => value.toLowerCase()),
       envelope.recipients.map((value) => value.toLowerCase()),
@@ -202,13 +203,33 @@ export function validatePaymentRequirement(
     throw new PaymentPolicyRejected('challenge resource does not match the requested URL');
   if (!policy.models.includes(model))
     throw new PaymentPolicyRejected('model is outside the approved policy');
+  if (paymentRequired.accepts.length !== 1)
+    throw new PaymentPolicyRejected('challenge must advertise exactly one payment option');
 
   const networkCandidates = paymentRequired.accepts.filter(
     (candidate) => candidate.network === policy.network,
   );
   if (networkCandidates.length === 0) throw new UnsupportedNetwork();
-  const schemeCandidates = networkCandidates.filter((candidate) => candidate.scheme === 'upto');
-  if (schemeCandidates.length === 0) throw new PaymentPolicyRejected('upto scheme is required');
+  const approvedScheme = policy.schemes[0];
+  const schemeCandidates = networkCandidates.filter(
+    (candidate) => candidate.scheme === approvedScheme,
+  );
+  if (schemeCandidates.length === 0) {
+    const advertisedSchemes = [
+      ...new Set(networkCandidates.map((candidate) => candidate.scheme)),
+    ].sort();
+    if (
+      approvedScheme === 'upto' &&
+      advertisedSchemes.length === 1 &&
+      advertisedSchemes[0] === 'exact'
+    )
+      throw new PaymentPolicyRejected(
+        'profile authorizes legacy upto but this resource requires exact; run onchain-router policy set --scheme exact for this profile before unlocking and retrying with a fresh idempotency key',
+      );
+    throw new PaymentPolicyRejected(
+      `profile authorizes ${approvedScheme} but this resource requires ${advertisedSchemes.join(', ')}`,
+    );
+  }
   const assetCandidates = schemeCandidates.filter(
     (candidate) => candidate.asset.toLowerCase() === policy.asset.toLowerCase(),
   );
@@ -229,13 +250,25 @@ export function validatePaymentRequirement(
   if (amountAtomic > policy.limits.perCallAtomic) throw new AuthorizationAboveLocalCap();
   if (requirement.maxTimeoutSeconds > policy.maximumAuthorizationSeconds)
     throw new PaymentPolicyRejected('authorization lifetime exceeds local policy');
-  const facilitator = requirement.extra?.['facilitatorAddress'];
-  if (
-    typeof facilitator !== 'string' ||
-    !ADDRESS.test(facilitator) ||
-    /^0x0{40}$/i.test(facilitator)
-  )
-    throw new PaymentPolicyRejected('challenge facilitator is missing or invalid');
+  if (approvedScheme === 'upto') {
+    const facilitator = requirement.extra?.['facilitatorAddress'];
+    if (
+      typeof facilitator !== 'string' ||
+      !ADDRESS.test(facilitator) ||
+      /^0x0{40}$/i.test(facilitator)
+    )
+      throw new PaymentPolicyRejected('challenge facilitator is missing or invalid');
+  } else {
+    const extra = requirement.extra;
+    const extraKeys = extra && typeof extra === 'object' ? Object.keys(extra).sort() : [];
+    if (
+      !extra ||
+      extra['name'] !== 'USD Coin' ||
+      extra['version'] !== '2' ||
+      extraKeys.join(',') !== ['name', 'version'].sort().join(',')
+    )
+      throw new PaymentPolicyRejected('challenge has invalid Base USDC EIP-712 metadata');
+  }
 
   return {
     paymentRequired,

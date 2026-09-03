@@ -16,7 +16,7 @@ Setup, unlock, funding, policy changes, and receipt inspection remain direct CLI
 
 ## Release status
 
-Version `0.1.1` is a bounded public alpha published under the npm `alpha` dist-tag. It is not yet a
+Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not yet a
 stable release or a claim of qualification across every OpenAI-compatible client. Keep it bound to
 loopback and preserve the bearer, Host, browser, body, and idempotency controls.
 

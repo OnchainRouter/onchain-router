@@ -4,9 +4,9 @@ import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const binaries = [
-  ['onchain-router', 'apps/buyer-cli/dist/index.js', ['--version'], '0.1.1'],
-  ['onchain-router-mcp', 'apps/buyer-mcp/dist/index.js', ['--version'], '0.1.1'],
-  ['onchain-router-proxy', 'apps/buyer-proxy/dist/index.js', ['--version'], '0.1.1'],
+  ['onchain-router', 'apps/buyer-cli/dist/index.js', ['--version'], '0.1.2'],
+  ['onchain-router-mcp', 'apps/buyer-mcp/dist/index.js', ['--version'], '0.1.2'],
+  ['onchain-router-proxy', 'apps/buyer-proxy/dist/index.js', ['--version'], '0.1.2'],
 ];
 
 const directory = mkdtempSync(join(tmpdir(), 'onchain-router-bin-smoke-'));

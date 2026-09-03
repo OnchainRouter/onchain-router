@@ -70,7 +70,7 @@ interface StoredPolicy {
   network: `eip155:${number}`;
   asset: `0x${string}`;
   recipients: `0x${string}`[];
-  schemes: ['upto'];
+  schemes: ['exact'] | ['upto'];
   models: string[];
   limits: {
     perCallAtomic: string;
@@ -92,7 +92,7 @@ function serializePolicy(policy: EffectiveBuyerPolicy): string {
     network: policy.network,
     asset: policy.asset,
     recipients: [...policy.recipients],
-    schemes: ['upto'],
+    schemes: [...policy.schemes],
     models: [...policy.models],
     limits: {
       perCallAtomic: policy.limits.perCallAtomic.toString(),
@@ -125,7 +125,7 @@ function deserializePolicy(json: string): EffectiveBuyerPolicy {
       network: policy.network,
       asset: policy.asset,
       recipients: policy.recipients,
-      schemes: ['upto'],
+      schemes: policy.schemes,
       models: policy.models,
       limits: {
         perCallAtomic: BigInt(policy.limits.perCallAtomic),

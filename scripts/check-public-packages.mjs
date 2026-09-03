@@ -3,7 +3,7 @@ import { readFileSync, statSync } from 'node:fs';
 const failures = [];
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 const publicRepository = 'git+https://github.com/AgenticFI/onchain-router-clients.git';
-const version = '0.1.1';
+const version = '0.1.2';
 const candidates = [
   ['packages/buyer-core', '@agenticfi/onchain-router-buyer-core'],
   ['packages/routing', '@agenticfi/onchain-router-routing'],
@@ -128,4 +128,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Six AgenticFI npm packages are configured as version 0.1.1 public alpha candidates.');
+console.log('Six AgenticFI npm packages are configured as version 0.1.2 public alpha candidates.');

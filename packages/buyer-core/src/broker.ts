@@ -5,6 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { x402Client } from '@x402/core/client';
 import type { PaymentPayload } from '@x402/core/types';
 import { PERMIT2_ADDRESS, getPermit2AllowanceReadParams, toClientEvmSigner } from '@x402/evm';
+import { ExactEvmScheme } from '@x402/evm/exact/client';
 import { UptoEvmScheme } from '@x402/evm/upto/client';
 import { createPublicClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -193,39 +194,44 @@ export class SignerBroker {
       transport: http('https://mainnet.base.org'),
     });
     const signer = toClientEvmSigner(account);
-    this.schemeClient = new x402Client().register(policy.network, new UptoEvmScheme(signer));
+    this.schemeClient =
+      policy.schemes[0] === 'exact'
+        ? new x402Client().register(policy.network, new ExactEvmScheme(signer))
+        : new x402Client().register(policy.network, new UptoEvmScheme(signer));
     this.permit2Operations =
-      this.options.testPermit2Operations ??
-      Object.freeze({
-        allowance: async (owner: `0x${string}`, asset: `0x${string}`) =>
-          await readClient.readContract(
-            getPermit2AllowanceReadParams({
-              tokenAddress: asset,
-              ownerAddress: owner,
-            }),
-          ),
-        nativeBalance: async (owner: `0x${string}`) =>
-          await readClient.getBalance({ address: owner }),
-        approve: async (asset: `0x${string}`, amountAtomic: bigint) => {
-          const transactionHash = await walletClient.sendTransaction(
-            createBoundedPermit2ApprovalTx(asset, amountAtomic),
-          );
-          let receipt;
-          try {
-            receipt = await readClient.waitForTransactionReceipt({
-              hash: transactionHash,
-              confirmations: 1,
-              timeout: 120_000,
-            });
-          } catch {
-            throw new Permit2ApprovalOutcomeUnknown(
-              'Permit2 approval was submitted but its receipt is unavailable; run `onchain-router permit2 status` before any new approval',
-              transactionHash,
-            );
-          }
-          return { transactionHash, status: receipt.status };
-        },
-      });
+      policy.schemes[0] === 'upto'
+        ? (this.options.testPermit2Operations ??
+          Object.freeze({
+            allowance: async (owner: `0x${string}`, asset: `0x${string}`) =>
+              await readClient.readContract(
+                getPermit2AllowanceReadParams({
+                  tokenAddress: asset,
+                  ownerAddress: owner,
+                }),
+              ),
+            nativeBalance: async (owner: `0x${string}`) =>
+              await readClient.getBalance({ address: owner }),
+            approve: async (asset: `0x${string}`, amountAtomic: bigint) => {
+              const transactionHash = await walletClient.sendTransaction(
+                createBoundedPermit2ApprovalTx(asset, amountAtomic),
+              );
+              let receipt;
+              try {
+                receipt = await readClient.waitForTransactionReceipt({
+                  hash: transactionHash,
+                  confirmations: 1,
+                  timeout: 120_000,
+                });
+              } catch {
+                throw new Permit2ApprovalOutcomeUnknown(
+                  'Permit2 approval was submitted but its receipt is unavailable; run `onchain-router permit2 status` before any new approval',
+                  transactionHash,
+                );
+              }
+              return { transactionHash, status: receipt.status };
+            },
+          }))
+        : null;
     this.sessionPolicy = policy;
     this.address = account.address;
     const capability = randomBytes(32).toString('base64url');
@@ -245,9 +251,10 @@ export class SignerBroker {
       });
       this.server.on('error', () => void this.stop());
       await chmod(socketPath, 0o600);
-    } catch {
+    } catch (error) {
       await this.stop();
-      throw new WalletLocked('signer broker could not start');
+      const detail = error instanceof Error ? `: ${error.message}` : '';
+      throw new WalletLocked(`signer broker could not start${detail}`);
     }
     this.expiryTimer = setInterval(
       () => {
@@ -380,23 +387,25 @@ export class SignerBroker {
         );
       const client = this.schemeClient;
       if (!client) throw new WalletLocked();
-      const permit2 = this.permit2Operations;
-      const owner = this.address;
-      if (!permit2 || !owner) throw new WalletLocked();
-      let allowance: bigint;
-      try {
-        allowance = await permit2.allowance(owner, policy.asset);
-      } catch {
-        this.options.ledger.releaseDefiniteFailure(authorization.idempotencyKey, this.now());
-        throw new RuntimeUnavailable(
-          'Permit2 allowance could not be read; no payment signature was created',
-        );
-      }
-      if (allowance < validated.amountAtomic) {
-        this.options.ledger.releaseDefiniteFailure(authorization.idempotencyKey, this.now());
-        throw new Permit2ApprovalRequired(
-          'Permit2 approval is required; fund this wallet with a small amount of Base ETH and run `onchain-router permit2 approve` before retrying',
-        );
+      if (policy.schemes[0] === 'upto') {
+        const permit2 = this.permit2Operations;
+        const owner = this.address;
+        if (!permit2 || !owner) throw new WalletLocked();
+        let allowance: bigint;
+        try {
+          allowance = await permit2.allowance(owner, policy.asset);
+        } catch {
+          this.options.ledger.releaseDefiniteFailure(authorization.idempotencyKey, this.now());
+          throw new RuntimeUnavailable(
+            'Permit2 allowance could not be read; no payment signature was created',
+          );
+        }
+        if (allowance < validated.amountAtomic) {
+          this.options.ledger.releaseDefiniteFailure(authorization.idempotencyKey, this.now());
+          throw new Permit2ApprovalRequired(
+            'Permit2 approval is required for this legacy upto profile; migrate to exact or run `onchain-router permit2 approve`',
+          );
+        }
       }
       this.options.ledger.claimAuthorization(
         authorization.idempotencyKey,

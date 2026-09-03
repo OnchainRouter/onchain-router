@@ -1,6 +1,6 @@
 {
   "name": "@agenticfi/onchain-router-proxy",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "description": "Authenticated local OpenAI-compatible proxy for the Onchain Router Buyer Runtime",
   "license": "MIT",

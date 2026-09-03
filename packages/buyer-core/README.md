@@ -13,7 +13,7 @@ Use a higher-level package unless you are developing an Onchain Router adapter:
 
 ## Release status
 
-Version `0.1.1` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
+Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
 stable `latest` line. Installing source or a package does not authorize wallet setup, import,
 funding, unlock, policy widening, or a paid request.
 
@@ -23,7 +23,7 @@ funding, unlock, policy widening, or a paid request.
 - an expiring, owner-only signer broker;
 - immutable human-approved network, recipient, model, output, and spend policy;
 - cross-process integer-atomic USDC reservations in SQLite;
-- official x402 v2 `upto` payment verification and signing;
+- official x402 v2 `exact` EIP-3009 payment verification and signing;
 - same-idempotency-key recovery after a lost response;
 - verification and durable storage of server receipts before releasing a result.
 
@@ -91,18 +91,18 @@ variables, agent prompts, MCP tools, or proxy requests.
 ## Payment and recovery contract
 
 Every logical paid request needs one stable idempotency key. Buyer Runtime validates the live 402
-challenge against local policy, reserves the signed maximum in integer atomic USDC, obtains owner
-authorization from the short-lived broker, and delegates signing to the official x402 libraries.
-It releases a successful result only after settlement and the corresponding receipt are durable.
+challenge against local policy, reserves the signed exact amount in integer atomic USDC, obtains
+owner authorization from the short-lived broker, and delegates EIP-3009 signing to the official
+x402 libraries. It releases a successful result only after settlement and the corresponding
+receipt are durable.
 
-Before signing a payment, the broker reads the dedicated wallet's Base USDC allowance to canonical
-Permit2. An insufficient allowance fails definitely and produces no payment signature. A trusted
-human-operated surface can submit a standard ERC-20 approval fixed to official Base USDC and
-canonical Permit2, bounded to the reviewed daily policy. The buyer pays the required Base ETH gas.
+The public exact flow does not inspect or grant a Permit2 allowance and an ordinary request needs
+no Base ETH. Permit2 operations remain available only so a human can inspect or migrate an
+explicitly retained legacy `upto` profile.
 
 The success result includes `Completed` or `RecoveredSuccess`, the idempotency key, response body,
-verified receipt, authorized maximum, actual amount, Base network, recipient, and settlement
-transaction. A known failed inference is not settled.
+verified receipt, signed exact amount, matching settled amount, Base network, recipient, and
+settlement transaction. A known failed inference is not settled.
 
 `ProviderOutcomeUnknown` and `SettlementOutcomeUnknown` are not generic retryable errors. Preserve
 the original idempotency key and identical request, inspect the local receipt, and require human
@@ -131,6 +131,9 @@ completions, or receipt capabilities in an issue.
   not silently widen a limit.
 - Catalog or model rejection: refresh `onchain-router models` and choose an enabled model allowed by
   local policy.
+- A legacy `upto` profile against public `exact` discovery is definite-unpaid. A human should run
+  `onchain-router policy set --profile PROFILE_DIRECTORY --scheme exact`, enter the existing wallet
+  passphrase, unlock, and retry with a fresh idempotency key. This changes no wallet key or budget.
 - Ambiguous outcome: use `onchain-router receipt <IDEMPOTENCY_KEY>` and follow the exact retry
   directive.
 - Native SQLite build failure: use a supported Node version, then rerun `pnpm buyer:deps`.

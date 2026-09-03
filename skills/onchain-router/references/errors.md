@@ -4,6 +4,8 @@ All local adapters return the Buyer Runtime outcome plus a retry directive. Corr
 
 Stop on `AuthorizationAboveLocalCap` or `PaymentPolicyRejected`. Reduce the request only when it remains within the existing human-owned model, output, recipient, and monetary envelope; an agent may not widen policy. Hourly, daily, session, and delegation exhaustion require reset or operator review.
 
+`Permit2ApprovalRequired` indicates an explicitly retained legacy `upto` profile. It is definite-unpaid. Ask the human operator to authenticate and migrate with `onchain-router policy set --scheme exact`; an agent must never fund gas, approve a token, or change payment policy. `Permit2ApprovalOutcomeUnknown` from a prior legacy approval still requires human review before any retry.
+
 Retry `empty_provider_response` only after increasing `max_tokens`; the known unusable inference is not customer-settled. Treat `finish_reason: "length"` as a paid, valid, truncated response rather than an error.
 
 Never create a new paid request after `provider_outcome_unknown`, `settlement_unknown`, a post-authorization timeout, or a lost connection. Retry the identical request with the same idempotency identity to recover durable state, then wait for receipt/reconciliation or operator resolution.

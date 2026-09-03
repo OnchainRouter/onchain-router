@@ -10,6 +10,7 @@ import {
   BuyerRuntimeError,
   IdempotencyConflict,
   InsufficientFunds,
+  PaymentPolicyRejected,
   PaymentVerificationRejected,
   ProviderOutcomeUnknown,
   ReceiptVerificationFailed,
@@ -184,6 +185,8 @@ function mapKnownFailure(status: number, parsed: ParsedResponse): BuyerRuntimeEr
     return new IdempotencyConflict(code, parsed.traceId ?? undefined);
   }
   if (status === 402) return new PaymentVerificationRejected(code, parsed.traceId ?? undefined);
+  if (code === 'payer_provider_quarantined')
+    return new PaymentPolicyRejected(code, parsed.traceId ?? undefined);
   if (code === 'provider_outcome_unknown')
     return new ProviderOutcomeUnknown(code, parsed.traceId ?? undefined);
   if (code === 'settlement_or_receipt_unknown')
@@ -296,6 +299,7 @@ export class BuyerRuntime {
           network: validated.requirement.network,
           asset: validated.requirement.asset,
           recipient: validated.requirement.payTo,
+          scheme: validated.requirement.scheme === 'upto' ? 'upto' : 'exact',
           maximumAtomic: validated.amountAtomic.toString(),
         });
         if (confirmed !== true)

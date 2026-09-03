@@ -17,7 +17,14 @@ import { LocalSpendLedger } from '../src/ledger.js';
 import { createBoundedPermit2ApprovalTx } from '../src/permit2.js';
 import { createBuyerPolicy, validatePaymentRequirement } from '../src/policy.js';
 import { WalletVault } from '../src/vault.js';
-import { TEST_ASSET, TEST_ORIGIN, testPaymentRequired, testPolicy } from './helpers.js';
+import {
+  TEST_ASSET,
+  TEST_ORIGIN,
+  testExactPaymentRequired,
+  testExactPolicy,
+  testPaymentRequired,
+  testPolicy,
+} from './helpers.js';
 
 const directories: string[] = [];
 const PASSPHRASE = 'correct horse battery staple';
@@ -89,9 +96,9 @@ describe('short-lived signer broker', () => {
         status: 'success',
       }),
     },
+    policy = testPolicy(),
   ) {
     const root = await directory();
-    const policy = testPolicy();
     const ledger = new LocalSpendLedger(join(root, 'ledger', 'buyer.sqlite'), policy);
     const vault = new WalletVault({
       directory: join(root, 'wallet'),
@@ -126,10 +133,11 @@ describe('short-lived signer broker', () => {
     session: SignerBrokerSession,
     paymentRequired = testPaymentRequired(),
     idempotencyKey = 'broker-payment',
+    policy = testPolicy(),
   ) {
     const validated = validatePaymentRequirement(
       paymentRequired,
-      testPolicy(),
+      policy,
       `${TEST_ORIGIN}/v1/chat/completions`,
       'gemini-2.5-flash',
     );
@@ -179,6 +187,53 @@ describe('short-lived signer broker', () => {
       await expect(context.client.authorize(request)).rejects.toMatchObject({
         code: 'IdempotencyConflict',
       });
+    } finally {
+      await context.broker.stop();
+      context.ledger.close();
+    }
+  });
+
+  it('creates an official exact EIP-3009 payload without a Permit2 allowance or gas check', async () => {
+    const allowance = vi.fn<Permit2Operations['allowance']>();
+    const nativeBalance = vi.fn<Permit2Operations['nativeBalance']>();
+    const approve = vi.fn<Permit2Operations['approve']>();
+    const permit2Operations: Permit2Operations = {
+      allowance,
+      nativeBalance,
+      approve,
+    };
+    const policy = testExactPolicy();
+    const context = await setup(Date.now, permit2Operations, policy);
+    try {
+      const request = authorization(
+        context.session,
+        testExactPaymentRequired(),
+        'broker-exact-payment',
+        policy,
+      );
+      context.ledger.reserve({
+        idempotencyKey: request.idempotencyKey,
+        requestHash: request.requestHash,
+        requirementHash: request.requirementHash,
+        model: request.model,
+        agentId: request.agentId,
+        sessionId: request.sessionId,
+        maximumAtomic: request.maximumAtomic,
+        now: Date.now(),
+      });
+      const payload = await context.client.authorize(request);
+      expect(payload.x402Version).toBe(2);
+      expect(payload.accepted.scheme).toBe('exact');
+      expect(payload.payload['signature']).toMatch(/^0x[0-9a-f]+$/i);
+      expect(payload.payload['authorization']).toMatchObject({
+        to: request.paymentRequired.accepts[0]?.payTo,
+        value: request.maximumAtomic.toString(),
+      });
+      expect(payload.payload).not.toHaveProperty('permit2Authorization');
+      expect(allowance).not.toHaveBeenCalled();
+      expect(nativeBalance).not.toHaveBeenCalled();
+      expect(approve).not.toHaveBeenCalled();
+      expect(context.ledger.get(request.idempotencyKey)?.state).toBe('authorized');
     } finally {
       await context.broker.stop();
       context.ledger.close();

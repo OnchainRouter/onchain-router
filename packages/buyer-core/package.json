@@ -1,6 +1,6 @@
 {
   "name": "@agenticfi/onchain-router-buyer-core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "description": "Secure local wallet, budget, x402 payment, recovery, and receipt runtime for Onchain Router",
   "license": "MIT",

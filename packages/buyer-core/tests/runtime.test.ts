@@ -407,6 +407,28 @@ describe('official x402 buyer lifecycle', () => {
     }
   });
 
+  it('classifies a provider-execution quarantine as a non-retriable policy rejection', async () => {
+    let calls = 0;
+    const fetcher = vi.fn(async () => {
+      calls += 1;
+      if (calls === 1) return challengeResponse();
+      return json({ error: 'payer_provider_quarantined' }, { status: 429 });
+    }) as unknown as typeof fetch;
+    const context = await setup(fetcher);
+    try {
+      const result = await context.runtime.execute(request('payer-quarantined'));
+      expect(result).toMatchObject({
+        ok: false,
+        outcome: 'PaymentPolicyRejected',
+        retry: 'do_not_retry',
+        message: 'payer_provider_quarantined',
+      });
+      expect(context.ledger.get('payer-quarantined')?.state).toBe('released');
+    } finally {
+      context.ledger.close();
+    }
+  });
+
   it('reports a safe x402 rejection code from the updated PAYMENT-REQUIRED header', async () => {
     let calls = 0;
     const fetcher = vi.fn(async () => {

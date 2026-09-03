@@ -147,7 +147,7 @@ function discoveryFetch() {
             path: '/v1/chat/completions',
             model: 'gemini-2.5-flash',
             category: 'text_generation',
-            scheme: 'upto',
+            scheme: 'exact',
             network: 'eip155:8453',
             asset: ASSET,
             payTo: RECIPIENT,
@@ -209,7 +209,7 @@ describe('one-command buyer setup and administration', () => {
       ok: true,
       command: 'setup',
     });
-    expect(context.stdout.at(-1)).toContain('Base ETH');
+    expect(context.stdout.at(-1)).toContain('do not require Base ETH or a Permit2 approval');
   });
 
   it('accepts every non-secret setup choice in one command', async () => {
@@ -447,6 +447,53 @@ describe('one-command buyer setup and administration', () => {
     expect(widerOutput.join('')).not.toContain(PASSPHRASE);
   });
 
+  it('migrates a legacy upto profile to exact without changing its wallet or financial limits', async () => {
+    const root = await directory();
+    const setup = await setupProfile(root);
+    const paths = buyerProfilePaths(setup.profile);
+    const vaultStatusBefore = await new WalletVault({
+      directory: paths.walletDirectory,
+      scryptN: 1_024,
+      allowWeakTestKdf: true,
+    }).status();
+
+    for (const scheme of ['upto', 'exact']) {
+      const cli = createCli({
+        prompt: new Answers([], [PASSPHRASE], []),
+        stdout: () => undefined,
+        stderr: () => undefined,
+        testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+      });
+      expect(
+        await cli(['policy', 'set', '--profile', setup.profile, '--scheme', scheme, '--json']),
+      ).toBe(0);
+    }
+
+    const ledger = new LocalSpendLedger(paths.ledgerPath);
+    const migrated = ledger.currentPolicy();
+    ledger.close();
+    const vaultStatusAfter = await new WalletVault({
+      directory: paths.walletDirectory,
+      scryptN: 1_024,
+      allowWeakTestKdf: true,
+    }).status();
+
+    expect(migrated).toMatchObject({
+      schemes: ['exact'],
+      models: ['gemini-2.5-flash'],
+      limits: {
+        perCallAtomic: 250_000n,
+        sessionAtomic: 1_000_000n,
+        hourAtomic: 2_000_000n,
+        dayAtomic: 5_000_000n,
+      },
+      delegations: [{ agentId: 'cli', maximumAtomic: 5_000_000n }],
+      maximumOutputTokens: 8192,
+      requirePerCallConfirmation: true,
+    });
+    expect(vaultStatusAfter.address).toBe(vaultStatusBefore.address);
+  });
+
   it('writes a redacted diagnostic bundle and treats a locked broker as healthy', async () => {
     const root = await directory();
     const setup = await setupProfile(root);
@@ -467,6 +514,50 @@ describe('one-command buyer setup and administration', () => {
     expect(content).not.toContain('capability');
     expect(content).not.toContain(PASSPHRASE);
     expect(stdout.join('')).not.toContain(PASSPHRASE);
+  });
+
+  it('reports an actionable unhealthy result when a legacy profile conflicts with exact discovery', async () => {
+    const root = await directory();
+    const setup = await setupProfile(root);
+    const migrateToLegacy = createCli({
+      prompt: new Answers([], [PASSPHRASE], []),
+      stdout: () => undefined,
+      stderr: () => undefined,
+      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+    });
+    expect(
+      await migrateToLegacy([
+        'policy',
+        'set',
+        '--profile',
+        setup.profile,
+        '--scheme',
+        'upto',
+        '--json',
+      ]),
+    ).toBe(0);
+
+    const stdout: string[] = [];
+    const cli = createCli({
+      prompt: new Answers([], [], []),
+      fetch: discoveryFetch(),
+      stdout: (value) => stdout.push(value),
+      stderr: () => undefined,
+      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+    });
+    expect(await cli(['doctor', '--profile', setup.profile, '--json'])).toBe(0);
+    const envelope = JSON.parse(stdout.at(-1) ?? '') as {
+      result: {
+        healthy: boolean;
+        checks: Array<{ check: string; ok: boolean; detail: string }>;
+      };
+    };
+    expect(envelope.result.healthy).toBe(false);
+    expect(envelope.result.checks).toContainEqual({
+      check: 'payment_scheme',
+      ok: false,
+      detail: `profile uses upto; discovery requires exact; run onchain-router policy set --profile ${setup.profile} --scheme exact`,
+    });
   });
 
   it('reports a malformed signer session as unhealthy instead of safely locked', async () => {
@@ -509,6 +600,11 @@ describe('one-command buyer setup and administration', () => {
       allowWeakTestKdf: true,
     });
     const policy = ledger.currentPolicy();
+    const permit2Operations = {
+      allowance: vi.fn(),
+      nativeBalance: vi.fn(),
+      approve: vi.fn(),
+    };
     const broker = new SignerBroker({
       socketPath: paths.socketPath,
       vault: wallet,
@@ -517,11 +613,7 @@ describe('one-command buyer setup and administration', () => {
       agentId: 'cli',
       idleTimeoutMs: 10_000,
       absoluteTimeoutMs: 60_000,
-      testPermit2Operations: {
-        allowance: vi.fn().mockResolvedValue(2n ** 256n - 1n),
-        nativeBalance: vi.fn().mockResolvedValue(1n),
-        approve: vi.fn(),
-      },
+      testPermit2Operations: permit2Operations,
     });
     const session = await broker.start(PASSPHRASE);
     await writeBuyerSession(paths.directory, session);
@@ -543,13 +635,13 @@ describe('one-command buyer setup and administration', () => {
               },
               accepts: [
                 {
-                  scheme: 'upto',
+                  scheme: 'exact',
                   network: 'eip155:8453',
                   asset: ASSET,
                   amount: '600',
                   payTo: RECIPIENT,
                   maxTimeoutSeconds: 60,
-                  extra: { facilitatorAddress: '0x2222222222222222222222222222222222222222' },
+                  extra: { name: 'USD Coin', version: '2' },
                 },
               ],
             }),
@@ -567,7 +659,7 @@ describe('one-command buyer setup and administration', () => {
                 transaction: '0xsettlement',
                 network: 'eip155:8453',
                 payer: session.address,
-                amount: '123',
+                amount: '600',
               }),
               'x-receipt-id': receiptId,
               'x-receipt-token': 'must-stay-in-runtime',
@@ -588,7 +680,7 @@ describe('one-command buyer setup and administration', () => {
             payer: session.address,
           },
           maximumAmount: '600',
-          actualAmount: '123',
+          actualAmount: '600',
         }),
         { status: 200, headers: { 'content-type': 'application/json' } },
       );
@@ -618,6 +710,9 @@ describe('one-command buyer setup and administration', () => {
       expect(stdout.join('')).toContain(receiptId);
       expect(stdout.join('')).not.toContain('must-stay-in-runtime');
       expect(ledger.receipt('cli-payment-1')).toMatchObject({ id: receiptId });
+      expect(permit2Operations.allowance).not.toHaveBeenCalled();
+      expect(permit2Operations.nativeBalance).not.toHaveBeenCalled();
+      expect(permit2Operations.approve).not.toHaveBeenCalled();
     } finally {
       await broker.stop();
       ledger.close();

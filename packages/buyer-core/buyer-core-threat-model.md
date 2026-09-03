@@ -48,7 +48,7 @@ requires a new threat review; none is silently covered by this model.
 - Adapter-facing runtime: canonical POST lifecycle, safe headers, outcome classification, receipt
   recovery, and result release (`src/runtime.ts`, `src/index.ts`).
 - Signer broker: owner-only Unix IPC, capability/session expiry, independent policy/reservation
-  validation, and official `upto` payload creation (`src/broker.ts`).
+  validation, and official x402 `exact` EIP-3009 payload creation (`src/broker.ts`).
 - Durable local state: encrypted ethers keystore plus strict SQLite policy/operation ledger
   (`src/filesystem.ts`, `src/vault.ts`, `src/ledger.ts`).
 - External boundaries: configured HTTPS x402 resource and protected receipt route through injected
