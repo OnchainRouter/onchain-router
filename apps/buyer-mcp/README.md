@@ -10,7 +10,7 @@ verification itself.
 
 ## Release status
 
-Version `0.1.1` is a bounded public alpha published under the npm `alpha` dist-tag. It is not yet a
+Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not yet a
 stable release or a claim of qualification across every MCP host. The server never owns wallet
 setup, import, funding, unlock, or policy-widening authority.
 
@@ -44,14 +44,14 @@ signed maximum, wallet secret, passphrase, broker capability, or receipt capabil
 
 ## Installation
 
-Install the bounded alpha, then pin the exact `0.1.1` version in the MCP host:
+Install the bounded alpha, then pin the exact `0.1.2` version in the MCP host:
 
 ```json
 {
   "mcpServers": {
     "onchain-router": {
       "command": "npx",
-      "args": ["--yes", "@agenticfi/onchain-router-mcp@0.1.1"]
+      "args": ["--yes", "@agenticfi/onchain-router-mcp@0.1.2"]
     }
   }
 }

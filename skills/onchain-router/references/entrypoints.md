@@ -2,7 +2,7 @@
 
 <!-- Generated from scripts/fixtures/agent-entrypoints.v1.json by scripts/generate-agent-entry-docs.mjs. -->
 
-> Public alpha: npm adapters use version `0.1.1` through the `alpha` dist-tag. Review `/docs/installation`, `/products.json`, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
+> Public alpha: npm adapters use version `0.1.2` through the `alpha` dist-tag. Review `/docs/installation`, `/products.json`, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
 
 ## Choose one primary path
 
@@ -25,6 +25,7 @@ All five adapters expose all five paid JSON endpoints. Media uses live model/opt
 - Paid endpoints: `/v1/chat/completions`, `/v1/messages`, `/v1/images/generations`, `/v1/audio/speech`, `/v1/audio/transcriptions`.
 - Example text model at generation time: `gemini-3.6-flash`. Confirm it against live discovery before a call.
 - Idempotency: create one stable key before the unpaid request and retain it through signing, recovery, and receipt lookup.
+- Inspection: empty, incomplete, or malformed unsigned JSON returns a discovery-only 402. Do not sign an inspection challenge; submit a valid body to obtain the request-specific exact price first.
 - Success: return `ok`, `outcome`, `idempotencyKey`, `body`, `receipt`, `payment`.
 - Failure: return `ok`, `outcome`, `retry`, `idempotencyKey`, `message`, `reference` without secret-bearing diagnostics.
 
@@ -39,6 +40,7 @@ The following actions are human-only and must run in a direct terminal:
 - wallet create or import
 - wallet unlock
 - funding
+- legacy `upto` to `exact` policy migration
 - policy widening
 - confirmation-policy changes
 - backup or restore
@@ -82,4 +84,4 @@ Publication commands are deliberately absent. Source checkout commands are evide
 
 ## Receipt and output
 
-Return the requested content, selected model, normalized usage, authorized maximum, actual atomic USDC amount, Base network, transaction, and verified receipt. Hosted media URLs are bearer capabilities: disclose their expiry but avoid logs or public messages containing the complete URL. A receipt proves Onchain Router's settlement and attested usage; it is not an upstream-provider attestation.
+Return the requested content, selected model, normalized usage, signed exact atomic USDC amount, Base network, transaction, and verified receipt. Hosted media URLs are bearer capabilities: disclose their expiry but avoid logs or public messages containing the complete URL. A receipt proves Onchain Router's settlement and attested usage; it is not an upstream-provider attestation.

@@ -12,6 +12,8 @@ import {
   TEST_ASSET,
   TEST_ORIGIN,
   TEST_RECIPIENT,
+  testExactPaymentRequired,
+  testExactPolicy,
   testPaymentRequired,
   testPolicy,
 } from './helpers.js';
@@ -38,7 +40,7 @@ describe('buyer policy', () => {
     expect(() =>
       createBuyerPolicy({ ...testPolicy(), canonicalOrigin: 'http://buyer.example' }),
     ).toThrow(PaymentPolicyRejected);
-    expect(() => createBuyerPolicy({ ...testPolicy(), schemes: ['exact'] as never })).toThrow(
+    expect(() => createBuyerPolicy({ ...testPolicy(), schemes: ['custom'] as never })).toThrow(
       PaymentPolicyRejected,
     );
     expect(() =>
@@ -76,6 +78,47 @@ describe('buyer policy', () => {
     );
     expect(validated.amountAtomic).toBe(600n);
     expect(validated.requirement.payTo).toBe(TEST_RECIPIENT);
+  });
+
+  it('accepts the official exact EVM payment scheme without a Permit2 policy', () => {
+    const validated = validatePaymentRequirement(
+      testExactPaymentRequired(),
+      testExactPolicy(),
+      `${TEST_ORIGIN}/v1/chat/completions`,
+      'gemini-2.5-flash',
+    );
+    expect(validated.amountAtomic).toBe(600n);
+    expect(validated.requirement.scheme).toBe('exact');
+  });
+
+  it('gives an explicit migration command when a legacy upto profile meets exact discovery', () => {
+    expect(() =>
+      validatePaymentRequirement(
+        testExactPaymentRequired(),
+        testPolicy(),
+        `${TEST_ORIGIN}/v1/chat/completions`,
+        'gemini-2.5-flash',
+      ),
+    ).toThrow(
+      'profile authorizes legacy upto but this resource requires exact; run onchain-router policy set --scheme exact for this profile before unlocking and retrying with a fresh idempotency key',
+    );
+  });
+
+  it.each([
+    ['facilitator address', { name: 'USD Coin', version: '2', facilitatorAddress: TEST_RECIPIENT }],
+    ['Permit2 marker', { name: 'USD Coin', version: '2', assetTransferMethod: 'permit2' }],
+    ['unknown metadata', { name: 'USD Coin', version: '2', unexpected: true }],
+  ])('rejects nonstandard exact EIP-712 %s before signing', (_label, extra) => {
+    const challenge = testExactPaymentRequired();
+    challenge.accepts[0] = { ...challenge.accepts[0]!, extra } as PaymentRequirements;
+    expect(() =>
+      validatePaymentRequirement(
+        challenge,
+        testExactPolicy(),
+        `${TEST_ORIGIN}/v1/chat/completions`,
+        'gemini-2.5-flash',
+      ),
+    ).toThrow(PaymentPolicyRejected);
   });
 
   it.each([

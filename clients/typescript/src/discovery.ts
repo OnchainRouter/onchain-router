@@ -52,6 +52,7 @@ export interface BuyerPaymentContract {
   readonly asset: typeof BASE_MAINNET_USDC;
   readonly recipients: readonly `0x${string}`[];
   readonly models: readonly string[];
+  readonly scheme: 'exact';
 }
 
 export interface BuyerRequestQuote {
@@ -179,7 +180,7 @@ export class OnchainRouterDiscovery {
     return candidate as PricingCatalog;
   }
 
-  /** Obtain a free, request-bound maximum. The quote never authorizes or executes payment. */
+  /** Obtain a free, request-bound fixed amount. The quote never authorizes or executes payment. */
   public async quote(
     kind: 'openai' | 'anthropic',
     request: Readonly<Record<string, unknown>>,
@@ -192,12 +193,13 @@ export class OnchainRouterDiscovery {
     if (typeof value !== 'object' || value === null)
       throw new RuntimeUnavailable('quote response is malformed');
     const candidate = value as Record<string, unknown>;
+    const amount = candidate['amount'] ?? candidate['maximumAmount'];
     if (
       typeof candidate['token'] !== 'string' ||
       candidate['token'].length > MAX_QUOTE_TOKEN_LENGTH ||
       !QUOTE_TOKEN.test(candidate['token']) ||
-      typeof candidate['maximumAmount'] !== 'string' ||
-      !/^[1-9]\d*$/.test(candidate['maximumAmount']) ||
+      typeof amount !== 'string' ||
+      !/^[1-9]\d*$/.test(amount) ||
       typeof candidate['catalogVersion'] !== 'string' ||
       !CATALOG_VERSION.test(candidate['catalogVersion']) ||
       typeof candidate['expiresAt'] !== 'number' ||
@@ -206,7 +208,7 @@ export class OnchainRouterDiscovery {
       throw new RuntimeUnavailable('quote response is malformed');
     return {
       token: candidate['token'],
-      maximumAtomic: BigInt(candidate['maximumAmount']),
+      maximumAtomic: BigInt(amount),
       catalogVersion: candidate['catalogVersion'],
       expiresAt: candidate['expiresAt'],
     };
@@ -246,7 +248,7 @@ export class OnchainRouterDiscovery {
       if (typeof resource !== 'object' || resource === null)
         throw new RuntimeUnavailable('x402 resource is malformed');
       const item = resource as Record<string, unknown>;
-      if (item['scheme'] !== 'upto') continue;
+      if (item['scheme'] !== 'exact') continue;
       if (item['network'] !== BASE_MAINNET_NETWORK) throw new UnsupportedNetwork();
       if (
         typeof item['asset'] !== 'string' ||
@@ -270,6 +272,7 @@ export class OnchainRouterDiscovery {
       asset: BASE_MAINNET_USDC,
       recipients: [...recipients].sort() as `0x${string}`[],
       models: enabled,
+      scheme: 'exact',
     };
   }
 

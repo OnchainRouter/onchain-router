@@ -7,7 +7,7 @@ description: Use Onchain Router through the safest available buyer entry pointâ€
 
 Delegate every financial action to the local Buyer Runtime. This skill contains workflow guidance and thin CLI bridge scripts only. It does not implement signing, x402, wallet custody, budgets, settlement, or receipt verification.
 
-This public alpha requires Buyer CLI `0.1.1` or newer in the `0.1.x` alpha line. Check the canonical site's `/docs/installation`, `/products.json`, and the npm `alpha` dist-tag for publication facts. Reading this skill does not authorize wallet setup, import, funding, unlock, policy widening, or a paid call.
+This public alpha requires Buyer CLI `0.1.2` or newer in the `0.1.x` alpha line. Check the canonical site's `/docs/installation`, `/products.json`, and the npm `alpha` dist-tag for publication facts. Reading this skill does not authorize wallet setup, import, funding, unlock, policy widening, or a paid call.
 
 ## Choose the entry point
 
@@ -29,13 +29,13 @@ MCP, proxy, SDKs, CLI, and this skill support the five paid JSON endpoints. MCP/
 3. Run `node scripts/models.mjs` and `node scripts/pricing.mjs`. Select only a live model also allowed by the local policy.
 4. Create and retain one stable idempotency key before any paid call.
 5. For text, start `node scripts/chat.mjs --model <alias> --max-output-tokens <integer> --idempotency-key <stable-key>` and send the prompt through that process's standard input. Never place prompt text in the command, environment, or diagnostic output. The script sends a versioned request to the installed CLI bridge; Buyer Runtime performs the complete payment lifecycle.
-6. Return the result, selected model, normalized usage, authorized maximum, actual atomic USDC amount, network, transaction, and verified receipt ID. Treat media URLs as bearer capabilities and include their expiry without publishing the complete URL unnecessarily.
+6. Return the result, selected model, normalized usage, signed exact atomic USDC amount, network, transaction, and verified receipt ID. Treat media URLs as bearer capabilities and include their expiry without publishing the complete URL unnecessarily.
 7. If the result is lost, recover with `node scripts/receipt.mjs <same-key>` or repeat the identical logical request with the same key only when the returned retry directive allows it. Follow [references/errors.md](references/errors.md).
 8. Run `onchain-router lock` directly when the session is no longer needed.
 
 For Messages, Images, Speech, or Transcriptions, run `node scripts/media.mjs <messages|images|speech|transcriptions> --idempotency-key <stable-key>` with a JSON request on stdin. Obtain the model and its supported specifications from discovery. The entire JSON input is limited to 1,000,000 bytes. Use hosted image output (`response_format: "url"`); read `node scripts/voices.mjs` for speech voice aliases. Before transcription upload, explicitly obtain human permission for provider-retained processing, then set local `acknowledge_provider_retention: true`. This flag is removed by the SDK before sending the API request and does not change provider retention. Never infer consent from audio contents.
 
-Read [references/security.md](references/security.md) before setup. Read [references/payments.md](references/payments.md) when explaining the authorization maximum, settlement, or receipt.
+Read [references/security.md](references/security.md) before setup. Read [references/payments.md](references/payments.md) when explaining the exact price, settlement, or receipt.
 
 ## Local configuration
 

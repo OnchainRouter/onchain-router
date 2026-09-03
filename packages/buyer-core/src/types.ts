@@ -21,7 +21,8 @@ export interface BuyerPolicy {
   readonly network: `eip155:${number}`;
   readonly asset: `0x${string}`;
   readonly recipients: readonly `0x${string}`[];
-  readonly schemes: readonly ['upto'];
+  /** One explicitly approved x402 scheme. New profiles default to exact. */
+  readonly schemes: readonly ['exact'] | readonly ['upto'];
   readonly models: readonly string[];
   readonly limits: LocalSpendLimits;
   readonly delegations?: readonly AgentDelegation[];
@@ -58,6 +59,7 @@ export interface PaymentConfirmation {
   readonly network: string;
   readonly asset: string;
   readonly recipient: string;
+  readonly scheme: 'exact' | 'upto';
   readonly maximumAtomic: string;
 }
 

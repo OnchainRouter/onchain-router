@@ -16,7 +16,7 @@ It also exposes free models, pricing, voices, balance, payment-contract, and quo
 
 ## Release status
 
-Version `0.1.1` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
+Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
 stable `latest` line. Installation does not authorize wallet setup, funding, unlock, policy
 widening, or a paid request.
 
@@ -57,8 +57,6 @@ onchain-router setup
 onchain-router funding
 onchain-router policy show
 onchain-router unlock
-onchain-router permit2 status
-onchain-router permit2 approve
 ```
 
 Setup creates or imports an encrypted dedicated wallet and asks the human to approve models and
@@ -111,11 +109,10 @@ try {
 `close()` releases local resources but does not end the signer session. Use `await buyer.lock()` or
 the human CLI's `onchain-router lock` when the session should end.
 
-Before the first paid request, read `await buyer.permit2Status()`. If approval is required, use the
-human-owned CLI or another trusted interactive operator surface to call
-`await buyer.approvePermit2()`. The approval is fixed to official Base USDC and canonical Permit2,
-bounded by the reviewed daily policy, and paid for with Base ETH by the buyer. Do not expose the
-approval method directly to an autonomous agent.
+The public exact flow requires only Base USDC. It does not require a Permit2 approval or Base ETH.
+The SDK retains `permit2Status()` and `approvePermit2()` only for explicitly retained legacy
+`upto` profiles; migrate those profiles with the human-owned CLI rather than exposing an approval
+method to an autonomous agent.
 
 ## Discovery
 
@@ -127,8 +124,8 @@ const balance = await buyer.discovery.balance('0xYourBaseAddress');
 ```
 
 Discovery is free. Treat it as authoritative and refresh it instead of assuming a model, voice,
-size, price, or provider stays enabled. `discovery.quote()` returns a short-lived maximum bound to
-one exact request; it is not the final settled amount.
+size, price, or provider stays enabled. `discovery.quote()` returns the short-lived fixed amount
+bound to one exact request.
 
 ## Media examples
 

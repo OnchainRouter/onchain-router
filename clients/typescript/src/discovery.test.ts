@@ -35,7 +35,7 @@ function fetcher(asset: string = BASE_MAINNET_USDC) {
           {
             path: '/v1/chat/completions',
             model: 'gemini-2.5-flash',
-            scheme: 'upto',
+            scheme: 'exact',
             network: 'eip155:8453',
             asset,
             payTo: RECIPIENT,
@@ -59,7 +59,7 @@ function fetcher(asset: string = BASE_MAINNET_USDC) {
       });
       return response({
         token: 'bound-quote.token',
-        maximumAmount: '600',
+        amount: '600',
         expiresAt: 1_900_000_000_000,
         catalogVersion: 'catalog-v1',
       });
@@ -86,6 +86,7 @@ describe('bounded buyer discovery', () => {
       asset: BASE_MAINNET_USDC,
       recipients: [RECIPIENT],
       models: ['gemini-2.5-flash'],
+      scheme: 'exact',
     });
     await expect(discovery.pricing()).resolves.toMatchObject({ service_fee_basis_points: 0 });
     await expect(discovery.balance(RECIPIENT)).resolves.toMatchObject({

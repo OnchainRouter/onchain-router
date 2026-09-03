@@ -55,3 +55,20 @@ export function testPaymentRequired(
     ...overrides,
   };
 }
+
+export function testExactPolicy(overrides: Record<string, unknown> = {}) {
+  return testPolicy({ schemes: ['exact'], ...overrides });
+}
+
+export function testExactPaymentRequired(amount = '600'): PaymentRequired {
+  const paymentRequired = testPaymentRequired(amount);
+  paymentRequired.accepts[0] = {
+    ...paymentRequired.accepts[0]!,
+    scheme: 'exact',
+    extra: {
+      name: 'USD Coin',
+      version: '2',
+    },
+  };
+  return paymentRequired;
+}

@@ -43,7 +43,7 @@ import { safeError, safeJson } from './format.js';
 import { TerminalPrompt, type PromptIO } from './prompt.js';
 import { readAudioFile } from './media-file.js';
 
-const VERSION = '0.1.1';
+const VERSION = '0.1.2';
 const DEFAULT_ORIGIN = 'https://llm.agenticfi.wtf';
 const DEFAULT_AGENT_ID = 'cli';
 const MAX_BRIDGE_BYTES = MAX_MEDIA_JSON_BYTES + 65_536;
@@ -354,7 +354,7 @@ async function setup(context: CliContext, args: ParsedArguments): Promise<unknow
     network: contract.network,
     asset: contract.asset,
     recipients: contract.recipients,
-    schemes: ['upto'],
+    schemes: [contract.scheme],
     models: selectedModels,
     delegations: [{ agentId: selectedAgent, maximumAtomic: dayAtomic }],
     limits: { perCallAtomic, sessionAtomic, hourAtomic, dayAtomic },
@@ -391,7 +391,7 @@ async function setup(context: CliContext, args: ParsedArguments): Promise<unknow
       agentId: selectedAgent,
       models: selectedModels,
       policy: policyJson(policy),
-      next: `Fund ${status.address} with Base mainnet USDC and a small amount of Base ETH for the initial Permit2 approval. Then unlock and run onchain-router permit2 approve.`,
+      next: `Fund ${status.address} with Base mainnet USDC, then unlock and make a request. Exact x402 payments do not require Base ETH or a Permit2 approval.`,
     };
   } catch (error) {
     await rm(staging, { recursive: true, force: true });
@@ -538,13 +538,23 @@ async function funding(context: CliContext, args: ParsedArguments): Promise<unkn
   const paths = profile(args);
   const walletStatus = await vault(paths, context).status();
   if (!walletStatus.address) throw new PaymentPolicyRejected('buyer wallet is not initialized');
-  return {
-    address: walletStatus.address,
-    network: BASE_MAINNET_NETWORK,
-    asset: BASE_MAINNET_USDC,
-    gasAsset: 'Base ETH',
-    instruction: `Send Base mainnet USDC plus a small amount of Base ETH to ${walletStatus.address}. The buyer pays Base ETH gas for the canonical Permit2 approval. Do not send funds on another network.`,
-  };
+  const ledger = new LocalSpendLedger(paths.ledgerPath);
+  try {
+    const scheme = ledger.currentPolicy().schemes[0];
+    return {
+      address: walletStatus.address,
+      network: BASE_MAINNET_NETWORK,
+      asset: BASE_MAINNET_USDC,
+      scheme,
+      ...(scheme === 'upto' ? { gasAsset: 'Base ETH' } : {}),
+      instruction:
+        scheme === 'exact'
+          ? `Send Base mainnet USDC to ${walletStatus.address}. Exact x402 payments are signed offchain and do not require Base ETH or a Permit2 approval. Do not send funds on another network.`
+          : `This legacy upto profile also needs a small amount of Base ETH for its Permit2 approval. Do not send funds on another network.`,
+    };
+  } finally {
+    ledger.close();
+  }
 }
 
 async function permit2(context: CliContext, args: ParsedArguments): Promise<unknown> {
@@ -593,16 +603,21 @@ async function setPolicy(context: CliContext, args: ParsedArguments): Promise<un
     'day-usdc',
     'max-output-tokens',
     'confirm-each',
+    'scheme',
   ]);
   const paths = profile(args);
   const ledger = new LocalSpendLedger(paths.ledgerPath);
   try {
     const current = ledger.currentPolicy();
+    const requestedScheme = flag(args, 'scheme') ?? current.schemes[0];
+    if (requestedScheme !== 'exact' && requestedScheme !== 'upto')
+      throw new PaymentPolicyRejected('scheme must be exact or upto');
     const dayAtomic = flag(args, 'day-usdc')
       ? parseUsdc(requiredFlag(args, 'day-usdc'), 'day cap')
       : current.limits.dayAtomic;
     const next = createBuyerPolicy({
       ...current,
+      schemes: [requestedScheme],
       models: flag(args, 'models') ? modelList(requiredFlag(args, 'models')) : current.models,
       limits: {
         perCallAtomic: flag(args, 'per-call-usdc')
@@ -654,7 +669,9 @@ async function setPolicy(context: CliContext, args: ParsedArguments): Promise<un
 
 async function confirmPayment(context: CliContext, value: PaymentConfirmation): Promise<boolean> {
   return await context.prompt.confirm(
-    `Authorize up to ${formatUsdc(BigInt(value.maximumAtomic))} USDC for ${value.model} to ${value.recipient}`,
+    value.scheme === 'exact'
+      ? `Pay ${formatUsdc(BigInt(value.maximumAtomic))} USDC for ${value.model} to ${value.recipient}`
+      : `Authorize up to ${formatUsdc(BigInt(value.maximumAtomic))} USDC for ${value.model} to ${value.recipient}`,
     false,
   );
 }
@@ -831,7 +848,7 @@ async function doctor(context: CliContext, args: ParsedArguments): Promise<unkno
     });
     try {
       const discovered = await discovery.paymentContract();
-      const consistent =
+      const contractConsistent =
         discovered.network === policy.network &&
         discovered.asset.toLowerCase() === policy.asset.toLowerCase() &&
         policy.recipients.every((recipient) =>
@@ -840,8 +857,18 @@ async function doctor(context: CliContext, args: ParsedArguments): Promise<unkno
         policy.models.every((model) => discovered.models.includes(model));
       checks.push({
         check: 'live_discovery',
-        ok: consistent,
-        detail: consistent ? 'matches local policy envelope' : 'differs from local policy envelope',
+        ok: contractConsistent,
+        detail: contractConsistent
+          ? 'network, asset, recipient, and models match local policy'
+          : 'network, asset, recipient, or models differ from local policy',
+      });
+      const schemeConsistent = discovered.scheme === policy.schemes[0];
+      checks.push({
+        check: 'payment_scheme',
+        ok: schemeConsistent,
+        detail: schemeConsistent
+          ? `profile and discovery use ${discovered.scheme}`
+          : `profile uses ${policy.schemes[0]}; discovery requires ${discovered.scheme}; run onchain-router policy set --profile ${paths.directory} --scheme ${discovered.scheme}`,
       });
     } catch {
       checks.push({ check: 'live_discovery', ok: false, detail: 'unavailable or invalid' });
@@ -987,9 +1014,9 @@ Usage:
                        [--confirm-each true|false] [--wallet-mode create|import] [--yes]
   onchain-router unlock [--agent ID] [--idle-seconds N] [--session-seconds N]
   onchain-router lock | status | balance | funding | models | pricing | voices
-  onchain-router permit2 status|approve
+  onchain-router permit2 status|approve (legacy upto profiles only)
   onchain-router policy show
-  onchain-router policy set [--models A,B] [--per-call-usdc N] [--session-usdc N]
+  onchain-router policy set [--scheme exact|upto] [--models A,B] [--per-call-usdc N] [--session-usdc N]
                               [--hour-usdc N] [--day-usdc N]
                               [--max-output-tokens N] [--confirm-each true|false]
   onchain-router chat "prompt" --model MODEL [--max-output-tokens N]

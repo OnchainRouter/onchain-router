@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: Type publish-0.1.1-alpha
+        description: Type publish-0.1.2-alpha
         required: true
         type: string
       resume_existing:
-        description: Resume after a partial publish by verifying and skipping existing 0.1.1 packages
+        description: Resume after a partial publish by verifying and skipping existing 0.1.2 packages
         required: false
         default: false
         type: boolean
@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'publish-0.1.1-alpha'
+    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'publish-0.1.2-alpha'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

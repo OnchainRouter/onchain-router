@@ -9,7 +9,7 @@ a request, or authorize fallback. The human-owned Buyer Runtime policy remains f
 
 ## Release status
 
-Version `0.1.1` is a bounded public alpha published under the npm `alpha` dist-tag. Routing remains
+Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. Routing remains
 experimental and advisory: it cannot sign, spend, retry a paid route, or widen Buyer Runtime policy.
 Do not describe it as production-ready automatic routing.
 
