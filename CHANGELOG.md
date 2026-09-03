@@ -6,10 +6,10 @@ All notable changes to the public AgenticFI client packages are documented here.
 
 ### Changed
 
-- Align all buyer surfaces with the production x402 v2 `exact` EIP-3009 contract. Ordinary public
-  calls now require Base USDC only and never inspect or grant a Permit2 allowance.
-- Keep legacy `upto` profiles readable, but require an explicit wallet-authenticated
-  `policy set --scheme exact` migration that preserves the wallet and all monetary limits.
+- Reduce all buyer surfaces to the production x402 v2 `exact` EIP-3009 contract.
+- Remove the legacy approval commands, SDK methods, broker actions, chain RPC reads, and approval
+  transaction builder. Older `upto` profiles remain readable only for an explicit,
+  wallet-authenticated `policy set --scheme exact` migration that preserves the wallet and limits.
 
 ### Fixed
 

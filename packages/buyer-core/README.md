@@ -13,9 +13,9 @@ Use a higher-level package unless you are developing an Onchain Router adapter:
 
 ## Release status
 
-Version `0.1.2` is a bounded public alpha published under the npm `alpha` dist-tag. It is not the
-stable `latest` line. Installing source or a package does not authorize wallet setup, import,
-funding, unlock, policy widening, or a paid request.
+This source tree is the `0.1.2` bounded-alpha candidate. Check the npm `alpha` dist-tag before
+assuming that exact version is published. Installing source or a package does not authorize wallet
+setup, import, funding, unlock, policy widening, or a paid request.
 
 ## What it owns
 
@@ -46,7 +46,7 @@ hard-coded.
 Install the bounded alpha explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router-buyer-core@alpha
+npm install @agenticfi/onchain-router-buyer-core@0.1.2
 ```
 
 To build the exact candidate from this repository now:
@@ -96,9 +96,9 @@ owner authorization from the short-lived broker, and delegates EIP-3009 signing 
 x402 libraries. It releases a successful result only after settlement and the corresponding
 receipt are durable.
 
-The public exact flow does not inspect or grant a Permit2 allowance and an ordinary request needs
-no Base ETH. Permit2 operations remain available only so a human can inspect or migrate an
-explicitly retained legacy `upto` profile.
+Only the public x402 v2 `exact` EIP-3009 path can sign or spend. Older `upto` profiles remain
+readable solely for an explicit, wallet-authenticated migration through the CLI; they cannot unlock
+the signer broker or authorize a request.
 
 The success result includes `Completed` or `RecoveredSuccess`, the idempotency key, response body,
 verified receipt, signed exact amount, matching settled amount, Base network, recipient, and

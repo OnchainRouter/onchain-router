@@ -1,10 +1,4 @@
-export {
-  SignerBroker,
-  type Permit2Operations,
-  type SignerBrokerOptions,
-  type SignerBrokerSession,
-} from './broker.js';
-export { createBoundedPermit2ApprovalTx } from './permit2.js';
+export { SignerBroker, type SignerBrokerOptions, type SignerBrokerSession } from './broker.js';
 export { LocalSpendLedger } from './ledger.js';
 export { WalletVault, type WalletStatus, type WalletVaultOptions } from './vault.js';
 export { createBuyerPolicy, isPolicyRestriction } from './policy.js';

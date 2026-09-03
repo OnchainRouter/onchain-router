@@ -441,7 +441,7 @@ describe('official x402 buyer lifecycle', () => {
           headers: {
             'payment-required': encodePaymentRequiredHeader({
               ...testPaymentRequired(),
-              error: 'invalid_permit2_allowance',
+              error: 'payment_verification_rejected',
             }),
           },
         },
@@ -453,7 +453,7 @@ describe('official x402 buyer lifecycle', () => {
       expect(result).toMatchObject({
         ok: false,
         outcome: 'PaymentVerificationRejected',
-        message: 'invalid_permit2_allowance',
+        message: 'payment_verification_rejected',
       });
       expect(context.ledger.get('header-error')?.state).toBe('released');
     } finally {

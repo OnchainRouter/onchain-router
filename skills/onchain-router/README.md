@@ -11,8 +11,9 @@ settlement path, or second receipt verifier.
 ## Release status
 
 Version `0.1.0` is public alpha source in this repository and at the canonical site's
-`/skill/onchain-router/SKILL.md`. It requires npm Buyer CLI `0.1.2` or newer in the `0.1.x` alpha line. It has not yet been
-claimed as qualified across every external agent or Skill registry.
+`/skill/onchain-router/SKILL.md`. This source candidate targets npm Buyer CLI `0.1.2` or newer in the
+`0.1.x` alpha line; check the live `alpha` dist-tag before installing. It has not been claimed as
+qualified across every external agent or Skill registry.
 
 ## Requirements
 

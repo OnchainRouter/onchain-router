@@ -5,8 +5,6 @@ export type BuyerOutcomeCode =
   | 'UnexpectedRecipient'
   | 'AuthorizationAboveLocalCap'
   | 'InsufficientFunds'
-  | 'Permit2ApprovalRequired'
-  | 'Permit2ApprovalOutcomeUnknown'
   | 'PaymentVerificationRejected'
   | 'ProviderOutcomeUnknown'
   | 'SettlementOutcomeUnknown'
@@ -53,11 +51,6 @@ export const UnexpectedAsset = defineError('UnexpectedAsset', 'do_not_retry');
 export const UnexpectedRecipient = defineError('UnexpectedRecipient', 'do_not_retry');
 export const AuthorizationAboveLocalCap = defineError('AuthorizationAboveLocalCap', 'do_not_retry');
 export const InsufficientFunds = defineError('InsufficientFunds', 'retry_unpaid_request');
-export const Permit2ApprovalRequired = defineError('Permit2ApprovalRequired', 'do_not_retry');
-export const Permit2ApprovalOutcomeUnknown = defineError(
-  'Permit2ApprovalOutcomeUnknown',
-  'human_review',
-);
 export const PaymentVerificationRejected = defineError(
   'PaymentVerificationRejected',
   'retry_unpaid_request',

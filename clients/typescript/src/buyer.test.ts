@@ -64,11 +64,6 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
       allowWeakTestKdf: true,
     });
     await vault.create(PASSPHRASE);
-    const permit2Operations = {
-      allowance: vi.fn(),
-      nativeBalance: vi.fn(),
-      approve: vi.fn(),
-    };
     const broker = new SignerBroker({
       socketPath: paths.socketPath,
       vault,
@@ -77,7 +72,6 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
       agentId: 'sdk-test',
       idleTimeoutMs: 10_000,
       absoluteTimeoutMs: 60_000,
-      testPermit2Operations: permit2Operations,
     });
     const session = await broker.start(PASSPHRASE);
     await writeBuyerSession(root, session);
@@ -252,9 +246,6 @@ describe('high-level TypeScript Buyer Runtime SDK', () => {
           transaction: '0xsettlement',
         },
       });
-      expect(permit2Operations.allowance).not.toHaveBeenCalled();
-      expect(permit2Operations.nativeBalance).not.toHaveBeenCalled();
-      expect(permit2Operations.approve).not.toHaveBeenCalled();
       expect(quoteBodies).toEqual([
         {
           kind: 'openai',

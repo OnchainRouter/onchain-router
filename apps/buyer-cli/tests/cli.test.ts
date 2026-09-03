@@ -10,6 +10,7 @@ import {
   LocalSpendLedger,
   SignerBroker,
   WalletVault,
+  createBuyerPolicy,
 } from '@agenticfi/onchain-router-buyer-core/admin';
 import { OnchainRouterBuyer, buyerProfilePaths } from '@agenticfi/onchain-router';
 import { writeBuyerSession } from '@agenticfi/onchain-router/admin';
@@ -29,39 +30,6 @@ it('returns nonzero for a paid unknown outcome and preserves it if cleanup fails
   expect(await cli(['chat', 'fixture', '--model', 'fixture-model', '--json'])).toBe(2);
   expect(output.join('')).toContain('SettlementOutcomeUnknown');
   expect(output.join('')).not.toContain('cleanup must not mask');
-});
-
-it('requires confirmation before a policy-bounded Permit2 approval', async () => {
-  const output: string[] = [];
-  const approvePermit2 = vi.fn().mockResolvedValue({
-    object: 'permit2_approval',
-    outcome: 'approved',
-    transactionHash: `0x${'3'.repeat(64)}`,
-  });
-  vi.spyOn(OnchainRouterBuyer, 'connect').mockResolvedValue({
-    permit2Status: async () => ({
-      object: 'permit2_status',
-      network: 'eip155:8453',
-      owner: '0x3333333333333333333333333333333333333333',
-      asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-      spender: '0x000000000022D473030F116dDEE9F6B43aC78BA3',
-      allowanceAtomic: '0',
-      requiredAtomic: '100000',
-      approved: false,
-      nativeBalanceWei: '1',
-    }),
-    approvePermit2,
-    close: vi.fn(),
-  } as unknown as OnchainRouterBuyer);
-  const cli = createCli({
-    prompt: new Answers([], [], [true]),
-    stdout: (value) => output.push(value),
-    stderr: () => undefined,
-  });
-
-  expect(await cli(['permit2', 'approve', '--profile', '/tmp/fixture', '--json'])).toBe(0);
-  expect(approvePermit2).toHaveBeenCalledOnce();
-  expect(output.join('')).toContain('permit2_approval');
 });
 
 const ASSET = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
@@ -181,6 +149,19 @@ async function setupProfile(root: string) {
   return { profile, stdout, stderr };
 }
 
+async function seedLegacyProfile(profile: string): Promise<void> {
+  const paths = buyerProfilePaths(profile);
+  const ledger = new LocalSpendLedger(paths.ledgerPath);
+  const legacy = createBuyerPolicy({ ...ledger.currentPolicy(), schemes: ['upto'] });
+  const vault = new WalletVault({
+    directory: paths.walletDirectory,
+    scryptN: 1_024,
+    allowWeakTestKdf: true,
+  });
+  ledger.replacePolicy(legacy, await vault.authenticatePolicyChange(legacy.hash, PASSPHRASE));
+  ledger.close();
+}
+
 describe('one-command buyer setup and administration', () => {
   it('creates one complete owner-only profile transactionally without exposing secrets', async () => {
     const root = await directory();
@@ -209,7 +190,8 @@ describe('one-command buyer setup and administration', () => {
       ok: true,
       command: 'setup',
     });
-    expect(context.stdout.at(-1)).toContain('do not require Base ETH or a Permit2 approval');
+    expect(context.stdout.at(-1)).toContain('Fund');
+    expect(context.stdout.at(-1)).toContain('Base mainnet USDC');
   });
 
   it('accepts every non-secret setup choice in one command', async () => {
@@ -456,18 +438,28 @@ describe('one-command buyer setup and administration', () => {
       scryptN: 1_024,
       allowWeakTestKdf: true,
     }).status();
+    await seedLegacyProfile(setup.profile);
 
-    for (const scheme of ['upto', 'exact']) {
-      const cli = createCli({
-        prompt: new Answers([], [PASSPHRASE], []),
-        stdout: () => undefined,
-        stderr: () => undefined,
-        testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
-      });
-      expect(
-        await cli(['policy', 'set', '--profile', setup.profile, '--scheme', scheme, '--json']),
-      ).toBe(0);
-    }
+    const rejectedOutput: string[] = [];
+    const rejected = createCli({
+      prompt: new Answers([], [], []),
+      stdout: (value) => rejectedOutput.push(value),
+      stderr: () => undefined,
+    });
+    expect(
+      await rejected(['policy', 'set', '--profile', setup.profile, '--scheme', 'upto', '--json']),
+    ).toBe(2);
+    expect(rejectedOutput.join('')).toContain('exact is the only supported payment scheme');
+
+    const migrate = createCli({
+      prompt: new Answers([], [PASSPHRASE], []),
+      stdout: () => undefined,
+      stderr: () => undefined,
+      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+    });
+    expect(
+      await migrate(['policy', 'set', '--profile', setup.profile, '--scheme', 'exact', '--json']),
+    ).toBe(0);
 
     const ledger = new LocalSpendLedger(paths.ledgerPath);
     const migrated = ledger.currentPolicy();
@@ -519,23 +511,7 @@ describe('one-command buyer setup and administration', () => {
   it('reports an actionable unhealthy result when a legacy profile conflicts with exact discovery', async () => {
     const root = await directory();
     const setup = await setupProfile(root);
-    const migrateToLegacy = createCli({
-      prompt: new Answers([], [PASSPHRASE], []),
-      stdout: () => undefined,
-      stderr: () => undefined,
-      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
-    });
-    expect(
-      await migrateToLegacy([
-        'policy',
-        'set',
-        '--profile',
-        setup.profile,
-        '--scheme',
-        'upto',
-        '--json',
-      ]),
-    ).toBe(0);
+    await seedLegacyProfile(setup.profile);
 
     const stdout: string[] = [];
     const cli = createCli({
@@ -600,11 +576,6 @@ describe('one-command buyer setup and administration', () => {
       allowWeakTestKdf: true,
     });
     const policy = ledger.currentPolicy();
-    const permit2Operations = {
-      allowance: vi.fn(),
-      nativeBalance: vi.fn(),
-      approve: vi.fn(),
-    };
     const broker = new SignerBroker({
       socketPath: paths.socketPath,
       vault: wallet,
@@ -613,7 +584,6 @@ describe('one-command buyer setup and administration', () => {
       agentId: 'cli',
       idleTimeoutMs: 10_000,
       absoluteTimeoutMs: 60_000,
-      testPermit2Operations: permit2Operations,
     });
     const session = await broker.start(PASSPHRASE);
     await writeBuyerSession(paths.directory, session);
@@ -710,9 +680,6 @@ describe('one-command buyer setup and administration', () => {
       expect(stdout.join('')).toContain(receiptId);
       expect(stdout.join('')).not.toContain('must-stay-in-runtime');
       expect(ledger.receipt('cli-payment-1')).toMatchObject({ id: receiptId });
-      expect(permit2Operations.allowance).not.toHaveBeenCalled();
-      expect(permit2Operations.nativeBalance).not.toHaveBeenCalled();
-      expect(permit2Operations.approve).not.toHaveBeenCalled();
     } finally {
       await broker.stop();
       ledger.close();
