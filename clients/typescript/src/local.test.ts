@@ -85,8 +85,11 @@ describe('non-secret local buyer inspection', () => {
     const root = await profile();
     const fetch = vi.fn(async (input: string | URL | Request) => {
       const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-      expect(url.startsWith(ORIGIN)).toBe(true);
-      if (url.endsWith('/v1/models'))
+      const requestUrl = new URL(url);
+      expect(requestUrl.origin).toBe(ORIGIN);
+      expect(requestUrl.search).toBe('');
+      expect(['/v1/models', '/v1/pricing']).toContain(requestUrl.pathname);
+      if (requestUrl.pathname === '/v1/models')
         return new Response(
           JSON.stringify({
             object: 'list',

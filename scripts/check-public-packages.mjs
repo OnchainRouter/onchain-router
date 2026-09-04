@@ -3,6 +3,7 @@ import { readFileSync, statSync } from 'node:fs';
 const failures = [];
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 const publicRepository = 'git+https://github.com/AgenticFI/onchain-router-clients.git';
+const publicIssues = new URL('https://github.com/AgenticFI/onchain-router-clients/issues');
 const version = '0.1.3';
 const candidates = [
   ['packages/buyer-core', '@agenticfi/onchain-router-buyer-core'],
@@ -50,7 +51,17 @@ for (const [directory, expectedName] of candidates) {
   ])
     if (!readme.includes(`## ${section}`))
       failures.push(`${directory}/README.md: ${section} section is missing`);
-  if (!readme.includes('https://github.com/AgenticFI/onchain-router-clients/issues'))
+  const markdownUrls = [...readme.matchAll(/\[[^\]]+\]\(([^)\s]+)\)|<([^>\s]+)>/g)]
+    .map((match) => match[1] ?? match[2])
+    .filter((url) => url !== undefined);
+  const hasPublicSupportLink = markdownUrls.some((url) => {
+    try {
+      return new URL(url).href === publicIssues.href;
+    } catch {
+      return false;
+    }
+  });
+  if (!hasPublicSupportLink)
     failures.push(`${directory}/README.md: public support link is missing`);
   if (/private preview|still marked private|not installable from npm/i.test(readme))
     failures.push(`${directory}/README.md: obsolete unpublished status found`);
