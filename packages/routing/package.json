@@ -1,6 +1,6 @@
 {
   "name": "@agenticfi/onchain-router-routing",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "description": "Experimental deterministic model-selection core for Onchain Router",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "cost",
     "latency"
   ],
-  "homepage": "https://llm.agenticfi.wtf/docs/routing",
+  "homepage": "https://onchainrouter.dev/docs/routing",
   "bugs": "https://github.com/AgenticFI/onchain-router-clients/issues",
   "repository": {
     "type": "git",

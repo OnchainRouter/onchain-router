@@ -11,7 +11,7 @@ settlement path, or second receipt verifier.
 ## Release status
 
 Version `0.1.0` is public alpha source in this repository and at the canonical site's
-`/skill/onchain-router/SKILL.md`. This public source release targets npm Buyer CLI `0.1.2` or newer in the
+`/skill/onchain-router/SKILL.md`. This public source release targets npm Buyer CLI `0.1.3` or newer in the
 `0.1.x` alpha line; check the live `alpha` dist-tag before installing. It has not been claimed as
 qualified across every external agent or Skill registry.
 
@@ -138,7 +138,7 @@ using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router
 
 ## Support
 
-Documentation: <https://llm.agenticfi.wtf/docs/agent-skill>
+Documentation: <https://onchainrouter.dev/docs/agent-skill>
 
 Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
 

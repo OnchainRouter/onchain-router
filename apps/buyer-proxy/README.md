@@ -16,7 +16,7 @@ Setup, unlock, funding, policy changes, and receipt inspection remain direct CLI
 
 ## Release status
 
-Version `0.1.2` is published as the current bounded npm alpha. It is not a claim of qualification
+Version `0.1.3` is the domain-cutover bounded npm alpha candidate. It is not a claim of qualification
 across every OpenAI-compatible client. Keep it bound to loopback and preserve the bearer, Host,
 browser, body, and idempotency controls.
 
@@ -42,7 +42,7 @@ by default; all media bypasses caching. Live catalog limits remain authoritative
 Install the bounded alpha explicitly:
 
 ```bash
-npm install --global @agenticfi/onchain-router-proxy@0.1.2
+npm install --global @agenticfi/onchain-router-proxy@0.1.3
 onchain-router-proxy --version
 ```
 
@@ -137,7 +137,7 @@ A hit retains the original response body and source idempotency key. It reports
 headers. There is no new payment or receipt; ordinary payment/receipt headers are omitted, and
 body usage describes the original inference. Misses report `MISS`; excluded requests report
 `BYPASS`. Responses remain HTTP `Cache-Control: no-store`. See the canonical
-[proxy guide](https://llm.agenticfi.wtf/docs/proxy) for details. Direct SDK, CLI, MCP, public API,
+[proxy guide](https://onchainrouter.dev/docs/proxy) for details. Direct SDK, CLI, MCP, public API,
 and provider cached-token pricing are unchanged.
 
 ## Result and failure contract
@@ -185,7 +185,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 ## Support
 
-Documentation: <https://llm.agenticfi.wtf/docs/proxy>
+Documentation: <https://onchainrouter.dev/docs/proxy>
 
 Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
 

@@ -47,7 +47,7 @@ def build(output_directory: Path | None = None) -> Path:
         f"License-File: {DIST_INFO}/licenses/LICENSE\n"
         "Description-Content-Type: text/markdown\n"
         "Author: AgenticFI\n"
-        "Project-URL: Homepage, https://llm.agenticfi.wtf/docs/sdk\n"
+        "Project-URL: Homepage, https://onchainrouter.dev/docs/sdk\n"
         "Project-URL: Repository, https://github.com/AgenticFI/onchain-router-clients\n\n"
         f"{readme}"
     ).encode("utf-8")

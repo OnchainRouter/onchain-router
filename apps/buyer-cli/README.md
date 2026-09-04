@@ -11,7 +11,7 @@ backup/restore primitives.
 
 ## Release status
 
-Version `0.1.2` is published as the current bounded npm alpha. Run every authority-changing
+Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Run every authority-changing
 command in a human-controlled terminal.
 
 ## Requirements
@@ -30,7 +30,7 @@ current USDC contract, recipient, models, voices, and prices from the canonical 
 Install the bounded alpha explicitly:
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@0.1.2
+npm install --global @agenticfi/onchain-router-cli@0.1.3
 onchain-router --version
 ```
 
@@ -50,7 +50,7 @@ Use `node apps/buyer-cli/dist/index.js` in place of `onchain-router` for every s
 
 ```bash
 onchain-router setup \
-  --origin https://llm.agenticfi.wtf \
+  --origin https://onchainrouter.dev \
   --models gemini-3.6-flash \
   --agent founder-cli-smoke \
   --per-call-usdc 0.02 \
@@ -227,7 +227,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 ## Support
 
-Documentation: <https://llm.agenticfi.wtf/docs/cli>
+Documentation: <https://onchainrouter.dev/docs/cli>
 
 Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
 

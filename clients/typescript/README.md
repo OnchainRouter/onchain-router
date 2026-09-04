@@ -16,7 +16,7 @@ It also exposes free models, pricing, voices, balance, payment-contract, and quo
 
 ## Release status
 
-Version `0.1.2` is published as the current bounded npm alpha. Installation does not authorize
+Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Installation does not authorize
 wallet setup, funding, unlock, policy widening, or a paid request.
 
 ## Requirements
@@ -34,7 +34,7 @@ model catalog, capabilities, and pricing at request time; do not hard-code them 
 Install the bounded alpha explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router@0.1.2
+npm install @agenticfi/onchain-router@0.1.3
 ```
 
 To build the exact published source:
@@ -224,7 +224,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 ## Support
 
-Documentation: <https://llm.agenticfi.wtf/docs/sdk>
+Documentation: <https://onchainrouter.dev/docs/sdk>
 
 Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
 

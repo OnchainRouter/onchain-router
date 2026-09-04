@@ -4,7 +4,7 @@ Open-source clients for agents that discover AI capabilities, pay x402 challenge
 Base, enforce local budgets, recover ambiguous requests, and retain a verified receipt for every
 completed payment.
 
-Version `0.1.2` is published as the current bounded npm alpha. Smart routing is experimental; the Buyer Runtime remains the
+Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Smart routing is experimental; the Buyer Runtime remains the
 authority for wallet access, model allowlists, recipients, output limits, and integer-atomic spend
 budgets.
 
@@ -21,14 +21,14 @@ budgets.
 | Python SDK     | `onchain-router` source package                  | Python should delegate payment execution to the local CLI                   |
 | Agent Skill    | [`skills/onchain-router`](skills/onchain-router) | A coding agent should follow the supported commands and retry rules         |
 
-The public HTTP API and documentation are at [llm.agenticfi.wtf](https://llm.agenticfi.wtf).
+The public HTTP API and documentation are at [onchainrouter.dev](https://onchainrouter.dev).
 
 ## Fastest safe start
 
 Requirements: Node.js 20.18 or newer, macOS or Linux, and a human-controlled terminal.
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@0.1.2
+npm install --global @agenticfi/onchain-router-cli@0.1.3
 onchain-router --version
 onchain-router setup
 onchain-router policy show
@@ -47,7 +47,7 @@ capability into an agent prompt, command argument, environment variable, log, or
 After setup and unlock, install the application surface you need:
 
 ```bash
-npm install @agenticfi/onchain-router@0.1.2
+npm install @agenticfi/onchain-router@0.1.3
 ```
 
 ```ts
@@ -109,14 +109,14 @@ USDC contract, recipient, or output formats from examples.
 For MCP clients:
 
 ```bash
-npm install --global @agenticfi/onchain-router-mcp@0.1.2
+npm install --global @agenticfi/onchain-router-mcp@0.1.3
 onchain-router-mcp --print-config
 ```
 
 For OpenAI-compatible clients:
 
 ```bash
-npm install --global @agenticfi/onchain-router-proxy@0.1.2
+npm install --global @agenticfi/onchain-router-proxy@0.1.3
 onchain-router-proxy --print-config
 ```
 
@@ -156,7 +156,7 @@ forbidden files, and common credential formats, then writes SHA-256 hashes under
 
 ## Release policy
 
-- Keep release `0.1.2` under the npm `alpha` dist-tag, not `latest`.
+- Keep release `0.1.3` under the npm `alpha` dist-tag, not `latest`.
 - npm publication is manual from the pinned GitHub Actions workflow after CI passes.
 - The initial bootstrap uses a short-lived granular npm automation token stored only as a GitHub
   Actions secret and requests npm provenance. It should be replaced by npm trusted publishing after

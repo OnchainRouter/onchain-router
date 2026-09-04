@@ -2,6 +2,19 @@
 
 All notable changes to the public AgenticFI client packages are documented here.
 
+## 0.1.3 - 2026-09-04
+
+### Changed
+
+- Move the canonical production API and documentation origin to `https://onchainrouter.dev`.
+- Update CLI defaults, package metadata, installation examples, MCP configuration, and the portable
+  Agent Skill to use the new origin while preserving the exact/EIP-3009 payment contract.
+
+### Security
+
+- Keep the release limited to the existing MIT client boundary. No wallet material, payment
+  payloads, backend source, or production credentials are included.
+
 ## 0.1.2 - 2026-09-03
 
 ### Added

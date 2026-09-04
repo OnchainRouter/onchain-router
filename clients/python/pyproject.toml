@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://llm.agenticfi.wtf/docs/sdk"
+Homepage = "https://onchainrouter.dev/docs/sdk"
 Repository = "https://github.com/AgenticFI/onchain-router-clients"
 Issues = "https://github.com/AgenticFI/onchain-router-clients/issues"
 
