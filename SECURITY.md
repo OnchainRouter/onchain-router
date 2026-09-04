@@ -8,7 +8,7 @@ without exposing users or funds.
 
 | Version                                       | Status                                                 |
 | --------------------------------------------- | ------------------------------------------------------ |
-| Production API at `https://llm.agenticfi.wtf` | Supported                                              |
+| Production API at `https://onchainrouter.dev` | Supported                                              |
 | Current `0.1.x` npm public alpha              | Supported while listed as current in the release notes |
 | Older commits and locally modified builds     | Best effort                                            |
 

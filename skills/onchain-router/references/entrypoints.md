@@ -2,7 +2,7 @@
 
 <!-- Generated from scripts/fixtures/agent-entrypoints.v1.json by scripts/generate-agent-entry-docs.mjs. -->
 
-> This public source release targets npm adapter version `0.1.2`. Review `/docs/installation`, `/products.json`, the live `alpha` dist-tag, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
+> This public source release targets npm adapter version `0.1.3`. Review `/docs/installation`, `/products.json`, the live `alpha` dist-tag, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
 
 ## Choose one primary path
 
@@ -18,7 +18,7 @@ All five adapters expose all five paid JSON endpoints. Media uses live model/opt
 
 ## One shared contract
 
-- Canonical origin: `https://llm.agenticfi.wtf`.
+- Canonical origin: `https://onchainrouter.dev`.
 - Network: Base mainnet `eip155:8453`.
 - Asset: official Base USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`.
 - Models and prices: always read `/v1/models` and `/v1/pricing`; never copy a price or assume an alias remains enabled.

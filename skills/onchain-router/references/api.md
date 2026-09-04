@@ -68,7 +68,7 @@ Use `POST /v1/audio/transcriptions` with canonical Base64 JSON when a client can
 The `audio_base64` value must be canonical RFC 4648 Base64 with no data-URL prefix or whitespace. Alternatively, send one complete multipart body:
 
 ```bash
-curl --request POST https://llm.agenticfi.wtf/v1/audio/transcriptions \
+curl --request POST https://onchainrouter.dev/v1/audio/transcriptions \
   --header "x-idempotency-key: 11111111-1111-4111-8111-111111111111" \
   --form "file=@speech.mp3;type=audio/mpeg" \
   --form "model=elevenlabs/scribe-v2" \

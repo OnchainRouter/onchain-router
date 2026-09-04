@@ -43,8 +43,8 @@ import { safeError, safeJson } from './format.js';
 import { TerminalPrompt, type PromptIO } from './prompt.js';
 import { readAudioFile } from './media-file.js';
 
-const VERSION = '0.1.2';
-const DEFAULT_ORIGIN = 'https://llm.agenticfi.wtf';
+const VERSION = '0.1.3';
+const DEFAULT_ORIGIN = 'https://onchainrouter.dev';
 const DEFAULT_AGENT_ID = 'cli';
 const MAX_BRIDGE_BYTES = MAX_MEDIA_JSON_BYTES + 65_536;
 const DEFAULT_SESSION_MS = 30 * 60_000;

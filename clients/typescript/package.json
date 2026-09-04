@@ -1,6 +1,6 @@
 {
   "name": "@agenticfi/onchain-router",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "description": "TypeScript SDK for Onchain Router discovery, x402 payments, recovery, and receipts",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "llm",
     "sdk"
   ],
-  "homepage": "https://llm.agenticfi.wtf/docs/sdk",
+  "homepage": "https://onchainrouter.dev/docs/sdk",
   "bugs": "https://github.com/AgenticFI/onchain-router-clients/issues",
   "repository": {
     "type": "git",

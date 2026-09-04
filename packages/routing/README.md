@@ -9,7 +9,7 @@ a request, or authorize fallback. The human-owned Buyer Runtime policy remains f
 
 ## Release status
 
-Version `0.1.2` is published as the current bounded npm alpha. Routing remains experimental and advisory: it cannot
+Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Routing remains experimental and advisory: it cannot
 sign, spend, retry a paid route, or widen Buyer Runtime policy. Do not describe it as
 production-ready automatic routing.
 
@@ -28,7 +28,7 @@ use JavaScript floating point for USDC or token accounting.
 Install the bounded alpha explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router-routing@0.1.2
+npm install @agenticfi/onchain-router-routing@0.1.3
 ```
 
 To build and test the exact published source:
@@ -153,7 +153,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 ## Support
 
-Documentation: <https://llm.agenticfi.wtf/docs/routing>
+Documentation: <https://onchainrouter.dev/docs/routing>
 
 Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
 

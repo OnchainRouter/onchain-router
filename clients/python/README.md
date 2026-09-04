@@ -11,7 +11,7 @@ Anthropic-style messages, image generation, text-to-speech, speech-to-text, reco
 ## Release status
 
 Version `0.1.0` is public alpha source with a deterministic local wheel builder. It is not currently
-published on PyPI. This source release targets npm Buyer CLI `0.1.2` or newer in the `0.1.x`
+published on PyPI. This source release targets npm Buyer CLI `0.1.3` or newer in the `0.1.x`
 alpha line; check the live npm `alpha` dist-tag before installing and do not infer a PyPI release
 from the project name.
 
@@ -31,7 +31,7 @@ Install the published CLI, then build the Python wheel from reviewed source beca
 PyPI:
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@0.1.2
+npm install --global @agenticfi/onchain-router-cli@0.1.3
 python clients/python/scripts/build_wheel.py
 python -m pip install clients/python/dist/onchain_router-0.1.0-py3-none-any.whl
 ```
@@ -183,7 +183,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 ## Support
 
-Documentation: <https://llm.agenticfi.wtf/docs/sdk>
+Documentation: <https://onchainrouter.dev/docs/sdk>
 
 Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
 

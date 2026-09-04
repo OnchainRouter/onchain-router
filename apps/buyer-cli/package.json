@@ -1,6 +1,6 @@
 {
   "name": "@agenticfi/onchain-router-cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "description": "Command-line wallet, budgets, x402 payments, recovery, and receipts for Onchain Router",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "wallet",
     "payments"
   ],
-  "homepage": "https://llm.agenticfi.wtf/docs/cli",
+  "homepage": "https://onchainrouter.dev/docs/cli",
   "bugs": "https://github.com/AgenticFI/onchain-router-clients/issues",
   "repository": {
     "type": "git",

@@ -13,7 +13,7 @@ Use a higher-level package unless you are developing an Onchain Router adapter:
 
 ## Release status
 
-Version `0.1.2` is published as the current bounded npm alpha. Installing source or a package does
+Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Installing source or a package does
 not authorize wallet setup, import, funding, unlock, policy widening, or a paid request.
 
 ## What it owns
@@ -37,7 +37,7 @@ an agent to widen policy. Redis is not used for local financial correctness.
 - a dedicated Base wallet funded with enough USDC for the intended calls.
 
 Windows is not yet a supported host. Live network, asset, recipient, models, and pricing must be
-read from `https://llm.agenticfi.wtf/.well-known/x402`, `/v1/models`, and `/v1/pricing` rather than
+read from `https://onchainrouter.dev/.well-known/x402`, `/v1/models`, and `/v1/pricing` rather than
 hard-coded.
 
 ## Installation
@@ -45,7 +45,7 @@ hard-coded.
 Install the bounded alpha explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router-buyer-core@0.1.2
+npm install @agenticfi/onchain-router-buyer-core@0.1.3
 ```
 
 To build the exact published source from this repository:
@@ -139,7 +139,7 @@ completions, or receipt capabilities in an issue.
 
 ## Support
 
-Documentation: <https://llm.agenticfi.wtf/docs/buyer-runtime>
+Documentation: <https://onchainrouter.dev/docs/buyer-runtime>
 
 Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
 
