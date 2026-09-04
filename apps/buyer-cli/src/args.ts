@@ -1,4 +1,4 @@
-import { PaymentPolicyRejected } from '@agenticfi/onchain-router-buyer-core';
+import { PaymentPolicyRejected } from '@onchainrouter/buyer-core';
 
 export interface ParsedArguments {
   readonly positionals: readonly string[];

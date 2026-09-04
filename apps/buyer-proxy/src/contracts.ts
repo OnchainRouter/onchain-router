@@ -1,5 +1,5 @@
-import { PaymentPolicyRejected } from '@agenticfi/onchain-router-buyer-core';
-import { PAID_JSON_ENDPOINTS } from '@agenticfi/onchain-router';
+import { PaymentPolicyRejected } from '@onchainrouter/buyer-core';
+import { PAID_JSON_ENDPOINTS } from '@onchainrouter/client';
 import type { CacheMode } from './response-cache.js';
 
 export function parseCacheRequest(

@@ -1,4 +1,4 @@
-import { BuyerRuntimeError } from '@agenticfi/onchain-router-buyer-core';
+import { BuyerRuntimeError } from '@onchainrouter/buyer-core';
 
 export function safeJson(value: unknown, spacing?: number): string {
   return JSON.stringify(

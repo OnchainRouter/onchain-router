@@ -2,11 +2,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import {
-  LocalSpendLedger,
-  WalletVault,
-  createBuyerPolicy,
-} from '@agenticfi/onchain-router-buyer-core/admin';
+import { LocalSpendLedger, WalletVault, createBuyerPolicy } from '@onchainrouter/buyer-core/admin';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BASE_MAINNET_USDC } from './discovery.js';
 import { inspectBuyerCatalog, inspectBuyerProfile, readBuyerReceipt } from './local.js';

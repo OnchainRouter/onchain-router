@@ -1,7 +1,7 @@
 import { request as httpRequest } from 'node:http';
 import OpenAI from 'openai';
-import type { BuyerFailure, BuyerResult } from '@agenticfi/onchain-router-buyer-core';
-import type { BuyerStatus, ModelCatalog } from '@agenticfi/onchain-router';
+import type { BuyerFailure, BuyerResult } from '@onchainrouter/buyer-core';
+import type { BuyerStatus, ModelCatalog } from '@onchainrouter/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createBuyerProxyService, type BuyerProxyService } from '../src/service.js';
 import { startBuyerProxy, type StartedBuyerProxy } from '../src/server.js';

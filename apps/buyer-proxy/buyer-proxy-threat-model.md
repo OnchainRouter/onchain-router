@@ -2,7 +2,7 @@
 
 ## Scope and assets
 
-This model covers the private BEQ-4 `@agenticfi/onchain-router-proxy` process, its owner-only local bearer,
+This model covers the private BEQ-4 `@onchainrouter/proxy` process, its owner-only local bearer,
 the loopback HTTP listener, and its handoff to the already-reviewed Buyer Runtime. The protected
 assets are wallet signing authority, local budget/policy state, the bearer, prompts/results,
 idempotency identities, receipt access, and the distinction between definite and ambiguous paid
@@ -18,7 +18,7 @@ signer broker, SQLite ledger, official x402 client, or server-side PostgreSQL co
 OpenAI-compatible local client
   -> bearer-authenticated 127.0.0.1 HTTP
   -> thin proxy validation/formatting
-  -> @agenticfi/onchain-router
+  -> @onchainrouter/client
   -> Buyer Runtime + owner-only signer broker/SQLite policy
   -> canonical public Onchain Router origin
 ```

@@ -3,7 +3,7 @@ import {
   SettlementOutcomeUnknown,
   type BuyerResult,
   type VerifiedReceipt,
-} from '@agenticfi/onchain-router-buyer-core';
+} from '@onchainrouter/buyer-core';
 import {
   OnchainRouterBuyer,
   inspectBuyerCatalog,
@@ -14,7 +14,7 @@ import {
   type OnchainRouterBuyerOptions,
   type PaidJsonEndpoint,
   OnchainRouterDiscovery,
-} from '@agenticfi/onchain-router';
+} from '@onchainrouter/client';
 import { chatBody, type ChatToolInput } from './contracts.js';
 
 export interface FocusedMcpService {

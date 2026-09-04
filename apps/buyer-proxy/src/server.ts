@@ -8,12 +8,12 @@ import {
   prepareMediaBody,
   type MediaEndpoint,
   type PaidJsonEndpoint,
-} from '@agenticfi/onchain-router';
+} from '@onchainrouter/client';
 import {
   BuyerRuntimeError,
   PaymentPolicyRejected,
   type BuyerFailure,
-} from '@agenticfi/onchain-router-buyer-core';
+} from '@onchainrouter/buyer-core';
 import {
   MAX_PROXY_CHAT_BODY_BYTES,
   PROXY_HOST,

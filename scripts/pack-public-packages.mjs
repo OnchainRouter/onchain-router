@@ -61,7 +61,7 @@ for (const filename of tarballs) {
   const packageJsonText = run('tar', ['-xOzf', path, 'package/package.json']);
   const packageJson = JSON.parse(packageJsonText);
   if (packageJson.private === true) throw new Error(`${filename}: packed package is private`);
-  if (packageJson.version !== '0.1.3') throw new Error(`${filename}: unexpected version`);
+  if (packageJson.version !== '0.2.0') throw new Error(`${filename}: unexpected version`);
   if (packageJson.publishConfig?.tag !== 'latest')
     throw new Error(`${filename}: packed stable tag is missing`);
   if (/workspace:/.test(packageJsonText))

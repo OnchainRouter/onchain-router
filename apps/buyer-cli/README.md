@@ -11,7 +11,7 @@ backup/restore primitives.
 
 ## Release status
 
-Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. Run every authority-changing
+Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. Run every authority-changing
 command in a human-controlled terminal.
 
 ## Requirements
@@ -30,7 +30,7 @@ current USDC contract, recipient, models, voices, and prices from the canonical 
 Install the stable release explicitly:
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@0.1.3
+npm install --global @onchainrouter/cli@0.2.0
 onchain-router --version
 ```
 
@@ -40,7 +40,7 @@ To build and run the exact published source:
 corepack enable
 pnpm install --frozen-lockfile
 pnpm buyer:deps
-pnpm exec turbo run build --filter=@agenticfi/onchain-router-cli...
+pnpm exec turbo run build --filter=@onchainrouter/cli...
 node apps/buyer-cli/dist/index.js --help
 ```
 
@@ -208,7 +208,7 @@ All accounting uses integer atomic USDC; the CLI never uses floating point for f
   receipt capabilities, or hosted media URLs.
 - Review `onchain-router doctor` output before sharing it; the command is designed to be redacted.
 
-Report security issues using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router-clients/blob/main/SECURITY.md).
+Report security issues using the repository [`SECURITY.md`](https://github.com/OnchainRouter/onchain-router/blob/main/SECURITY.md).
 
 ## Troubleshooting
 
@@ -229,7 +229,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 Documentation: <https://onchainrouter.dev/docs/cli>
 
-Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
+Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 
 Attach the CLI version, OS, Node version, sanitized outcome code, and redacted `doctor` output.
 Never attach wallet material, prompts, completions, signatures, or receipt capabilities.

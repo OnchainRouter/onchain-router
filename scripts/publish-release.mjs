@@ -10,8 +10,8 @@ if (process.env.GITHUB_ACTIONS !== 'true' || process.env.GITHUB_EVENT_NAME !== '
   );
 if (process.env.GITHUB_REF !== 'refs/heads/main')
   throw new Error('npm stable publication requires the public repository main branch');
-if (process.env.RELEASE_CONFIRM !== 'publish-0.1.3-stable')
-  throw new Error('release confirmation does not match publish-0.1.3-stable');
+if (process.env.RELEASE_CONFIRM !== 'publish-0.2.0-stable')
+  throw new Error('release confirmation does not match publish-0.2.0-stable');
 if (!process.env.NODE_AUTH_TOKEN)
   throw new Error('stable publication requires the repository-scoped NPM_TOKEN secret');
 
@@ -19,7 +19,7 @@ const release = JSON.parse(readFileSync('.artifacts/npm/manifest.json', 'utf8'))
 if (release.version !== 1 || release.distTag !== 'latest' || release.packages?.length !== 6)
   throw new Error('inspected package manifest is invalid');
 
-const expectedRepository = 'git+https://github.com/AgenticFI/onchain-router-clients.git';
+const expectedRepository = 'git+https://github.com/OnchainRouter/onchain-router.git';
 const resumeExisting = process.env.RESUME_EXISTING === 'true';
 
 function registryMetadata(item) {
@@ -43,12 +43,12 @@ function registryDistTags(name) {
 }
 
 const publishOrder = [
-  '@agenticfi/onchain-router-buyer-core',
-  '@agenticfi/onchain-router-routing',
-  '@agenticfi/onchain-router',
-  '@agenticfi/onchain-router-cli',
-  '@agenticfi/onchain-router-mcp',
-  '@agenticfi/onchain-router-proxy',
+  '@onchainrouter/buyer-core',
+  '@onchainrouter/routing',
+  '@onchainrouter/client',
+  '@onchainrouter/cli',
+  '@onchainrouter/mcp',
+  '@onchainrouter/proxy',
 ];
 const byName = new Map(release.packages.map((item) => [item.name, item]));
 if (publishOrder.some((name) => !byName.has(name)))
@@ -109,5 +109,5 @@ for (const name of publishOrder) {
 }
 
 console.log(
-  'Published six Onchain Router packages as npm 0.1.3 stable releases with provenance and no retired alpha tags.',
+  'Published six Onchain Router packages as npm 0.2.0 stable releases with provenance and no retired alpha tags.',
 );

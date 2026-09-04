@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
-import { buyerProfilePaths } from '@agenticfi/onchain-router';
+import { buyerProfilePaths } from '@onchainrouter/client';
 import { MCP_SERVER_VERSION, createFocusedMcpServer } from './server.js';
 
 export interface McpArguments {
@@ -12,7 +12,7 @@ export interface McpArguments {
   readonly profileDirectory: string;
 }
 
-const HELP = `Onchain Router focused MCP 0.1.3
+const HELP = `Onchain Router focused MCP 0.2.0
 
 Usage:
   onchain-router-mcp [--profile DIRECTORY]

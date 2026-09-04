@@ -16,7 +16,7 @@ It also exposes free models, pricing, voices, balance, payment-contract, and quo
 
 ## Release status
 
-Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. Installation does not authorize
+Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. Installation does not authorize
 wallet setup, funding, unlock, policy widening, or a paid request.
 
 ## Requirements
@@ -34,7 +34,7 @@ model catalog, capabilities, and pricing at request time; do not hard-code them 
 Install the stable release explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router@0.1.3
+npm install @onchainrouter/client@0.2.0
 ```
 
 To build the exact published source:
@@ -43,8 +43,8 @@ To build the exact published source:
 corepack enable
 pnpm install --frozen-lockfile
 pnpm buyer:deps
-pnpm exec turbo run build --filter=@agenticfi/onchain-router...
-pnpm --filter @agenticfi/onchain-router test
+pnpm exec turbo run build --filter=@onchainrouter/client...
+pnpm --filter @onchainrouter/client test
 ```
 
 ## One-time wallet setup
@@ -69,7 +69,7 @@ still be present in live discovery and allowed by the local policy.
 
 ```ts
 import { randomUUID } from 'node:crypto';
-import { OnchainRouterBuyer } from '@agenticfi/onchain-router';
+import { OnchainRouterBuyer } from '@onchainrouter/client';
 
 const buyer = await OnchainRouterBuyer.connect();
 const requestKey = randomUUID(); // persist this for recovery
@@ -208,7 +208,7 @@ Explicit model selection through `buyer.chat()` remains the supported default.
 - Set a stable idempotency key and disable higher-layer automatic retries around paid methods.
 - Treat `finish_reason: "length"` as a paid, truncated success rather than a reason to retry.
 
-Report security issues using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router-clients/blob/main/SECURITY.md).
+Report security issues using the repository [`SECURITY.md`](https://github.com/OnchainRouter/onchain-router/blob/main/SECURITY.md).
 
 ## Troubleshooting
 
@@ -226,7 +226,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 Documentation: <https://onchainrouter.dev/docs/sdk>
 
-Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
+Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 
 Include the SDK version, Node version, OS, sanitized outcome code, and redacted diagnostics. Never
 attach wallet material, user content, signatures, or receipt capabilities.

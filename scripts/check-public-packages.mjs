@@ -2,16 +2,16 @@ import { readFileSync, statSync } from 'node:fs';
 
 const failures = [];
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
-const publicRepository = 'git+https://github.com/AgenticFI/onchain-router-clients.git';
-const publicIssues = new URL('https://github.com/AgenticFI/onchain-router-clients/issues');
-const version = '0.1.3';
+const publicRepository = 'git+https://github.com/OnchainRouter/onchain-router.git';
+const publicIssues = new URL('https://github.com/OnchainRouter/onchain-router/issues');
+const version = '0.2.0';
 const candidates = [
-  ['packages/buyer-core', '@agenticfi/onchain-router-buyer-core'],
-  ['packages/routing', '@agenticfi/onchain-router-routing'],
-  ['clients/typescript', '@agenticfi/onchain-router'],
-  ['apps/buyer-cli', '@agenticfi/onchain-router-cli'],
-  ['apps/buyer-mcp', '@agenticfi/onchain-router-mcp'],
-  ['apps/buyer-proxy', '@agenticfi/onchain-router-proxy'],
+  ['packages/buyer-core', '@onchainrouter/buyer-core'],
+  ['packages/routing', '@onchainrouter/routing'],
+  ['clients/typescript', '@onchainrouter/client'],
+  ['apps/buyer-cli', '@onchainrouter/cli'],
+  ['apps/buyer-mcp', '@onchainrouter/mcp'],
+  ['apps/buyer-proxy', '@onchainrouter/proxy'],
 ];
 
 for (const [directory, expectedName] of candidates) {
@@ -143,5 +143,5 @@ if (failures.length) {
 }
 
 console.log(
-  'Six Onchain Router npm packages are configured as version 0.1.3 stable release candidates.',
+  'Six Onchain Router npm packages are configured as version 0.2.0 stable release candidates.',
 );

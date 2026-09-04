@@ -2,7 +2,7 @@ import { closeSync, openSync } from 'node:fs';
 import { stdin, stdout } from 'node:process';
 import { createInterface } from 'node:readline/promises';
 import { ReadStream, WriteStream } from 'node:tty';
-import { PaymentPolicyRejected } from '@agenticfi/onchain-router-buyer-core';
+import { PaymentPolicyRejected } from '@onchainrouter/buyer-core';
 
 export interface PromptIO {
   ask(message: string, defaultValue?: string): Promise<string>;

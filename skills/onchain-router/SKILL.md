@@ -7,7 +7,7 @@ description: Use Onchain Router through the safest available buyer entry pointâ€
 
 Delegate every financial action to the local Buyer Runtime. This skill contains workflow guidance and thin CLI bridge scripts only. It does not implement signing, x402, wallet custody, budgets, settlement, or receipt verification.
 
-This public source release targets Buyer CLI `0.1.3` or newer in the `0.1.x` stable line. Check the canonical site's `/docs/installation`, `/products.json`, and the npm `latest` dist-tag for publication facts. Reading this skill does not authorize wallet setup, import, funding, unlock, policy widening, or a paid call.
+This public source release targets Buyer CLI `0.2.0` or newer in the `0.2.x` stable line. Check the canonical site's `/docs/installation`, `/products.json`, and the npm `latest` dist-tag for publication facts. Reading this skill does not authorize wallet setup, import, funding, unlock, policy widening, or a paid call.
 
 ## Choose the entry point
 

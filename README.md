@@ -4,7 +4,7 @@ Open-source clients for agents that discover AI capabilities, pay x402 challenge
 Base, enforce local budgets, recover ambiguous requests, and retain a verified receipt for every
 completed payment.
 
-Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. Smart routing is experimental; the Buyer Runtime remains the
+Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. Smart routing is experimental; the Buyer Runtime remains the
 authority for wallet access, model allowlists, recipients, output limits, and integer-atomic spend
 budgets.
 
@@ -12,12 +12,12 @@ budgets.
 
 | Surface        | Package or path                                  | Use it when                                                                 |
 | -------------- | ------------------------------------------------ | --------------------------------------------------------------------------- |
-| TypeScript SDK | `@agenticfi/onchain-router`                      | Your Node.js application needs typed discovery and paid API calls           |
-| Buyer CLI      | `@agenticfi/onchain-router-cli`                  | A human needs to create/unlock a wallet, set budgets, or inspect receipts   |
-| MCP server     | `@agenticfi/onchain-router-mcp`                  | Claude, Cursor, ChatGPT, or another MCP client should call the API as tools |
-| Local proxy    | `@agenticfi/onchain-router-proxy`                | An OpenAI-compatible client needs one loopback base URL                     |
-| Buyer Runtime  | `@agenticfi/onchain-router-buyer-core`           | You are building another trusted local adapter                              |
-| Smart routing  | `@agenticfi/onchain-router-routing`              | You need deterministic, constraint-first model selection before payment     |
+| TypeScript SDK | `@onchainrouter/client`                          | Your Node.js application needs typed discovery and paid API calls           |
+| Buyer CLI      | `@onchainrouter/cli`                             | A human needs to create/unlock a wallet, set budgets, or inspect receipts   |
+| MCP server     | `@onchainrouter/mcp`                             | Claude, Cursor, ChatGPT, or another MCP client should call the API as tools |
+| Local proxy    | `@onchainrouter/proxy`                           | An OpenAI-compatible client needs one loopback base URL                     |
+| Buyer Runtime  | `@onchainrouter/buyer-core`                      | You are building another trusted local adapter                              |
+| Smart routing  | `@onchainrouter/routing`                         | You need deterministic, constraint-first model selection before payment     |
 | Python SDK     | `onchain-router` source package                  | Python should delegate payment execution to the local CLI                   |
 | Agent Skill    | [`skills/onchain-router`](skills/onchain-router) | A coding agent should follow the supported commands and retry rules         |
 
@@ -28,7 +28,7 @@ The public HTTP API and documentation are at [onchainrouter.dev](https://onchain
 Requirements: Node.js 20.18 or newer, macOS or Linux, and a human-controlled terminal.
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@0.1.3
+npm install --global @onchainrouter/cli@0.2.0
 onchain-router --version
 onchain-router setup
 onchain-router policy show
@@ -47,11 +47,11 @@ capability into an agent prompt, command argument, environment variable, log, or
 After setup and unlock, install the application surface you need:
 
 ```bash
-npm install @agenticfi/onchain-router@0.1.3
+npm install @onchainrouter/client@0.2.0
 ```
 
 ```ts
-import { OnchainRouterBuyer } from '@agenticfi/onchain-router';
+import { OnchainRouterBuyer } from '@onchainrouter/client';
 
 const buyer = await OnchainRouterBuyer.connect();
 try {
@@ -109,14 +109,14 @@ USDC contract, recipient, or output formats from examples.
 For MCP clients:
 
 ```bash
-npm install --global @agenticfi/onchain-router-mcp@0.1.3
+npm install --global @onchainrouter/mcp@0.2.0
 onchain-router-mcp --print-config
 ```
 
 For OpenAI-compatible clients:
 
 ```bash
-npm install --global @agenticfi/onchain-router-proxy@0.1.3
+npm install --global @onchainrouter/proxy@0.2.0
 onchain-router-proxy --print-config
 ```
 
@@ -156,7 +156,7 @@ forbidden files, and common credential formats, then writes SHA-256 hashes under
 
 ## Release policy
 
-- Publish release `0.1.3` under npm's normal `latest` dist-tag and remove the retired `alpha` tag.
+- Publish release `0.2.0` under npm's normal `latest` dist-tag and remove the retired `alpha` tag.
 - npm publication is manual from the pinned GitHub Actions workflow after CI passes.
 - The initial bootstrap uses a short-lived granular npm automation token stored only as a GitHub
   Actions secret and requests npm provenance. It should be replaced by npm trusted publishing after
@@ -167,7 +167,7 @@ See [docs/release-scope.md](docs/release-scope.md) for the exact stable client b
 
 ## Support and security
 
-Use [GitHub Issues](https://github.com/AgenticFI/onchain-router-clients/issues) for sanitized bugs and
+Use [GitHub Issues](https://github.com/OnchainRouter/onchain-router/issues) for sanitized bugs and
 feature requests. Do not attach prompts, completions, wallet material, payment signatures, receipt
 capabilities, or hosted-media URLs.
 

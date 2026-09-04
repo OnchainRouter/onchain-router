@@ -2,7 +2,7 @@
 
 <!-- Generated from scripts/fixtures/agent-entrypoints.v1.json by scripts/generate-agent-entry-docs.mjs. -->
 
-> This public source release targets npm adapter version `0.1.3`. Review `/docs/installation`, `/products.json`, the live `latest` dist-tag, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
+> This public source release targets npm adapter version `0.2.0`. Review `/docs/installation`, `/products.json`, the live `latest` dist-tag, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
 
 ## Choose one primary path
 
@@ -51,13 +51,13 @@ Do not send a wallet key, seed phrase, passphrase, broker capability, payment pa
 
 Repository-built preview commands are:
 
-| Entry point              | Artifact                                      | Inspect or start                                       |
-| ------------------------ | --------------------------------------------- | ------------------------------------------------------ |
-| Focused MCP              | `@agenticfi/onchain-router-mcp`               | `node apps/buyer-mcp/dist/index.js --print-config`     |
-| Loopback proxy           | `@agenticfi/onchain-router-proxy`             | `node apps/buyer-proxy/dist/index.js --print-config`   |
-| TypeScript or Python SDK | `@agenticfi/onchain-router or onchain-router` | `OnchainRouterBuyer.connect() or OnchainRouterBuyer()` |
-| Buyer CLI                | `@agenticfi/onchain-router-cli`               | `onchain-router help`                                  |
-| Portable Agent Skill     | `skills/onchain-router`                       | `node scripts/models.mjs`                              |
+| Entry point              | Artifact                                  | Inspect or start                                       |
+| ------------------------ | ----------------------------------------- | ------------------------------------------------------ |
+| Focused MCP              | `@onchainrouter/mcp`                      | `node apps/buyer-mcp/dist/index.js --print-config`     |
+| Loopback proxy           | `@onchainrouter/proxy`                    | `node apps/buyer-proxy/dist/index.js --print-config`   |
+| TypeScript or Python SDK | `@onchainrouter/client or onchain-router` | `OnchainRouterBuyer.connect() or OnchainRouterBuyer()` |
+| Buyer CLI                | `@onchainrouter/cli`                      | `onchain-router help`                                  |
+| Portable Agent Skill     | `skills/onchain-router`                   | `node scripts/models.mjs`                              |
 
 Publication commands are deliberately absent. Source checkout commands are evidence for private review, not a public installation promise.
 

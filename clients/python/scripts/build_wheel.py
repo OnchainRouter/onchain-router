@@ -46,9 +46,9 @@ def build(output_directory: Path | None = None) -> Path:
         "License-Expression: MIT\n"
         f"License-File: {DIST_INFO}/licenses/LICENSE\n"
         "Description-Content-Type: text/markdown\n"
-        "Author: AgenticFI\n"
+        "Author: Onchain Router contributors\n"
         "Project-URL: Homepage, https://onchainrouter.dev/docs/sdk\n"
-        "Project-URL: Repository, https://github.com/AgenticFI/onchain-router-clients\n\n"
+        "Project-URL: Repository, https://github.com/OnchainRouter/onchain-router\n\n"
         f"{readme}"
     ).encode("utf-8")
     members[f"{DIST_INFO}/WHEEL"] = (

@@ -3,12 +3,8 @@ import {
   PaymentPolicyRejected,
   type EffectiveBuyerPolicy,
   type VerifiedReceipt,
-} from '@agenticfi/onchain-router-buyer-core';
-import {
-  LocalSpendLedger,
-  WalletVault,
-  pathExists,
-} from '@agenticfi/onchain-router-buyer-core/admin';
+} from '@onchainrouter/buyer-core';
+import { LocalSpendLedger, WalletVault, pathExists } from '@onchainrouter/buyer-core/admin';
 import { OnchainRouterBuyer, type BuyerStatus, type OnchainRouterBuyerOptions } from './buyer.js';
 import {
   OnchainRouterDiscovery,

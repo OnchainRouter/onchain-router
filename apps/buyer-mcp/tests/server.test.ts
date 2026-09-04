@@ -1,5 +1,5 @@
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
-import type { BuyerResult, VerifiedReceipt } from '@agenticfi/onchain-router-buyer-core';
+import type { BuyerResult, VerifiedReceipt } from '@onchainrouter/buyer-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MCP_TOOL_NAMES, createFocusedMcpServer } from '../src/server.js';
 import type { FocusedMcpService } from '../src/service.js';

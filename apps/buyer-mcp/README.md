@@ -10,7 +10,7 @@ verification itself.
 
 ## Release status
 
-Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
+Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
 across every MCP host. The server never owns wallet setup, import, funding, unlock, or
 policy-widening authority.
 
@@ -44,14 +44,14 @@ signed maximum, wallet secret, passphrase, broker capability, or receipt capabil
 
 ## Installation
 
-Install the stable release, then pin the exact `0.1.3` version in the MCP host:
+Install the stable release, then pin the exact `0.2.0` version in the MCP host:
 
 ```json
 {
   "mcpServers": {
     "onchain-router": {
       "command": "npx",
-      "args": ["--yes", "@agenticfi/onchain-router-mcp@0.1.3"]
+      "args": ["--yes", "@onchainrouter/mcp@0.2.0"]
     }
   }
 }
@@ -66,7 +66,7 @@ To build the exact published source:
 corepack enable
 pnpm install --frozen-lockfile
 pnpm buyer:deps
-pnpm exec turbo run build --filter=@agenticfi/onchain-router-mcp...
+pnpm exec turbo run build --filter=@onchainrouter/mcp...
 node apps/buyer-mcp/dist/index.js --print-config --profile "$HOME/.onchain-router"
 ```
 
@@ -135,7 +135,7 @@ Never replay an ambiguous call under a new key or on another model. `ProviderOut
 - Treat tool descriptions and model output as untrusted; they cannot change payment authority.
 - Lock the signer through the direct CLI after the agent session ends.
 
-Report security issues using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router-clients/blob/main/SECURITY.md).
+Report security issues using the repository [`SECURITY.md`](https://github.com/OnchainRouter/onchain-router/blob/main/SECURITY.md).
 
 ## Troubleshooting
 
@@ -151,7 +151,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 Documentation: <https://onchainrouter.dev/docs/mcp>
 
-Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
+Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 
 Include the package version, MCP host/version, OS, Node version, sanitized tool/outcome code, and
 redacted `doctor` output. Never attach user content or secrets.

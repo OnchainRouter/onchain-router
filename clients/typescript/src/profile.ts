@@ -1,15 +1,15 @@
 import { unlink } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
-import type { SignerBrokerSession } from '@agenticfi/onchain-router-buyer-core';
+import type { SignerBrokerSession } from '@onchainrouter/buyer-core';
 import {
   assertPrivateRegularFile,
   atomicPrivateWrite,
   ensurePrivateDirectory,
   pathExists,
   safeReadPrivateFile,
-} from '@agenticfi/onchain-router-buyer-core/admin';
-import { PaymentPolicyRejected } from '@agenticfi/onchain-router-buyer-core';
+} from '@onchainrouter/buyer-core/admin';
+import { PaymentPolicyRejected } from '@onchainrouter/buyer-core';
 
 export const BUYER_PROFILE_VERSION = 1;
 

@@ -8,7 +8,7 @@ import {
   WalletLocked,
   type EffectiveBuyerPolicy,
   type PaymentConfirmation,
-} from '@agenticfi/onchain-router-buyer-core';
+} from '@onchainrouter/buyer-core';
 import {
   LocalSpendLedger,
   WalletVault,
@@ -17,7 +17,7 @@ import {
   isPolicyRestriction,
   pathExists,
   type WalletVaultOptions,
-} from '@agenticfi/onchain-router-buyer-core/admin';
+} from '@onchainrouter/buyer-core/admin';
 import {
   BASE_MAINNET_NETWORK,
   BASE_MAINNET_USDC,
@@ -29,8 +29,8 @@ import {
   buyerProfilePaths,
   type BuyerProfilePaths,
   type PaidJsonEndpoint,
-} from '@agenticfi/onchain-router';
-import { removeBuyerSession } from '@agenticfi/onchain-router/admin';
+} from '@onchainrouter/client';
+import { removeBuyerSession } from '@onchainrouter/client/admin';
 import {
   assertKnownFlags,
   booleanFlag,
@@ -43,7 +43,7 @@ import { safeError, safeJson } from './format.js';
 import { TerminalPrompt, type PromptIO } from './prompt.js';
 import { readAudioFile } from './media-file.js';
 
-const VERSION = '0.1.3';
+const VERSION = '0.2.0';
 const DEFAULT_ORIGIN = 'https://onchainrouter.dev';
 const DEFAULT_AGENT_ID = 'cli';
 const MAX_BRIDGE_BYTES = MAX_MEDIA_JSON_BYTES + 65_536;

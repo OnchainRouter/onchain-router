@@ -4,13 +4,13 @@ import type {
   EffectiveBuyerPolicy,
   PaymentConfirmation,
   VerifiedReceipt,
-} from '@agenticfi/onchain-router-buyer-core';
+} from '@onchainrouter/buyer-core';
 import {
   BuyerRuntime,
   PaymentPolicyRejected,
   SignerBrokerClient,
   WalletLocked,
-} from '@agenticfi/onchain-router-buyer-core';
+} from '@onchainrouter/buyer-core';
 import {
   DeterministicSmartRouter,
   createRoutingPolicy,
@@ -19,8 +19,8 @@ import {
   type RouteModel,
   type RouteProfile,
   type RouteWeights,
-} from '@agenticfi/onchain-router-routing';
-import { LocalSpendLedger } from '@agenticfi/onchain-router-buyer-core/admin';
+} from '@onchainrouter/routing';
+import { LocalSpendLedger } from '@onchainrouter/buyer-core/admin';
 import { OnchainRouterDiscovery } from './discovery.js';
 import {
   MEDIA_ENDPOINTS,
