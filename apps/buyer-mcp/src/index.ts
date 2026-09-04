@@ -12,7 +12,7 @@ export interface McpArguments {
   readonly profileDirectory: string;
 }
 
-const HELP = `Onchain Router focused MCP 0.2.0
+const HELP = `Onchain Router focused MCP 0.2.1
 
 Usage:
   onchain-router-mcp [--profile DIRECTORY]

@@ -542,6 +542,100 @@ describe('one-command buyer setup and administration', () => {
     expect(vaultStatusAfter.address).toBe(vaultStatusBefore.address);
   });
 
+  it('migrates the canonical origin only after live contract validation and wallet authentication', async () => {
+    const root = await directory();
+    const setup = await setupProfile(root);
+    const paths = buyerProfilePaths(setup.profile);
+    const ledgerBefore = new LocalSpendLedger(paths.ledgerPath);
+    const before = ledgerBefore.currentPolicy();
+    ledgerBefore.close();
+
+    const stdout: string[] = [];
+    const migrate = createCli({
+      prompt: new Answers([], [PASSPHRASE], []),
+      fetch: discoveryFetch(),
+      stdout: (value) => stdout.push(value),
+      stderr: () => undefined,
+      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+    });
+    expect(
+      await migrate([
+        'policy',
+        'set',
+        '--profile',
+        setup.profile,
+        '--origin',
+        'https://new-router.example',
+        '--json',
+      ]),
+    ).toBe(0);
+
+    const ledgerAfter = new LocalSpendLedger(paths.ledgerPath);
+    const after = ledgerAfter.currentPolicy();
+    ledgerAfter.close();
+    expect(after).toMatchObject({
+      canonicalOrigin: 'https://new-router.example',
+      network: before.network,
+      asset: before.asset,
+      recipients: before.recipients,
+      schemes: before.schemes,
+      models: before.models,
+      limits: before.limits,
+      delegations: before.delegations,
+      maximumOutputTokens: before.maximumOutputTokens,
+      requirePerCallConfirmation: before.requirePerCallConfirmation,
+    });
+    expect(stdout.join('')).toContain('human-authorized-replacement');
+    expect(stdout.join('')).not.toContain(PASSPHRASE);
+  });
+
+  it('rejects an origin whose live payment recipient differs before requesting a passphrase', async () => {
+    const root = await directory();
+    const setup = await setupProfile(root);
+    const paths = buyerProfilePaths(setup.profile);
+    const secret = vi.fn(async () => PASSPHRASE);
+    const fetch = discoveryFetch();
+    const mismatchedFetch = vi.fn(async (input: string | URL | Request) => {
+      const response = await fetch(input);
+      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      if (!url.endsWith('/.well-known/x402')) return response;
+      const document = (await response.json()) as { resources: Array<Record<string, unknown>> };
+      document.resources[0] = {
+        ...document.resources[0],
+        payTo: '0x2222222222222222222222222222222222222222',
+      };
+      return new Response(JSON.stringify(document), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    }) as unknown as typeof globalThis.fetch;
+    const stdout: string[] = [];
+    const migrate = createCli({
+      prompt: { ask: vi.fn(), secret, confirm: vi.fn() },
+      fetch: mismatchedFetch,
+      stdout: (value) => stdout.push(value),
+      stderr: () => undefined,
+      testVaultOptions: { scryptN: 1_024, allowWeakTestKdf: true },
+    });
+    expect(
+      await migrate([
+        'policy',
+        'set',
+        '--profile',
+        setup.profile,
+        '--origin',
+        'https://unsafe-router.example',
+        '--json',
+      ]),
+    ).toBe(2);
+    expect(stdout.join('')).toContain('target origin uses a different payment recipient');
+    expect(secret).not.toHaveBeenCalled();
+
+    const ledger = new LocalSpendLedger(paths.ledgerPath);
+    expect(ledger.currentPolicy().canonicalOrigin).toBe('https://router.example');
+    ledger.close();
+  });
+
   it('writes a redacted diagnostic bundle and treats a locked broker as healthy', async () => {
     const root = await directory();
     const setup = await setupProfile(root);

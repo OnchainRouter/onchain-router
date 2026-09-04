@@ -10,7 +10,7 @@ verification itself.
 
 ## Release status
 
-Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
+Version `0.2.1` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
 across every MCP host. The server never owns wallet setup, import, funding, unlock, or
 policy-widening authority.
 
@@ -44,14 +44,14 @@ signed maximum, wallet secret, passphrase, broker capability, or receipt capabil
 
 ## Installation
 
-Install the stable release, then pin the exact `0.2.0` version in the MCP host:
+Install the stable release, then pin the exact `0.2.1` version in the MCP host:
 
 ```json
 {
   "mcpServers": {
     "onchain-router": {
       "command": "npx",
-      "args": ["--yes", "@onchainrouter/mcp@0.2.0"]
+      "args": ["--yes", "@onchainrouter/mcp@0.2.1"]
     }
   }
 }

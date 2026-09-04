@@ -16,7 +16,7 @@ Setup, unlock, funding, policy changes, and receipt inspection remain direct CLI
 
 ## Release status
 
-Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
+Version `0.2.1` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
 across every OpenAI-compatible client. Keep it bound to loopback and preserve the bearer, Host,
 browser, body, and idempotency controls.
 
@@ -42,7 +42,7 @@ by default; all media bypasses caching. Live catalog limits remain authoritative
 Install the stable release explicitly:
 
 ```bash
-npm install --global @onchainrouter/proxy@0.2.0
+npm install --global @onchainrouter/proxy@0.2.1
 onchain-router-proxy --version
 ```
 

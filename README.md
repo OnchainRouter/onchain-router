@@ -4,7 +4,7 @@ Open-source clients for agents that discover AI capabilities, pay x402 challenge
 Base, enforce local budgets, recover ambiguous requests, and retain a verified receipt for every
 completed payment.
 
-Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. Smart routing is experimental; the Buyer Runtime remains the
+Version `0.2.1` is the stable npm release for the `onchainrouter.dev` domain cutover and existing-profile origin migration. Smart routing is experimental; the Buyer Runtime remains the
 authority for wallet access, model allowlists, recipients, output limits, and integer-atomic spend
 budgets.
 
@@ -28,7 +28,7 @@ The public HTTP API and documentation are at [onchainrouter.dev](https://onchain
 Requirements: Node.js 20.18 or newer, macOS or Linux, and a human-controlled terminal.
 
 ```bash
-npm install --global @onchainrouter/cli@0.2.0
+npm install --global @onchainrouter/cli@0.2.1
 onchain-router --version
 onchain-router setup
 onchain-router policy show
@@ -47,7 +47,7 @@ capability into an agent prompt, command argument, environment variable, log, or
 After setup and unlock, install the application surface you need:
 
 ```bash
-npm install @onchainrouter/client@0.2.0
+npm install @onchainrouter/client@0.2.1
 ```
 
 ```ts
@@ -109,14 +109,14 @@ USDC contract, recipient, or output formats from examples.
 For MCP clients:
 
 ```bash
-npm install --global @onchainrouter/mcp@0.2.0
+npm install --global @onchainrouter/mcp@0.2.1
 onchain-router-mcp --print-config
 ```
 
 For OpenAI-compatible clients:
 
 ```bash
-npm install --global @onchainrouter/proxy@0.2.0
+npm install --global @onchainrouter/proxy@0.2.1
 onchain-router-proxy --print-config
 ```
 
@@ -156,7 +156,7 @@ forbidden files, and common credential formats, then writes SHA-256 hashes under
 
 ## Release policy
 
-- Publish release `0.2.0` under npm's normal `latest` dist-tag and remove the retired `alpha` tag.
+- Publish release `0.2.1` under npm's normal `latest` dist-tag and remove the retired `alpha` tag.
 - npm publication is manual from the pinned GitHub Actions workflow after CI passes.
 - The initial bootstrap uses a short-lived granular npm automation token stored only as a GitHub
   Actions secret and requests npm provenance. It should be replaced by npm trusted publishing after

@@ -11,7 +11,7 @@ backup/restore primitives.
 
 ## Release status
 
-Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. Run every authority-changing
+Version `0.2.1` is the stable npm release for the `onchainrouter.dev` domain cutover and existing-profile origin migration. Run every authority-changing
 command in a human-controlled terminal.
 
 ## Requirements
@@ -30,7 +30,7 @@ current USDC contract, recipient, models, voices, and prices from the canonical 
 Install the stable release explicitly:
 
 ```bash
-npm install --global @onchainrouter/cli@0.2.0
+npm install --global @onchainrouter/cli@0.2.1
 onchain-router --version
 ```
 
@@ -94,7 +94,7 @@ onchain-router unlock [--agent ID] [--idle-seconds N] [--session-seconds N]
 onchain-router lock | status | balance | funding | models | pricing | voices
 onchain-router wallet rotate-passphrase
 onchain-router policy show
-onchain-router policy set [--scheme exact] [--models A,B] [--per-call-usdc N] [--session-usdc N]
+onchain-router policy set [--origin URL] [--scheme exact] [--models A,B] [--per-call-usdc N] [--session-usdc N]
                           [--hour-usdc N] [--day-usdc N]
                           [--max-output-tokens N] [--confirm-each true|false]
 onchain-router chat "prompt" --model MODEL [--max-output-tokens N]
@@ -107,6 +107,20 @@ onchain-router doctor [--out FILE]
 New profiles use `exact`. A profile created by an older alpha with `upto` is locked from signing;
 migrate it once with `onchain-router policy set --profile DIR --scheme exact`. The command requires
 the wallet passphrase and preserves the wallet, models, delegations, and monetary limits.
+
+When the canonical service domain changes, migrate an existing profile without moving funds or
+recreating its wallet:
+
+```bash
+onchain-router policy set \
+  --profile YOUR_PROFILE \
+  --origin https://onchainrouter.dev
+```
+
+The CLI first verifies that the new origin advertises the same network, USDC asset, recipient,
+payment scheme, and every locally allowed model. It then requires the existing wallet passphrase,
+locks any active signer session, and changes only the canonical origin. A mismatch fails before the
+passphrase prompt and leaves the policy unchanged.
 
 Add `--json` for a stable versioned automation envelope. Use a separate `--profile DIR` when a
 human intentionally maintains more than one isolated buyer. Do not let model-supplied text select
@@ -219,6 +233,9 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/O
 - Legacy profile rejected: authenticate and run
   `onchain-router policy set --profile YOUR_PROFILE --scheme exact`, then unlock and retry with a
   fresh idempotency key. The migration preserves the wallet and every policy limit.
+- Retired origin or discovery unavailable: authenticate and run
+  `onchain-router policy set --profile YOUR_PROFILE --origin https://onchainrouter.dev`. The
+  migration succeeds only when the live payment contract matches the existing policy.
 - Model or option rejected: refresh `models`, `pricing`, and `voices`, then compare with `policy show`.
 - Budget rejected: lower the request or have the human review policy; never silently widen it.
 - Lost or ambiguous response: keep the same key/body and run `receipt`; do not create a new key.

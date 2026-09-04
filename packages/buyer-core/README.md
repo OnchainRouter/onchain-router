@@ -13,7 +13,7 @@ Use a higher-level package unless you are developing an Onchain Router adapter:
 
 ## Release status
 
-Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. Installing source or a package does
+Version `0.2.1` is the stable npm release for the `onchainrouter.dev` domain cutover. Installing source or a package does
 not authorize wallet setup, import, funding, unlock, policy widening, or a paid request.
 
 ## What it owns
@@ -45,7 +45,7 @@ hard-coded.
 Install the stable release explicitly:
 
 ```bash
-npm install @onchainrouter/buyer-core@0.2.0
+npm install @onchainrouter/buyer-core@0.2.1
 ```
 
 To build the exact published source from this repository:

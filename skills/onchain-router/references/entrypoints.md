@@ -2,7 +2,7 @@
 
 <!-- Generated from scripts/fixtures/agent-entrypoints.v1.json by scripts/generate-agent-entry-docs.mjs. -->
 
-> This public source release targets npm adapter version `0.2.0`. Review `/docs/installation`, `/products.json`, the live `latest` dist-tag, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
+> This public source release targets npm adapter version `0.2.1`. Review `/docs/installation`, `/products.json`, the live `latest` dist-tag, and registry provenance before installing. Package availability does not grant permission to create, import, fund, unlock, or spend from a wallet.
 
 ## Choose one primary path
 

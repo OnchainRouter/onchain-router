@@ -1,6 +1,6 @@
 {
   "name": "@onchainrouter/routing",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "Experimental deterministic model-selection core for Onchain Router",
   "license": "MIT",

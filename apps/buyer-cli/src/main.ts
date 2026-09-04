@@ -43,7 +43,7 @@ import { safeError, safeJson } from './format.js';
 import { TerminalPrompt, type PromptIO } from './prompt.js';
 import { readAudioFile } from './media-file.js';
 
-const VERSION = '0.2.0';
+const VERSION = '0.2.1';
 const DEFAULT_ORIGIN = 'https://onchainrouter.dev';
 const DEFAULT_AGENT_ID = 'cli';
 const MAX_BRIDGE_BYTES = MAX_MEDIA_JSON_BYTES + 65_536;
@@ -601,6 +601,7 @@ async function setPolicy(context: CliContext, args: ParsedArguments): Promise<un
   assertKnownFlags(args, [
     'profile',
     'json',
+    'origin',
     'models',
     'per-call-usdc',
     'session-usdc',
@@ -614,6 +615,29 @@ async function setPolicy(context: CliContext, args: ParsedArguments): Promise<un
   const ledger = new LocalSpendLedger(paths.ledgerPath);
   try {
     const current = ledger.currentPolicy();
+    const requestedOrigin = flag(args, 'origin');
+    let canonicalOrigin = current.canonicalOrigin;
+    if (requestedOrigin !== undefined) {
+      const target = await new OnchainRouterDiscovery(requiredFlag(args, 'origin'), {
+        ...(context.fetch ? { fetch: context.fetch } : {}),
+      }).paymentContract();
+      const sameRecipients =
+        target.recipients.length === current.recipients.length &&
+        target.recipients.every((recipient) =>
+          current.recipients.some((item) => item.toLowerCase() === recipient.toLowerCase()),
+        );
+      if (target.network !== current.network)
+        throw new PaymentPolicyRejected('target origin uses a different payment network');
+      if (target.asset.toLowerCase() !== current.asset.toLowerCase())
+        throw new PaymentPolicyRejected('target origin uses a different payment asset');
+      if (!sameRecipients)
+        throw new PaymentPolicyRejected('target origin uses a different payment recipient');
+      if (target.scheme !== 'exact')
+        throw new PaymentPolicyRejected('target origin does not advertise the exact scheme');
+      if (current.models.some((model) => !target.models.includes(model)))
+        throw new PaymentPolicyRejected('target origin does not advertise every allowed model');
+      canonicalOrigin = target.canonicalOrigin;
+    }
     const requestedScheme = flag(args, 'scheme');
     if (requestedScheme !== undefined && requestedScheme !== 'exact')
       throw new PaymentPolicyRejected('exact is the only supported payment scheme');
@@ -626,6 +650,7 @@ async function setPolicy(context: CliContext, args: ParsedArguments): Promise<un
       : current.limits.dayAtomic;
     const next = createBuyerPolicy({
       ...current,
+      canonicalOrigin,
       schemes: ['exact'],
       models: flag(args, 'models') ? modelList(requiredFlag(args, 'models')) : current.models,
       limits: {
@@ -1023,7 +1048,7 @@ Usage:
   onchain-router lock | status | balance | funding | models | pricing | voices
   onchain-router wallet rotate-passphrase
   onchain-router policy show
-  onchain-router policy set [--scheme exact] [--models A,B] [--per-call-usdc N] [--session-usdc N]
+  onchain-router policy set [--origin URL] [--scheme exact] [--models A,B] [--per-call-usdc N] [--session-usdc N]
                               [--hour-usdc N] [--day-usdc N]
                               [--max-output-tokens N] [--confirm-each true|false]
   onchain-router chat "prompt" --model MODEL [--max-output-tokens N]

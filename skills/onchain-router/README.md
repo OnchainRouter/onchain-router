@@ -11,7 +11,7 @@ settlement path, or second receipt verifier.
 ## Release status
 
 Version `0.1.0` is the current source release in this repository and at the canonical site's
-`/skill/onchain-router/SKILL.md`. This public source release targets npm Buyer CLI `0.2.0` or newer in the
+`/skill/onchain-router/SKILL.md`. This public source release targets npm Buyer CLI `0.2.1` or newer in the
 `0.2.x` stable line; check the live `latest` dist-tag before installing. It has not been claimed as
 qualified across every external agent or Skill registry.
 

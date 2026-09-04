@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 - 2026-09-04
+
+- Add a wallet-authenticated `policy set --origin` migration for existing buyer profiles. The CLI
+  validates the target origin's live network, USDC asset, recipient, exact scheme, and allowed
+  models before changing the canonical origin, while preserving the wallet, ledger, limits, and
+  delegations.
+
 All notable changes to the public Onchain Router client packages are documented here.
 
 ## 0.2.0 - 2026-09-04
