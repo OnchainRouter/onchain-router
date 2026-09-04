@@ -6,6 +6,7 @@
   validates the target origin's live network, USDC asset, recipient, exact scheme, and allowed
   models before changing the canonical origin, while preserving the wallet, ledger, limits, and
   delegations.
+- Point SDK and routing package metadata at the corresponding live documentation pages.
 
 All notable changes to the public Onchain Router client packages are documented here.
 

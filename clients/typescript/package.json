@@ -14,7 +14,7 @@
     "llm",
     "sdk"
   ],
-  "homepage": "https://onchainrouter.dev/docs/sdk",
+  "homepage": "https://onchainrouter.dev/docs/sdk-examples",
   "bugs": "https://github.com/OnchainRouter/onchain-router/issues",
   "repository": {
     "type": "git",

@@ -153,7 +153,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/O
 
 ## Support
 
-Documentation: <https://onchainrouter.dev/docs/routing>
+Documentation: <https://onchainrouter.dev/docs/agents>
 
 Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 

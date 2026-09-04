@@ -14,7 +14,7 @@
     "cost",
     "latency"
   ],
-  "homepage": "https://onchainrouter.dev/docs/routing",
+  "homepage": "https://onchainrouter.dev/docs/agents",
   "bugs": "https://github.com/OnchainRouter/onchain-router/issues",
   "repository": {
     "type": "git",
