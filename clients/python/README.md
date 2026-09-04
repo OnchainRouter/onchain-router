@@ -183,7 +183,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/O
 
 ## Support
 
-Documentation: <https://onchainrouter.dev/docs/sdk>
+Documentation: <https://onchainrouter.dev/docs/sdk-examples>
 
 Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 

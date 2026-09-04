@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://onchainrouter.dev/docs/sdk"
+Homepage = "https://onchainrouter.dev/docs/sdk-examples"
 Repository = "https://github.com/OnchainRouter/onchain-router"
 Issues = "https://github.com/OnchainRouter/onchain-router/issues"
 
