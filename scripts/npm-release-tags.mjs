@@ -10,8 +10,10 @@ export function parseDistTags(output) {
   return tags;
 }
 
-export function alphaTagCleanup(tags, version) {
-  if (tags.alpha !== version)
-    throw new Error(`alpha dist-tag must resolve to ${version}, found ${tags.alpha ?? 'missing'}`);
-  return tags.latest === version ? ['latest'] : [];
+export function retiredTagCleanup(tags, version) {
+  if (tags.latest !== version)
+    throw new Error(
+      `latest dist-tag must resolve to ${version}, found ${tags.latest ?? 'missing'}`,
+    );
+  return tags.alpha ? ['alpha'] : [];
 }

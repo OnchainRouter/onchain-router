@@ -9,6 +9,8 @@ All notable changes to the public AgenticFI client packages are documented here.
 - Move the canonical production API and documentation origin to `https://onchainrouter.dev`.
 - Update CLI defaults, package metadata, installation examples, MCP configuration, and the portable
   Agent Skill to use the new origin while preserving the exact/EIP-3009 payment contract.
+- Publish the client packages through npm's normal `latest` channel and retire the earlier `alpha`
+  distribution tag.
 
 ### Security
 

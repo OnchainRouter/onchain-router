@@ -9,10 +9,10 @@ without exposing users or funds.
 | Version                                       | Status                                                 |
 | --------------------------------------------- | ------------------------------------------------------ |
 | Production API at `https://onchainrouter.dev` | Supported                                              |
-| Current `0.1.x` npm public alpha              | Supported while listed as current in the release notes |
+| Current `0.1.x` npm stable release            | Supported while listed as current in the release notes |
 | Older commits and locally modified builds     | Best effort                                            |
 
-The current `0.1.x` npm packages use the `alpha` dist-tag. Registry presence, provenance, and supported
+The current `0.1.x` npm packages use the default `latest` dist-tag. Registry presence, provenance, and supported
 versions must be verified against the canonical documentation and release page rather than inferred
 from a package name.
 
@@ -56,7 +56,7 @@ Please avoid:
 - [Buyer Runtime threat model](packages/buyer-core/buyer-core-threat-model.md)
 - [Local proxy threat model](apps/buyer-proxy/buyer-proxy-threat-model.md)
 - [Smart-routing threat model](packages/routing/routing-threat-model.md)
-- [Public alpha release scope](docs/release-scope.md)
+- [Stable client release scope](docs/release-scope.md)
 
 Security reports do not authorize production access, wallet use, provider calls, package
 publication, or deployment.

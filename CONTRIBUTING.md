@@ -10,7 +10,7 @@ corepack enable
 pnpm install --frozen-lockfile
 pnpm deps:native
 pnpm verify
-pnpm pack:alpha
+pnpm pack:release
 ```
 
 Add tests for behavior changes. Preserve the financial invariants: validate policy and the official

@@ -11,7 +11,7 @@ backup/restore primitives.
 
 ## Release status
 
-Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Run every authority-changing
+Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. Run every authority-changing
 command in a human-controlled terminal.
 
 ## Requirements
@@ -27,7 +27,7 @@ current USDC contract, recipient, models, voices, and prices from the canonical 
 
 ## Installation
 
-Install the bounded alpha explicitly:
+Install the stable release explicitly:
 
 ```bash
 npm install --global @agenticfi/onchain-router-cli@0.1.3

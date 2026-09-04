@@ -16,7 +16,7 @@ Setup, unlock, funding, policy changes, and receipt inspection remain direct CLI
 
 ## Release status
 
-Version `0.1.3` is the domain-cutover bounded npm alpha candidate. It is not a claim of qualification
+Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
 across every OpenAI-compatible client. Keep it bound to loopback and preserve the bearer, Host,
 browser, body, and idempotency controls.
 
@@ -39,7 +39,7 @@ by default; all media bypasses caching. Live catalog limits remain authoritative
 
 ## Installation
 
-Install the bounded alpha explicitly:
+Install the stable release explicitly:
 
 ```bash
 npm install --global @agenticfi/onchain-router-proxy@0.1.3

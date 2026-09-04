@@ -10,6 +10,6 @@ This repository contains public client software for an x402 payment product.
 - Preserve integer money, exact origin/network/asset/recipient/model checks, atomic reservations,
   same-idempotency recovery, and receipt-before-result-release behavior.
 - Do not add the proprietary backend, production configuration, or deployment secrets.
-- Run `pnpm verify` and `pnpm pack:alpha` after package changes.
+- Run `pnpm verify` and `pnpm pack:release` after package changes.
 - Package publication is manual and requires explicit human approval; ordinary pull requests must
   not invoke the release workflow.

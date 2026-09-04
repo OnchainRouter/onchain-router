@@ -62,8 +62,8 @@ for (const filename of tarballs) {
   const packageJson = JSON.parse(packageJsonText);
   if (packageJson.private === true) throw new Error(`${filename}: packed package is private`);
   if (packageJson.version !== '0.1.3') throw new Error(`${filename}: unexpected version`);
-  if (packageJson.publishConfig?.tag !== 'alpha')
-    throw new Error(`${filename}: packed alpha tag is missing`);
+  if (packageJson.publishConfig?.tag !== 'latest')
+    throw new Error(`${filename}: packed stable tag is missing`);
   if (/workspace:/.test(packageJsonText))
     throw new Error(`${filename}: workspace dependency marker leaked into tarball`);
 
@@ -93,6 +93,6 @@ for (const filename of tarballs) {
 
 writeFileSync(
   join(artifactDirectory, 'manifest.json'),
-  `${JSON.stringify({ version: 1, distTag: 'alpha', packages: manifest }, null, 2)}\n`,
+  `${JSON.stringify({ version: 1, distTag: 'latest', packages: manifest }, null, 2)}\n`,
 );
-console.log(`Packed and inspected ${manifest.length} npm public-alpha tarballs.`);
+console.log(`Packed and inspected ${manifest.length} npm stable-release tarballs.`);
