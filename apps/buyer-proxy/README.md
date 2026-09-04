@@ -1,6 +1,6 @@
 # Onchain Router Local Proxy
 
-`@agenticfi/onchain-router-proxy` is the loopback OpenAI-compatible adapter for Buyer Runtime. It lets an
+`@onchainrouter/proxy` is the loopback OpenAI-compatible adapter for Buyer Runtime. It lets an
 OpenAI-compatible client use paid Onchain Router chat without implementing x402. The proxy exposes:
 
 - `GET /v1/models` — live models intersected with the human-owned local policy;
@@ -16,7 +16,7 @@ Setup, unlock, funding, policy changes, and receipt inspection remain direct CLI
 
 ## Release status
 
-Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
+Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. It is not a claim of qualification
 across every OpenAI-compatible client. Keep it bound to loopback and preserve the bearer, Host,
 browser, body, and idempotency controls.
 
@@ -42,7 +42,7 @@ by default; all media bypasses caching. Live catalog limits remain authoritative
 Install the stable release explicitly:
 
 ```bash
-npm install --global @agenticfi/onchain-router-proxy@0.1.3
+npm install --global @onchainrouter/proxy@0.2.0
 onchain-router-proxy --version
 ```
 
@@ -52,7 +52,7 @@ To build the exact published source:
 corepack enable
 pnpm install --frozen-lockfile
 pnpm buyer:deps
-pnpm exec turbo run build --filter=@agenticfi/onchain-router-proxy...
+pnpm exec turbo run build --filter=@onchainrouter/proxy...
 ```
 
 ## Quick start
@@ -61,7 +61,7 @@ Build the private artifact, complete Buyer Runtime setup/unlock in a human termi
 proxy:
 
 ```bash
-pnpm --filter @agenticfi/onchain-router-proxy build
+pnpm --filter @onchainrouter/proxy build
 onchain-router setup
 onchain-router unlock
 node apps/buyer-proxy/dist/index.js
@@ -165,9 +165,9 @@ manually with the same idempotency key and identical body.
   the proxy.
 - Treat model output and request content as untrusted; neither can change origin, recipient,
   network, asset, maximum, or wallet authority.
-- Review the [proxy threat model](https://github.com/AgenticFI/onchain-router-clients/blob/main/apps/buyer-proxy/buyer-proxy-threat-model.md) before adding an endpoint or client.
+- Review the [proxy threat model](https://github.com/OnchainRouter/onchain-router/blob/main/apps/buyer-proxy/buyer-proxy-threat-model.md) before adding an endpoint or client.
 
-Report security issues using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router-clients/blob/main/SECURITY.md).
+Report security issues using the repository [`SECURITY.md`](https://github.com/OnchainRouter/onchain-router/blob/main/SECURITY.md).
 
 ## Troubleshooting
 
@@ -187,7 +187,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 Documentation: <https://onchainrouter.dev/docs/proxy>
 
-Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
+Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 
 Include the package version, client/version, OS, Node version, response status, sanitized outcome,
 and redacted `doctor` output. Never attach the bearer, wallet material, request content, payment

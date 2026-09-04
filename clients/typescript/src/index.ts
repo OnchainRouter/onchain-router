@@ -56,7 +56,7 @@ export {
   type RouteModel,
   type RouteProfile,
   type RouteWeights,
-} from '@agenticfi/onchain-router-routing';
+} from '@onchainrouter/routing';
 
 export interface OnchainRouterClientOptions {
   baseUrl: string;

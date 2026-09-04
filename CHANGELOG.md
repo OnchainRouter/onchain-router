@@ -2,6 +2,29 @@
 
 All notable changes to the public Onchain Router client packages are documented here.
 
+## 0.2.0 - 2026-09-04
+
+### Changed
+
+- Move the canonical public source repository to `https://github.com/OnchainRouter/onchain-router`.
+- Publish the six JavaScript packages under the independent `@onchainrouter` npm organization:
+  `client`, `buyer-core`, `routing`, `cli`, `mcp`, and `proxy`.
+- Replace public installation, import, support, repository, author, and build-filter references with
+  the Onchain Router namespace while retaining the existing command names and runtime contracts.
+
+### Compatibility
+
+- Packages published before the organization migration remain available for existing installations,
+  but new users should install the `@onchainrouter/*` packages.
+- The namespace migration does not change wallet files, policies, idempotency identities, x402
+  signing, settlement, recovery, or receipt verification.
+
+### Security
+
+- Package publication remains manual, provenance-enabled, and limited to the existing MIT client
+  boundary. No wallet material, payment payloads, backend source, or production credentials are
+  included.
+
 ## 0.1.3 - 2026-09-04
 
 ### Changed

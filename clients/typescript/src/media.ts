@@ -1,4 +1,4 @@
-import { PaymentPolicyRejected } from '@agenticfi/onchain-router-buyer-core';
+import { PaymentPolicyRejected } from '@onchainrouter/buyer-core';
 import type { ModelCatalog } from './discovery.js';
 
 export const MAX_AUDIO_INPUT_BYTES = 25 * 1024 * 1024;

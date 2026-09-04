@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BuyerRuntimeError } from '@agenticfi/onchain-router-buyer-core';
+import { BuyerRuntimeError } from '@onchainrouter/buyer-core';
 import { safeError } from '../src/format.js';
 
 describe('safe CLI errors', () => {

@@ -1,15 +1,11 @@
 import process from 'node:process';
-import { pathExists } from '@agenticfi/onchain-router-buyer-core/admin';
-import {
-  LocalSpendLedger,
-  SignerBroker,
-  WalletVault,
-} from '@agenticfi/onchain-router-buyer-core/admin';
+import { pathExists } from '@onchainrouter/buyer-core/admin';
+import { LocalSpendLedger, SignerBroker, WalletVault } from '@onchainrouter/buyer-core/admin';
 import {
   buyerProfilePaths,
   removeBuyerSession,
   writeBuyerSession,
-} from '@agenticfi/onchain-router/admin';
+} from '@onchainrouter/client/admin';
 import { safeError } from './format.js';
 
 interface StartMessage {

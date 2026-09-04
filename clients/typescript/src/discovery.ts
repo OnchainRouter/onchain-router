@@ -4,7 +4,7 @@ import {
   UnexpectedAsset,
   UnexpectedRecipient,
   UnsupportedNetwork,
-} from '@agenticfi/onchain-router-buyer-core';
+} from '@onchainrouter/buyer-core';
 
 export const BASE_MAINNET_NETWORK = 'eip155:8453' as const;
 export const BASE_MAINNET_USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' as const;

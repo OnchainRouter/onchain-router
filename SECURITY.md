@@ -9,10 +9,10 @@ without exposing users or funds.
 | Version                                       | Status                                                 |
 | --------------------------------------------- | ------------------------------------------------------ |
 | Production API at `https://onchainrouter.dev` | Supported                                              |
-| Current `0.1.x` npm stable release            | Supported while listed as current in the release notes |
+| Current `0.2.x` npm stable release            | Supported while listed as current in the release notes |
 | Older commits and locally modified builds     | Best effort                                            |
 
-The current `0.1.x` npm packages use the default `latest` dist-tag. Registry presence, provenance, and supported
+The current `0.2.x` npm packages use the default `latest` dist-tag. Registry presence, provenance, and supported
 versions must be verified against the canonical documentation and release page rather than inferred
 from a package name.
 

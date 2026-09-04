@@ -2,7 +2,7 @@ import {
   PaymentPolicyRejected,
   SettlementOutcomeUnknown,
   type BuyerResult,
-} from '@agenticfi/onchain-router-buyer-core';
+} from '@onchainrouter/buyer-core';
 import {
   OnchainRouterBuyer,
   OnchainRouterDiscovery,
@@ -13,7 +13,7 @@ import {
   type BuyerStatus,
   type ModelCatalog,
   type OnchainRouterBuyerOptions,
-} from '@agenticfi/onchain-router';
+} from '@onchainrouter/client';
 import {
   ResponseCache,
   cacheableRequest,

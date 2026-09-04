@@ -2,12 +2,12 @@ import { constants } from 'node:fs';
 import { open } from 'node:fs/promises';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
-import { PaymentPolicyRejected } from '@agenticfi/onchain-router-buyer-core';
+import { PaymentPolicyRejected } from '@onchainrouter/buyer-core';
 import {
   assertPrivateRegularFile,
   ensurePrivateDirectory,
   safeReadPrivateFile,
-} from '@agenticfi/onchain-router-buyer-core/admin';
+} from '@onchainrouter/buyer-core/admin';
 
 const TOKEN = /^[A-Za-z0-9_-]{43}$/;
 export const PROXY_TOKEN_FILENAME = 'proxy-token';

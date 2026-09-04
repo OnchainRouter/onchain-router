@@ -1,5 +1,5 @@
 {
-  "name": "@agenticfi/onchain-router-skill",
+  "name": "@onchainrouter/skill",
   "version": "0.1.0",
   "private": true,
   "description": "Portable Agent Skill for the Onchain Router Buyer CLI",

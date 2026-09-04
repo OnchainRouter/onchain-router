@@ -6,14 +6,14 @@ integration does not invent its own payment lifecycle.
 
 Use a higher-level package unless you are developing an Onchain Router adapter:
 
-- applications: `@agenticfi/onchain-router` or the Python `onchain-router` package;
-- humans and shell automation: `@agenticfi/onchain-router-cli`;
-- tool-capable agents: `@agenticfi/onchain-router-mcp`;
-- OpenAI-compatible clients: `@agenticfi/onchain-router-proxy`.
+- applications: `@onchainrouter/client` or the Python `onchain-router` package;
+- humans and shell automation: `@onchainrouter/cli`;
+- tool-capable agents: `@onchainrouter/mcp`;
+- OpenAI-compatible clients: `@onchainrouter/proxy`.
 
 ## Release status
 
-Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. Installing source or a package does
+Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. Installing source or a package does
 not authorize wallet setup, import, funding, unlock, policy widening, or a paid request.
 
 ## What it owns
@@ -33,7 +33,7 @@ an agent to widen policy. Redis is not used for local financial correctness.
 
 - Node.js 20.18 or newer;
 - macOS or Linux;
-- the matching Onchain Router `0.1.x` client packages;
+- the matching Onchain Router `0.2.x` client packages;
 - a dedicated Base wallet funded with enough USDC for the intended calls.
 
 Windows is not yet a supported host. Live network, asset, recipient, models, and pricing must be
@@ -45,7 +45,7 @@ hard-coded.
 Install the stable release explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router-buyer-core@0.1.3
+npm install @onchainrouter/buyer-core@0.2.0
 ```
 
 To build the exact published source from this repository:
@@ -54,8 +54,8 @@ To build the exact published source from this repository:
 corepack enable
 pnpm install --frozen-lockfile
 pnpm buyer:deps
-pnpm --filter @agenticfi/onchain-router-buyer-core build
-pnpm --filter @agenticfi/onchain-router-buyer-core test
+pnpm --filter @onchainrouter/buyer-core build
+pnpm --filter @onchainrouter/buyer-core test
 ```
 
 `pnpm buyer:deps` is the explicit native-build step for the pinned `better-sqlite3` dependency.
@@ -73,7 +73,7 @@ onchain-router status
 ```
 
 ```ts
-import { OnchainRouterBuyer } from '@agenticfi/onchain-router';
+import { OnchainRouterBuyer } from '@onchainrouter/client';
 
 const buyer = await OnchainRouterBuyer.connect();
 try {
@@ -116,10 +116,10 @@ review when the returned retry directive says so. Never submit a new key to work
   not yet claimed.
 - Keep the signer session short and run `onchain-router lock` when work is complete.
 - Treat hosted media URLs and receipt capabilities as bearer secrets.
-- Review the [Buyer Runtime threat model](https://github.com/AgenticFI/onchain-router-clients/blob/main/packages/buyer-core/buyer-core-threat-model.md) before building an adapter.
+- Review the [Buyer Runtime threat model](https://github.com/OnchainRouter/onchain-router/blob/main/packages/buyer-core/buyer-core-threat-model.md) before building an adapter.
 
 Security issues should be reported privately using the process in the repository
-[`SECURITY.md`](https://github.com/AgenticFI/onchain-router-clients/blob/main/SECURITY.md). Do not include wallet material, payment signatures, prompts,
+[`SECURITY.md`](https://github.com/OnchainRouter/onchain-router/blob/main/SECURITY.md). Do not include wallet material, payment signatures, prompts,
 completions, or receipt capabilities in an issue.
 
 ## Troubleshooting
@@ -141,7 +141,7 @@ completions, or receipt capabilities in an issue.
 
 Documentation: <https://onchainrouter.dev/docs/buyer-runtime>
 
-Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
+Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 
 Include the package version, OS, Node version, sanitized outcome code, and a redacted diagnostic
 report. Never attach secrets or request/response content.

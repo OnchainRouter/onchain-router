@@ -1,4 +1,4 @@
-import type { BuyerSuccess } from '@agenticfi/onchain-router-buyer-core';
+import type { BuyerSuccess } from '@onchainrouter/buyer-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   ResponseCache,

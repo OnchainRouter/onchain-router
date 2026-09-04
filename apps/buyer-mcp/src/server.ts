@@ -1,11 +1,11 @@
 import { McpServer } from '@modelcontextprotocol/server';
-import { BuyerRuntimeError, PaymentPolicyRejected } from '@agenticfi/onchain-router-buyer-core';
+import { BuyerRuntimeError, PaymentPolicyRejected } from '@onchainrouter/buyer-core';
 import {
   MEDIA_ENDPOINTS,
   prepareMediaBody,
   type MediaEndpoint,
   type PaidJsonEndpoint,
-} from '@agenticfi/onchain-router';
+} from '@onchainrouter/client';
 import {
   chatInputSchema,
   modelsInputSchema,
@@ -19,7 +19,7 @@ import {
 import { createFocusedMcpService, type FocusedMcpService } from './service.js';
 
 export const MCP_SERVER_NAME = 'onchain-router';
-export const MCP_SERVER_VERSION = '0.1.3';
+export const MCP_SERVER_VERSION = '0.2.0';
 export const MCP_TOOL_NAMES = [
   'onchain_router_models',
   'onchain_router_chat',

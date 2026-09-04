@@ -11,7 +11,7 @@ Anthropic-style messages, image generation, text-to-speech, speech-to-text, reco
 ## Release status
 
 Version `0.1.0` is public source with a deterministic local wheel builder. It is not currently
-published on PyPI. This source release targets npm Buyer CLI `0.1.3` or newer in the `0.1.x`
+published on PyPI. This source release targets npm Buyer CLI `0.2.0` or newer in the `0.2.x`
 stable line; check the live npm `latest` dist-tag before installing and do not infer a PyPI release
 from the project name.
 
@@ -31,7 +31,7 @@ Install the published CLI, then build the Python wheel from reviewed source beca
 PyPI:
 
 ```bash
-npm install --global @agenticfi/onchain-router-cli@0.1.3
+npm install --global @onchainrouter/cli@0.2.0
 python clients/python/scripts/build_wheel.py
 python -m pip install clients/python/dist/onchain_router-0.1.0-py3-none-any.whl
 ```
@@ -169,7 +169,7 @@ call to a different model.
 - Treat hosted media URLs and receipt capabilities as secrets.
 - Obtain permission before sending third-party audio for retained provider processing.
 
-Report security issues using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router-clients/blob/main/SECURITY.md).
+Report security issues using the repository [`SECURITY.md`](https://github.com/OnchainRouter/onchain-router/blob/main/SECURITY.md).
 
 ## Troubleshooting
 
@@ -185,11 +185,11 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 Documentation: <https://onchainrouter.dev/docs/sdk>
 
-Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
+Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 
 Include the package version, Python version, OS, matching CLI version, sanitized error code, and
 redacted diagnostics. Never attach user content or secrets.
 
 ## License
 
-MIT. See [LICENSE](https://github.com/AgenticFI/onchain-router-clients/blob/main/clients/python/LICENSE).
+MIT. See [LICENSE](https://github.com/OnchainRouter/onchain-router/blob/main/clients/python/LICENSE).

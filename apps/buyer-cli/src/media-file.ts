@@ -1,8 +1,8 @@
 import { constants } from 'node:fs';
 import { lstat, open, realpath } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { PaymentPolicyRejected } from '@agenticfi/onchain-router-buyer-core';
-import { MAX_AUDIO_INPUT_BYTES } from '@agenticfi/onchain-router';
+import { PaymentPolicyRejected } from '@onchainrouter/buyer-core';
+import { MAX_AUDIO_INPUT_BYTES } from '@onchainrouter/client';
 
 /** Explicit CLI file selection only; never exposed as an MCP/proxy path parameter. */
 export async function readAudioFile(file: string): Promise<string> {

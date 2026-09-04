@@ -1,4 +1,4 @@
-import { PaymentPolicyRejected, type BuyerResult } from '@agenticfi/onchain-router-buyer-core';
+import { PaymentPolicyRejected, type BuyerResult } from '@onchainrouter/buyer-core';
 import { describe, expect, it, vi } from 'vitest';
 import { chatBody, type ChatToolInput } from '../src/contracts.js';
 import { createFocusedMcpService } from '../src/service.js';

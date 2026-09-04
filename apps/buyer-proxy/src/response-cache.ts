@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { BuyerResult } from '@agenticfi/onchain-router-buyer-core';
+import type { BuyerResult } from '@onchainrouter/buyer-core';
 
 export const RESPONSE_CACHE_TTL_MS = 10 * 60 * 1000;
 export const RESPONSE_CACHE_MAX_ENTRIES = 200;

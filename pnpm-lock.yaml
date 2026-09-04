@@ -60,10 +60,10 @@ importers:
 
   apps/buyer-cli:
     dependencies:
-      '@agenticfi/onchain-router':
+      '@onchainrouter/client':
         specifier: workspace:*
         version: link:../../clients/typescript
-      '@agenticfi/onchain-router-buyer-core':
+      '@onchainrouter/buyer-core':
         specifier: workspace:*
         version: link:../../packages/buyer-core
     devDependencies:
@@ -85,10 +85,10 @@ importers:
 
   apps/buyer-mcp:
     dependencies:
-      '@agenticfi/onchain-router':
+      '@onchainrouter/client':
         specifier: workspace:*
         version: link:../../clients/typescript
-      '@agenticfi/onchain-router-buyer-core':
+      '@onchainrouter/buyer-core':
         specifier: workspace:*
         version: link:../../packages/buyer-core
       '@modelcontextprotocol/server':
@@ -116,10 +116,10 @@ importers:
 
   apps/buyer-proxy:
     dependencies:
-      '@agenticfi/onchain-router':
+      '@onchainrouter/client':
         specifier: workspace:*
         version: link:../../clients/typescript
-      '@agenticfi/onchain-router-buyer-core':
+      '@onchainrouter/buyer-core':
         specifier: workspace:*
         version: link:../../packages/buyer-core
     devDependencies:
@@ -143,10 +143,10 @@ importers:
 
   clients/typescript:
     dependencies:
-      '@agenticfi/onchain-router-buyer-core':
+      '@onchainrouter/buyer-core':
         specifier: workspace:*
         version: link:../../packages/buyer-core
-      '@agenticfi/onchain-router-routing':
+      '@onchainrouter/routing':
         specifier: workspace:*
         version: link:../../packages/routing
       '@x402/core':

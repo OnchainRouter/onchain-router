@@ -11,9 +11,9 @@ import {
   SignerBroker,
   WalletVault,
   createBuyerPolicy,
-} from '@agenticfi/onchain-router-buyer-core/admin';
-import { OnchainRouterBuyer, buyerProfilePaths } from '@agenticfi/onchain-router';
-import { writeBuyerSession } from '@agenticfi/onchain-router/admin';
+} from '@onchainrouter/buyer-core/admin';
+import { OnchainRouterBuyer, buyerProfilePaths } from '@onchainrouter/client';
+import { writeBuyerSession } from '@onchainrouter/client/admin';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createCli } from '../src/main.js';
 import type { PromptIO } from '../src/prompt.js';

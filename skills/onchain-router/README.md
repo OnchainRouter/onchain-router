@@ -11,8 +11,8 @@ settlement path, or second receipt verifier.
 ## Release status
 
 Version `0.1.0` is the current source release in this repository and at the canonical site's
-`/skill/onchain-router/SKILL.md`. This public source release targets npm Buyer CLI `0.1.3` or newer in the
-`0.1.x` stable line; check the live `latest` dist-tag before installing. It has not been claimed as
+`/skill/onchain-router/SKILL.md`. This public source release targets npm Buyer CLI `0.2.0` or newer in the
+`0.2.x` stable line; check the live `latest` dist-tag before installing. It has not been claimed as
 qualified across every external agent or Skill registry.
 
 ## Requirements
@@ -123,7 +123,7 @@ model, or an automatic fallback. Those outcomes require same-key recovery or hum
 - Lock the signer with the direct CLI after the agent session ends.
 
 Read [references/security.md](references/security.md) before funded testing. Report security issues
-using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router-clients/blob/main/SECURITY.md).
+using the repository [`SECURITY.md`](https://github.com/OnchainRouter/onchain-router/blob/main/SECURITY.md).
 
 ## Troubleshooting
 
@@ -140,7 +140,7 @@ using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router
 
 Documentation: <https://onchainrouter.dev/docs/agent-skill>
 
-Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
+Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 
 Include the Skill version, host/version, CLI version, OS, Node version, sanitized outcome code, and
 redacted diagnostics. Never attach user content or secrets.

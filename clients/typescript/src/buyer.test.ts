@@ -9,7 +9,7 @@ import {
   SignerBroker,
   WalletVault,
   createBuyerPolicy,
-} from '@agenticfi/onchain-router-buyer-core/admin';
+} from '@onchainrouter/buyer-core/admin';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { OnchainRouterBuyer } from './buyer.js';
 import { BASE_MAINNET_USDC } from './discovery.js';

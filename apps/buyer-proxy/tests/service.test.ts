@@ -2,8 +2,8 @@ import {
   PaymentPolicyRejected,
   SettlementOutcomeUnknown,
   type BuyerResult,
-} from '@agenticfi/onchain-router-buyer-core';
-import type { BuyerCatalogInspection, BuyerStatus } from '@agenticfi/onchain-router';
+} from '@onchainrouter/buyer-core';
+import type { BuyerCatalogInspection, BuyerStatus } from '@onchainrouter/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createBuyerProxyService } from '../src/service.js';
 import { ResponseCache } from '../src/response-cache.js';

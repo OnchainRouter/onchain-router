@@ -9,7 +9,7 @@ a request, or authorize fallback. The human-owned Buyer Runtime policy remains f
 
 ## Release status
 
-Version `0.1.3` is the stable npm package release for the `onchainrouter.dev` domain cutover. Routing remains experimental and advisory: it cannot
+Version `0.2.0` is the stable npm package release for the `onchainrouter.dev` domain cutover. Routing remains experimental and advisory: it cannot
 sign, spend, retry a paid route, or widen Buyer Runtime policy. Do not describe it as
 production-ready automatic routing.
 
@@ -28,7 +28,7 @@ use JavaScript floating point for USDC or token accounting.
 Install the stable package explicitly:
 
 ```bash
-npm install @agenticfi/onchain-router-routing@0.1.3
+npm install @onchainrouter/routing@0.2.0
 ```
 
 To build and test the exact published source:
@@ -36,8 +36,8 @@ To build and test the exact published source:
 ```bash
 corepack enable
 pnpm install --frozen-lockfile
-pnpm --filter @agenticfi/onchain-router-routing build
-pnpm --filter @agenticfi/onchain-router-routing test
+pnpm --filter @onchainrouter/routing build
+pnpm --filter @onchainrouter/routing test
 ```
 
 ## Quick start
@@ -52,7 +52,7 @@ import {
   createRoutingPolicy,
   type RouteModel,
   type RouteQuotePort,
-} from '@agenticfi/onchain-router-routing';
+} from '@onchainrouter/routing';
 
 const models: RouteModel[] = [
   {
@@ -100,7 +100,7 @@ console.log(decision.selectedModel, decision.selectedMaximumAtomic);
 ```
 
 Application developers should normally use `OnchainRouterBuyer.routedChat()` from
-`@agenticfi/onchain-router`; it connects routing to the ordinary Buyer Runtime payment and receipt
+`@onchainrouter/client`; it connects routing to the ordinary Buyer Runtime payment and receipt
 path without creating a second wallet or settlement implementation.
 
 ## Decision contract
@@ -137,9 +137,9 @@ USDC settlement.
   different catalog version.
 - Never route around `ProviderOutcomeUnknown` or `SettlementOutcomeUnknown` with another model.
 - Keep prompts, completions, wallet identifiers, and signatures out of routing evidence and logs.
-- Review the [routing threat model](https://github.com/AgenticFI/onchain-router-clients/blob/main/packages/routing/routing-threat-model.md) before adding a quote or health port.
+- Review the [routing threat model](https://github.com/OnchainRouter/onchain-router/blob/main/packages/routing/routing-threat-model.md) before adding a quote or health port.
 
-Report security issues using the repository [`SECURITY.md`](https://github.com/AgenticFI/onchain-router-clients/blob/main/SECURITY.md).
+Report security issues using the repository [`SECURITY.md`](https://github.com/OnchainRouter/onchain-router/blob/main/SECURITY.md).
 
 ## Troubleshooting
 
@@ -155,7 +155,7 @@ Report security issues using the repository [`SECURITY.md`](https://github.com/A
 
 Documentation: <https://onchainrouter.dev/docs/routing>
 
-Issues: <https://github.com/AgenticFI/onchain-router-clients/issues>
+Issues: <https://github.com/OnchainRouter/onchain-router/issues>
 
 Include the package version, policy hash, catalog version, sanitized exclusions, and an exact
 reproduction without user content.
