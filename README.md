@@ -137,7 +137,7 @@ apps/buyer-proxy       Authenticated loopback OpenAI-compatible proxy
 skills/onchain-router  Agent instructions and scripts
 ```
 
-This repository intentionally excludes the proprietary AgenticFI gateway, provider credentials,
+This repository intentionally excludes the proprietary production gateway, provider credentials,
 production deployment configuration, and Workbench.
 
 ## Develop and verify

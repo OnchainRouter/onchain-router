@@ -109,5 +109,5 @@ for (const name of publishOrder) {
 }
 
 console.log(
-  'Published six AgenticFI packages as npm 0.1.3 stable releases with provenance and no retired alpha tags.',
+  'Published six Onchain Router packages as npm 0.1.3 stable releases with provenance and no retired alpha tags.',
 );

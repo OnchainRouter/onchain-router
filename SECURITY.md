@@ -18,7 +18,11 @@ from a package name.
 
 ## Report a vulnerability
 
-Email **saren@agenticfi.wtf** with the subject `Onchain Router security report`.
+Open this repository’s **Security** tab and select **Report a vulnerability** to start a private
+GitHub security advisory. Do not open a public issue containing vulnerability details. If private
+reporting is temporarily unavailable, wait for the canonical private contact path in the
+[documentation](https://onchainrouter.dev/docs/) rather than sending sensitive evidence through an
+unverified channel.
 
 Include only what is necessary to reproduce the issue:
 

@@ -16,7 +16,7 @@ aligns every buyer surface with the production x402 v2 `exact` EIP-3009 contract
 
 ## Excluded
 
-- proprietary AgenticFI gateway, provider adapters, keys, and production configuration;
+- proprietary production gateway, provider adapters, keys, and production configuration;
 - Workbench/website source;
 - production deployment or configuration mutation;
 - wallet initialization, import, funding, unlock, or any USDC payment during publication;
