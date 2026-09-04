@@ -17,3 +17,10 @@ export function retiredTagCleanup(tags, version) {
     );
   return tags.alpha ? ['alpha'] : [];
 }
+
+export function releaseAuthentication(environment) {
+  if (environment.ACTIONS_ID_TOKEN_REQUEST_URL && environment.ACTIONS_ID_TOKEN_REQUEST_TOKEN)
+    return 'trusted-publishing';
+  if (environment.NODE_AUTH_TOKEN) return 'repository-token';
+  throw new Error('stable publication requires npm trusted publishing or a repository token');
+}

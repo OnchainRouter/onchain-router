@@ -23,11 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 22.14.0
           registry-url: https://registry.npmjs.org
+          package-manager-cache: false
       - name: Enable pinned pnpm and provenance-capable npm
         run: corepack enable && corepack prepare pnpm@9.15.0 --activate && npm install --global npm@11.5.1
       - name: Install dependencies without lifecycle scripts
@@ -41,6 +42,5 @@ jobs:
       - name: Publish six stable packages with npm provenance
         run: node scripts/publish-release.mjs
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           RELEASE_CONFIRM: ${{ inputs.confirmation }}
           RESUME_EXISTING: ${{ inputs.resume_existing }}

@@ -158,9 +158,8 @@ forbidden files, and common credential formats, then writes SHA-256 hashes under
 
 - Publish release `0.2.1` under npm's normal `latest` dist-tag and remove the retired `alpha` tag.
 - npm publication is manual from the pinned GitHub Actions workflow after CI passes.
-- The initial bootstrap uses a short-lived granular npm automation token stored only as a GitHub
-  Actions secret and requests npm provenance. It should be replaced by npm trusted publishing after
-  each package exists.
+- The workflow prefers npm trusted publishing with a short-lived GitHub OIDC identity and automatic
+  provenance. A repository token remains only as an explicit bootstrap fallback.
 - This repository release does not deploy production, create/import/fund a wallet, or spend USDC.
 
 See [docs/release-scope.md](docs/release-scope.md) for the exact stable client boundary.

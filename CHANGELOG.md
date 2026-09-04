@@ -7,6 +7,8 @@
   models before changing the canonical origin, while preserving the wallet, ledger, limits, and
   delegations.
 - Point SDK and routing package metadata at the corresponding live documentation pages.
+- Replace the release workflow's required long-lived npm credential with OIDC trusted publishing,
+  while retaining a guarded repository-token bootstrap fallback.
 
 All notable changes to the public Onchain Router client packages are documented here.
 
