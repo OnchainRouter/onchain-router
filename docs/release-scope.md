@@ -24,4 +24,5 @@ aligns every buyer surface with the production x402 v2 `exact` EIP-3009 contract
 
 The npm release uses the default `latest` dist-tag, exact version `0.2.1`, inspected tarballs, and
 provenance. Registry metadata, not this source file, is authoritative for publication status.
-Publication uses the existing repository-scoped npm credential stored only in GitHub Actions.
+Publication prefers npm trusted publishing with a short-lived GitHub OIDC identity. A repository
+token is accepted only as a bootstrap fallback and is never included in a package.

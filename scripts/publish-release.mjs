@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-import { parseDistTags, retiredTagCleanup } from './npm-release-tags.mjs';
+import { parseDistTags, releaseAuthentication, retiredTagCleanup } from './npm-release-tags.mjs';
 
 if (process.env.GITHUB_ACTIONS !== 'true' || process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch')
   throw new Error(
@@ -12,8 +12,7 @@ if (process.env.GITHUB_REF !== 'refs/heads/main')
   throw new Error('npm stable publication requires the public repository main branch');
 if (process.env.RELEASE_CONFIRM !== 'publish-0.2.1-stable')
   throw new Error('release confirmation does not match publish-0.2.1-stable');
-if (!process.env.NODE_AUTH_TOKEN)
-  throw new Error('stable publication requires the repository-scoped NPM_TOKEN secret');
+const authentication = releaseAuthentication(process.env);
 
 const release = JSON.parse(readFileSync('.artifacts/npm/manifest.json', 'utf8'));
 if (release.version !== 1 || release.distTag !== 'latest' || release.packages?.length !== 6)
@@ -109,5 +108,5 @@ for (const name of publishOrder) {
 }
 
 console.log(
-  'Published six Onchain Router packages as npm 0.2.1 stable releases with provenance and no retired alpha tags.',
+  `Published six Onchain Router packages as npm 0.2.1 stable releases with provenance via ${authentication} and no retired alpha tags.`,
 );
