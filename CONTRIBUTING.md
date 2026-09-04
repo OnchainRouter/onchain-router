@@ -1,7 +1,7 @@
 # Contributing
 
 Thank you for improving Onchain Router clients. Keep changes inside the public client boundary; the
-hosted AgenticFI gateway and its production configuration are maintained separately.
+hosted Onchain Router gateway and its production configuration are maintained separately.
 
 ## Before opening a pull request
 

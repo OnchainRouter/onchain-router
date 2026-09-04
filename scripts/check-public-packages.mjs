@@ -66,8 +66,12 @@ if (skill.private !== true || skill.license !== 'MIT')
   );
 
 const securityPolicy = readFileSync('SECURITY.md', 'utf8');
-if (!securityPolicy.includes('saren@agenticfi.wtf'))
-  failures.push('SECURITY.md: private reporting contact is missing');
+if (
+  !securityPolicy.includes('Security') ||
+  !securityPolicy.includes('Report a vulnerability') ||
+  !securityPolicy.includes('security advisory')
+)
+  failures.push('SECURITY.md: private GitHub vulnerability-reporting path is missing');
 if (!securityPolicy.includes('Do **not** email or post private keys'))
   failures.push('SECURITY.md: secret-handling warning is missing');
 
@@ -128,5 +132,5 @@ if (failures.length) {
 }
 
 console.log(
-  'Six AgenticFI npm packages are configured as version 0.1.3 stable release candidates.',
+  'Six Onchain Router npm packages are configured as version 0.1.3 stable release candidates.',
 );
