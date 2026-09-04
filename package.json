@@ -14,7 +14,8 @@
   },
   "pnpm": {
     "overrides": {
-      "axios": "1.19.0"
+      "axios": "1.19.0",
+      "esbuild": "0.28.1"
     }
   },
   "scripts": {
