@@ -10,9 +10,9 @@ Anthropic-style messages, image generation, text-to-speech, speech-to-text, reco
 
 ## Release status
 
-Version `0.1.0` is public alpha source with a deterministic local wheel builder. It is not currently
+Version `0.1.0` is public source with a deterministic local wheel builder. It is not currently
 published on PyPI. This source release targets npm Buyer CLI `0.1.3` or newer in the `0.1.x`
-alpha line; check the live npm `alpha` dist-tag before installing and do not infer a PyPI release
+stable line; check the live npm `latest` dist-tag before installing and do not infer a PyPI release
 from the project name.
 
 ## Requirements

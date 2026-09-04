@@ -16,7 +16,7 @@ It also exposes free models, pricing, voices, balance, payment-contract, and quo
 
 ## Release status
 
-Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Installation does not authorize
+Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. Installation does not authorize
 wallet setup, funding, unlock, policy widening, or a paid request.
 
 ## Requirements
@@ -31,7 +31,7 @@ model catalog, capabilities, and pricing at request time; do not hard-code them 
 
 ## Installation
 
-Install the bounded alpha explicitly:
+Install the stable release explicitly:
 
 ```bash
 npm install @agenticfi/onchain-router@0.1.3

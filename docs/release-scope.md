@@ -1,6 +1,6 @@
-# Public alpha release scope
+# Stable client release scope
 
-Version `0.1.3` is the domain-cutover bounded-alpha candidate for the MIT-licensed client boundary and
+Version `0.1.3` is the stable domain-cutover release for the MIT-licensed client boundary and
 aligns every buyer surface with the production x402 v2 `exact` EIP-3009 contract.
 
 ## Included
@@ -20,11 +20,8 @@ aligns every buyer surface with the production x402 v2 `exact` EIP-3009 contract
 - Workbench/website source;
 - production deployment or configuration mutation;
 - wallet initialization, import, funding, unlock, or any USDC payment during publication;
-- a claim that experimental smart routing is production-ready;
-- promotion of the npm packages to `latest`.
+- a claim that experimental smart routing is production-ready.
 
-The npm release uses the `alpha` dist-tag, exact version `0.1.3`, inspected tarballs, and
+The npm release uses the default `latest` dist-tag, exact version `0.1.3`, inspected tarballs, and
 provenance. Registry metadata, not this source file, is authoritative for publication status.
-The first publication may use a short-lived granular npm token stored only in GitHub Actions. After
-package creation, configure npm trusted publishing for this repository and remove the bootstrap
-token.
+Publication uses the existing repository-scoped npm credential stored only in GitHub Actions.

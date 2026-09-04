@@ -2,21 +2,21 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-import { alphaTagCleanup, parseDistTags } from './npm-alpha-tags.mjs';
+import { parseDistTags, retiredTagCleanup } from './npm-release-tags.mjs';
 
 if (process.env.GITHUB_ACTIONS !== 'true' || process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch')
   throw new Error(
-    'npm alpha publication is allowed only from a manually dispatched GitHub workflow',
+    'npm stable publication is allowed only from a manually dispatched GitHub workflow',
   );
 if (process.env.GITHUB_REF !== 'refs/heads/main')
-  throw new Error('npm alpha publication requires the public repository main branch');
-if (process.env.RELEASE_CONFIRM !== 'publish-0.1.3-alpha')
-  throw new Error('release confirmation does not match publish-0.1.3-alpha');
+  throw new Error('npm stable publication requires the public repository main branch');
+if (process.env.RELEASE_CONFIRM !== 'publish-0.1.3-stable')
+  throw new Error('release confirmation does not match publish-0.1.3-stable');
 if (!process.env.NODE_AUTH_TOKEN)
-  throw new Error('the initial public alpha requires the short-lived NPM_TOKEN repository secret');
+  throw new Error('stable publication requires the repository-scoped NPM_TOKEN secret');
 
 const release = JSON.parse(readFileSync('.artifacts/npm/manifest.json', 'utf8'));
-if (release.version !== 1 || release.distTag !== 'alpha' || release.packages?.length !== 6)
+if (release.version !== 1 || release.distTag !== 'latest' || release.packages?.length !== 6)
   throw new Error('inspected package manifest is invalid');
 
 const expectedRepository = 'git+https://github.com/AgenticFI/onchain-router-clients.git';
@@ -87,7 +87,7 @@ for (const name of publishOrder) {
   const tarball = resolve('.artifacts/npm', item.filename);
   const result = spawnSync(
     'npm',
-    ['publish', tarball, '--access', 'public', '--tag', 'alpha', '--provenance'],
+    ['publish', tarball, '--access', 'public', '--tag', 'latest', '--provenance'],
     { stdio: 'inherit', env: process.env },
   );
   if (result.status !== 0) throw new Error(`publication failed for ${item.name}@${item.version}`);
@@ -96,7 +96,7 @@ for (const name of publishOrder) {
 for (const name of publishOrder) {
   const item = byName.get(name);
   const tags = registryDistTags(name);
-  for (const tag of alphaTagCleanup(tags, item.version)) {
+  for (const tag of retiredTagCleanup(tags, item.version)) {
     const result = spawnSync('npm', ['dist-tag', 'rm', name, tag], {
       stdio: 'inherit',
       env: process.env,
@@ -104,10 +104,10 @@ for (const name of publishOrder) {
     if (result.status !== 0) throw new Error(`could not remove unintended ${tag} tag from ${name}`);
   }
   const finalTags = registryDistTags(name);
-  if (finalTags.alpha !== item.version || finalTags.latest === item.version)
-    throw new Error(`${name} dist-tags do not match the bounded alpha release policy`);
+  if (finalTags.latest !== item.version || finalTags.alpha !== undefined)
+    throw new Error(`${name} dist-tags do not match the stable release policy`);
 }
 
 console.log(
-  'Published six AgenticFI packages as npm 0.1.3 alpha releases with provenance and no unintended latest tags.',
+  'Published six AgenticFI packages as npm 0.1.3 stable releases with provenance and no retired alpha tags.',
 );

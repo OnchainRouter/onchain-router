@@ -18,8 +18,7 @@ for (const [directory, expectedName] of candidates) {
   const manifest = readJson(path);
   if (manifest.name !== expectedName) failures.push(`${path}: expected ${expectedName}`);
   if (manifest.version !== version) failures.push(`${path}: version must be ${version}`);
-  if (manifest.private !== false)
-    failures.push(`${path}: public alpha package must not be private`);
+  if (manifest.private !== false) failures.push(`${path}: public package must not be private`);
   if (manifest.license !== 'MIT') failures.push(`${path}: MIT metadata is required`);
   if (manifest.repository?.url !== publicRepository)
     failures.push(`${path}: public repository metadata is required`);
@@ -27,8 +26,8 @@ for (const [directory, expectedName] of candidates) {
     failures.push(`${path}: supported Node engine is missing`);
   if (manifest.publishConfig?.access !== 'public')
     failures.push(`${path}: publishConfig.access must be public`);
-  if (manifest.publishConfig?.tag !== 'alpha')
-    failures.push(`${path}: publishConfig.tag must be alpha`);
+  if (manifest.publishConfig?.tag !== 'latest')
+    failures.push(`${path}: publishConfig.tag must be latest`);
   if (manifest.publishConfig?.provenance !== true)
     failures.push(`${path}: npm provenance must be requested`);
   if (!Array.isArray(manifest.keywords) || manifest.keywords.length < 5)
@@ -128,4 +127,6 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Six AgenticFI npm packages are configured as version 0.1.3 public alpha candidates.');
+console.log(
+  'Six AgenticFI npm packages are configured as version 0.1.3 stable release candidates.',
+);

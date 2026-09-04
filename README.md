@@ -4,7 +4,7 @@ Open-source clients for agents that discover AI capabilities, pay x402 challenge
 Base, enforce local budgets, recover ambiguous requests, and retain a verified receipt for every
 completed payment.
 
-Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Smart routing is experimental; the Buyer Runtime remains the
+Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. Smart routing is experimental; the Buyer Runtime remains the
 authority for wallet access, model allowlists, recipients, output limits, and integer-atomic spend
 budgets.
 
@@ -147,23 +147,23 @@ corepack enable
 pnpm install --frozen-lockfile
 pnpm deps:native
 pnpm verify
-pnpm pack:alpha
+pnpm pack:release
 ```
 
-`pnpm pack:alpha` builds and inspects the six npm tarballs, rejects workspace dependency markers,
+`pnpm pack:release` builds and inspects the six npm tarballs, rejects workspace dependency markers,
 forbidden files, and common credential formats, then writes SHA-256 hashes under
 `.artifacts/npm/manifest.json`.
 
 ## Release policy
 
-- Keep release `0.1.3` under the npm `alpha` dist-tag, not `latest`.
+- Publish release `0.1.3` under npm's normal `latest` dist-tag and remove the retired `alpha` tag.
 - npm publication is manual from the pinned GitHub Actions workflow after CI passes.
 - The initial bootstrap uses a short-lived granular npm automation token stored only as a GitHub
   Actions secret and requests npm provenance. It should be replaced by npm trusted publishing after
   each package exists.
 - This repository release does not deploy production, create/import/fund a wallet, or spend USDC.
 
-See [docs/release-scope.md](docs/release-scope.md) for the exact public-alpha boundary.
+See [docs/release-scope.md](docs/release-scope.md) for the exact stable client boundary.
 
 ## Support and security
 

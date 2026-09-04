@@ -25,5 +25,5 @@ jobs:
         run: pnpm deps:native
       - name: Verify source, tests, and package metadata
         run: pnpm verify
-      - name: Build and inspect npm tarballs
-        run: pnpm pack:alpha
+      - name: Build and inspect stable npm tarballs
+        run: pnpm pack:release

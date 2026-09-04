@@ -28,10 +28,10 @@
     "test": "turbo run test",
     "test:unit": "turbo run test:unit",
     "test:integration": "turbo run test:integration",
-    "test:release": "node --test scripts/npm-alpha-tags.test.mjs",
+    "test:release": "node --test scripts/npm-release-tags.test.mjs",
     "test:bins": "node scripts/smoke-built-binaries.mjs",
     "package:check": "node scripts/check-public-packages.mjs",
-    "pack:alpha": "pnpm build && pnpm package:check && node scripts/pack-public-packages.mjs",
+    "pack:release": "pnpm build && pnpm package:check && node scripts/pack-public-packages.mjs",
     "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:release && pnpm build && pnpm test:bins && pnpm package:check"
   },
   "devDependencies": {

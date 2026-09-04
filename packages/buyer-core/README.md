@@ -13,7 +13,7 @@ Use a higher-level package unless you are developing an Onchain Router adapter:
 
 ## Release status
 
-Version `0.1.3` is the domain-cutover bounded npm alpha candidate. Installing source or a package does
+Version `0.1.3` is the stable npm release for the `onchainrouter.dev` domain cutover. Installing source or a package does
 not authorize wallet setup, import, funding, unlock, policy widening, or a paid request.
 
 ## What it owns
@@ -42,7 +42,7 @@ hard-coded.
 
 ## Installation
 
-Install the bounded alpha explicitly:
+Install the stable release explicitly:
 
 ```bash
 npm install @agenticfi/onchain-router-buyer-core@0.1.3

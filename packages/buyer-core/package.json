@@ -44,7 +44,7 @@
   "types": "./dist/index.d.ts",
   "publishConfig": {
     "access": "public",
-    "tag": "alpha",
+    "tag": "latest",
     "provenance": true
   },
   "scripts": {
