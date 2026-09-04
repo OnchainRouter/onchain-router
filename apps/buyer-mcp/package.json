@@ -1,6 +1,6 @@
 {
   "name": "@onchainrouter/mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "Focused MCP tools for Onchain Router text, image, and speech payments",
   "license": "MIT",

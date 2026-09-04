@@ -9,7 +9,7 @@ a request, or authorize fallback. The human-owned Buyer Runtime policy remains f
 
 ## Release status
 
-Version `0.2.0` is the stable npm package release for the `onchainrouter.dev` domain cutover. Routing remains experimental and advisory: it cannot
+Version `0.2.1` is the stable npm package release for the `onchainrouter.dev` domain cutover. Routing remains experimental and advisory: it cannot
 sign, spend, retry a paid route, or widen Buyer Runtime policy. Do not describe it as
 production-ready automatic routing.
 
@@ -28,7 +28,7 @@ use JavaScript floating point for USDC or token accounting.
 Install the stable package explicitly:
 
 ```bash
-npm install @onchainrouter/routing@0.2.0
+npm install @onchainrouter/routing@0.2.1
 ```
 
 To build and test the exact published source:

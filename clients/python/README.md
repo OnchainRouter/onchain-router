@@ -11,7 +11,7 @@ Anthropic-style messages, image generation, text-to-speech, speech-to-text, reco
 ## Release status
 
 Version `0.1.0` is public source with a deterministic local wheel builder. It is not currently
-published on PyPI. This source release targets npm Buyer CLI `0.2.0` or newer in the `0.2.x`
+published on PyPI. This source release targets npm Buyer CLI `0.2.1` or newer in the `0.2.x`
 stable line; check the live npm `latest` dist-tag before installing and do not infer a PyPI release
 from the project name.
 
@@ -31,7 +31,7 @@ Install the published CLI, then build the Python wheel from reviewed source beca
 PyPI:
 
 ```bash
-npm install --global @onchainrouter/cli@0.2.0
+npm install --global @onchainrouter/cli@0.2.1
 python clients/python/scripts/build_wheel.py
 python -m pip install clients/python/dist/onchain_router-0.1.0-py3-none-any.whl
 ```

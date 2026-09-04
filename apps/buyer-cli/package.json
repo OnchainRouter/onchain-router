@@ -1,6 +1,6 @@
 {
   "name": "@onchainrouter/cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "Command-line wallet, budgets, x402 payments, recovery, and receipts for Onchain Router",
   "license": "MIT",

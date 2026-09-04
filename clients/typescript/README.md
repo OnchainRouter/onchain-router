@@ -16,7 +16,7 @@ It also exposes free models, pricing, voices, balance, payment-contract, and quo
 
 ## Release status
 
-Version `0.2.0` is the stable npm release for the `onchainrouter.dev` domain cutover. Installation does not authorize
+Version `0.2.1` is the stable npm release for the `onchainrouter.dev` domain cutover. Installation does not authorize
 wallet setup, funding, unlock, policy widening, or a paid request.
 
 ## Requirements
@@ -34,7 +34,7 @@ model catalog, capabilities, and pricing at request time; do not hard-code them 
 Install the stable release explicitly:
 
 ```bash
-npm install @onchainrouter/client@0.2.0
+npm install @onchainrouter/client@0.2.1
 ```
 
 To build the exact published source:

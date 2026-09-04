@@ -8,7 +8,7 @@ import { DEFAULT_PROXY_PORT, proxyClientRecipe } from './contracts.js';
 import { startBuyerProxy } from './server.js';
 import { loadOrCreateProxyToken, PROXY_TOKEN_FILENAME } from './token.js';
 
-export const BUYER_PROXY_VERSION = '0.2.0';
+export const BUYER_PROXY_VERSION = '0.2.1';
 
 export interface ProxyArguments {
   readonly action: 'serve' | 'help' | 'version' | 'print-config';
@@ -17,7 +17,7 @@ export interface ProxyArguments {
   readonly cacheEnabled: boolean;
 }
 
-const HELP = `Onchain Router local buyer proxy 0.2.0
+const HELP = `Onchain Router local buyer proxy 0.2.1
 
 Usage:
   onchain-router-proxy [--profile DIRECTORY] [--port PORT] [--no-cache]

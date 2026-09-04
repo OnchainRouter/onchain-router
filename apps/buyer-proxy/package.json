@@ -1,6 +1,6 @@
 {
   "name": "@onchainrouter/proxy",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "Authenticated local OpenAI-compatible proxy for the Onchain Router Buyer Runtime",
   "license": "MIT",

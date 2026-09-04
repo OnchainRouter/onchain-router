@@ -1,6 +1,6 @@
 # Stable client release scope
 
-Version `0.2.0` is the stable domain-cutover release for the MIT-licensed client boundary and
+Version `0.2.1` is the stable domain-cutover and existing-profile migration release for the MIT-licensed client boundary and
 aligns every buyer surface with the production x402 v2 `exact` EIP-3009 contract.
 
 ## Included
@@ -22,6 +22,6 @@ aligns every buyer surface with the production x402 v2 `exact` EIP-3009 contract
 - wallet initialization, import, funding, unlock, or any USDC payment during publication;
 - a claim that experimental smart routing is production-ready.
 
-The npm release uses the default `latest` dist-tag, exact version `0.2.0`, inspected tarballs, and
+The npm release uses the default `latest` dist-tag, exact version `0.2.1`, inspected tarballs, and
 provenance. Registry metadata, not this source file, is authoritative for publication status.
 Publication uses the existing repository-scoped npm credential stored only in GitHub Actions.

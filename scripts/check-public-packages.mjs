@@ -4,7 +4,7 @@ const failures = [];
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 const publicRepository = 'git+https://github.com/OnchainRouter/onchain-router.git';
 const publicIssues = new URL('https://github.com/OnchainRouter/onchain-router/issues');
-const version = '0.2.0';
+const version = '0.2.1';
 const candidates = [
   ['packages/buyer-core', '@onchainrouter/buyer-core'],
   ['packages/routing', '@onchainrouter/routing'],
@@ -143,5 +143,5 @@ if (failures.length) {
 }
 
 console.log(
-  'Six Onchain Router npm packages are configured as version 0.2.0 stable release candidates.',
+  'Six Onchain Router npm packages are configured as version 0.2.1 stable release candidates.',
 );

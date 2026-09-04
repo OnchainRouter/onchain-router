@@ -1,6 +1,6 @@
 {
   "name": "@onchainrouter/client",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "TypeScript SDK for Onchain Router discovery, x402 payments, recovery, and receipts",
   "license": "MIT",
