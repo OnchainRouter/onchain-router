@@ -54,7 +54,7 @@
     "zod": "4.2.0"
   },
   "devDependencies": {
-    "@modelcontextprotocol/client": "2.0.0",
+    "@modelcontextprotocol/client": "2.3.0",
     "tsup": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
