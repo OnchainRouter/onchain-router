@@ -48,7 +48,7 @@
     "test:integration": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@modelcontextprotocol/server": "2.0.0",
+    "@modelcontextprotocol/server": "2.3.0",
     "@onchainrouter/buyer-core": "workspace:*",
     "@onchainrouter/client": "workspace:*",
     "zod": "4.2.0"
