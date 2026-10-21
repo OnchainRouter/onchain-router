@@ -60,12 +60,12 @@ importers:
 
   apps/buyer-cli:
     dependencies:
-      '@onchainrouter/client':
-        specifier: workspace:*
-        version: link:../../clients/typescript
       '@onchainrouter/buyer-core':
         specifier: workspace:*
         version: link:../../packages/buyer-core
+      '@onchainrouter/client':
+        specifier: workspace:*
+        version: link:../../clients/typescript
     devDependencies:
       '@x402/core':
         specifier: 2.21.0
@@ -85,15 +85,15 @@ importers:
 
   apps/buyer-mcp:
     dependencies:
-      '@onchainrouter/client':
-        specifier: workspace:*
-        version: link:../../clients/typescript
+      '@modelcontextprotocol/server':
+        specifier: 2.3.0
+        version: 2.3.0
       '@onchainrouter/buyer-core':
         specifier: workspace:*
         version: link:../../packages/buyer-core
-      '@modelcontextprotocol/server':
-        specifier: 2.0.0
-        version: 2.0.0
+      '@onchainrouter/client':
+        specifier: workspace:*
+        version: link:../../clients/typescript
       zod:
         specifier: 4.2.0
         version: 4.2.0
@@ -116,12 +116,12 @@ importers:
 
   apps/buyer-proxy:
     dependencies:
-      '@onchainrouter/client':
-        specifier: workspace:*
-        version: link:../../clients/typescript
       '@onchainrouter/buyer-core':
         specifier: workspace:*
         version: link:../../packages/buyer-core
+      '@onchainrouter/client':
+        specifier: workspace:*
+        version: link:../../clients/typescript
     devDependencies:
       openai:
         specifier: 7.4.0
@@ -466,8 +466,12 @@ packages:
     resolution: {integrity: sha512-pJCEwGG7Lfr/+PQp9ZTwKXNeO5wzbfKL7H3MYpCorM4oFBoQrdjnBgEoqG+RjhsvS1FKrDbKux+M1HhlnGWqcA==}
     engines: {node: '>=20'}
 
-  '@modelcontextprotocol/server@2.0.0':
-    resolution: {integrity: sha512-YhHWdHfpFMQfd0prsEnxKeS3Qz3ytIGmsS0sth4KDjnacIT7hxk6hXHkJ9KysxlkvTM+WZAtQbbcUhdoP4Hvtw==}
+  '@modelcontextprotocol/core@2.3.0':
+    resolution: {integrity: sha512-09BHFaNVBe5pB2AhzCfLj0cqmsKLERvZQ4FblzP90UMGLaXVqdZPByFjURwsUYCmxonUW2yAwgTTvle+8O2/8w==}
+    engines: {node: '>=20'}
+
+  '@modelcontextprotocol/server@2.3.0':
+    resolution: {integrity: sha512-+6b0LdsQLmHsvS7J6sQJ4weTpzUn61fU1JKS+321/+IyDYoHW5CR2Tgqcs6GgAAQvlesCo6yX3xttgmx+XGtJw==}
     engines: {node: '>=20'}
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
@@ -1059,6 +1063,7 @@ packages:
   eslint@9.39.1:
     resolution: {integrity: sha512-BhHmn2yNOFA9H9JmmIVKJmd288g9hrVRDkdoIgRCRuSySRUHH7r/DI6aAXW9T1WwUuY3DFgrcaqB+deURBLR5g==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -2008,9 +2013,13 @@ snapshots:
     dependencies:
       zod: 4.2.0
 
-  '@modelcontextprotocol/server@2.0.0':
+  '@modelcontextprotocol/core@2.3.0':
     dependencies:
-      '@modelcontextprotocol/core': 2.0.0
+      zod: 4.2.0
+
+  '@modelcontextprotocol/server@2.3.0':
+    dependencies:
+      '@modelcontextprotocol/core': 2.3.0
       zod: 4.2.0
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
