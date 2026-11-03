@@ -62,7 +62,7 @@
     "better-sqlite3": "12.11.1",
     "ethers": "6.17.0",
     "viem": "2.55.11",
-    "zod": "3.25.76"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@types/better-sqlite3": "9.6.0",
